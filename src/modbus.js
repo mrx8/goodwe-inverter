@@ -62,10 +62,34 @@ function createModbusRtuRequest (commAddr, cmd, offset, value) {
   message[4] = value >> 8 & 0xFF
   message[5] = value & 0xFF
 
-  const checksum = modbusChecksum(message.slice(0, 6))
+  const checksum = modbusChecksum(message.subarray(0, 6))
 
   message[6] = checksum
   message[7] = checksum >> 8 & 0xFF
+
+  return message
+}
+
+
+function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
+  const size = values.length
+  const totalMessageSize = 9 + size
+  const message = Buffer.allocUnsafe(totalMessageSize)
+  const checksumIndex = totalMessageSize - 2
+
+  message[0] = commAddr
+  message[1] = cmd
+  message[2] = offset >> 8 & 0xFF
+  message[3] = offset & 0xFF
+  message[4] = 0x00
+  message[5] = Math.floor(size / 2)
+  message[6] = size
+
+  values.copy(message, 7)
+
+  const checksum = modbusChecksum(message.subarray(0, 7 + size))
+  message[checksumIndex] = checksum
+  message[checksumIndex + 1] = checksum >> 8 & 0xFF
 
   return message
 }
@@ -79,6 +103,7 @@ module.exports = {
   CRC_16_ARRAY,
   modbusChecksum,
   createModbusRtuRequest,
+  createModbusRtuMultiRequest,
 }
 
 
@@ -94,44 +119,7 @@ logger = logging.getLogger(__name__)
 ==> Hier!
 
 
-def create_modbus_tcp_request(comm_addr: int, cmd: int, offset: int, value: int) -> bytes:
-    """
-    Create modbus TCP request.
-    data[0:1] is transaction identifier
-    data[2:3] is protocol identifier (0)
-    data[4:5] message length
-    data[6] is inverter address
-    data[7] is modbus command
-    data[8:9] is command offset parameter
-    data[10:11] is command value parameter
-    """
-    data: bytearray = bytearray(12)
-    data[0] = 0
-    data[1] = 1  # Not transaction ID support yet
-    data[2] = 0
-    data[3] = 0
-    data[4] = 0
-    data[5] = 6
-    data[6] = comm_addr
-    data[7] = cmd
-    data[8] = (offset >> 8) & 0xFF
-    data[9] = offset & 0xFF
-    data[10] = (value >> 8) & 0xFF
-    data[11] = value & 0xFF
-    return bytes(data)
-
-
 def create_modbus_rtu_multi_request(comm_addr: int, cmd: int, offset: int, values: bytes) -> bytes:
-    """
-    Create modbus RTU (multi value) request.
-    data[0] is inverter address
-    data[1] is modbus command
-    data[2:3] is command offset parameter
-    data[4:5] is number of registers
-    data[6] is number of bytes
-    data[7-n] is data payload
-    data[n+1:n+2] is crc-16 checksum
-    """
     data: bytearray = bytearray(7)
     data[0] = comm_addr
     data[1] = cmd
@@ -144,37 +132,6 @@ def create_modbus_rtu_multi_request(comm_addr: int, cmd: int, offset: int, value
     checksum = _modbus_checksum(data)
     data.append(checksum & 0xFF)
     data.append((checksum >> 8) & 0xFF)
-    return bytes(data)
-
-
-def create_modbus_tcp_multi_request(comm_addr: int, cmd: int, offset: int, values: bytes) -> bytes:
-    """
-    Create modbus TCP (multi value) request.
-    data[0:1] is transaction identifier
-    data[2:3] is protocol identifier (0)
-    data[4:5] message length
-    data[6] is inverter address
-    data[7] is modbus command
-    data[8:9] is command offset parameter
-    data[10:11] is number of registers
-    data[12] is number of bytes
-    data[13-n] is data payload
-    """
-    data: bytearray = bytearray(13)
-    data[0] = 0
-    data[1] = 1  # Not transaction ID support yet
-    data[2] = 0
-    data[3] = 0
-    data[4] = 0
-    data[5] = 7 + len(values)
-    data[6] = comm_addr
-    data[7] = cmd
-    data[8] = (offset >> 8) & 0xFF
-    data[9] = offset & 0xFF
-    data[10] = 0
-    data[11] = len(values) // 2
-    data[12] = len(values)
-    data.extend(values)
     return bytes(data)
 
 

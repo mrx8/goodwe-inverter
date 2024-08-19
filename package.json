@@ -4,12 +4,14 @@
   "description": "read/write registers via modbus-rtu interface (UDP) from GoodWe-Inverters",
   "main": "src/main.js",
   "scripts": {
-    "test": "echo 'Error: no test specified' && exit 1",
+    "test": "mocha --timeout 10000 $(find test/ -name 'test-*.js' -type f)",
     "eslint": "eslint eslint.config.js 'src/**/*.js'"
   },
   "author": "Andreas Vierengel",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "9.9.0"
+    "chai": "5.1.1",
+    "eslint": "9.9.0",
+    "mocha": "10.7.3"
   }
 }

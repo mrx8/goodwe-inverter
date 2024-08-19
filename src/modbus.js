@@ -38,9 +38,65 @@ function create_crc16_array () {
 }
 
 const CRC_16_ARRAY = create_crc16_array()
+// console.log(require('node:util').inspect(CRC_16_ARRAY, {maxArrayLength: Infinity}))
+
+
+function modbusChecksum (data) {
+  let crc = 0xFFFF
+
+  for (const byte of data) {
+    crc = crc >> 8 ^ CRC_16_ARRAY[(crc ^ byte) & 0xFF]
+  }
+
+  return crc
+}
+
+
+function createModbusRtuRequest (commAddr, cmd, offset, value) {
+  const message = Buffer.allocUnsafe(8)
+
+  message[0] = commAddr
+  message[1] = cmd
+  message[2] = offset >> 8 & 0xFF
+  message[3] = offset & 0xFF
+  message[4] = value >> 8 & 0xFF
+  message[5] = value & 0xFF
+
+  const checksum = modbusChecksum(message.slice(0, 6))
+
+  message[6] = checksum
+  message[7] = checksum >> 8 & 0xFF
+
+  return message
+}
+
+// def create_modbus_rtu_request(comm_addr: int, cmd: int, offset: int, value: int) -> bytes:
+//     data: bytearray = bytearray(6)
+//     data[0] = comm_addr
+//     data[1] = cmd
+//     data[2] = (offset >> 8) & 0xFF
+//     data[3] = offset & 0xFF
+//     data[4] = (value >> 8) & 0xFF
+//     data[5] = value & 0xFF
+//     checksum = _modbus_checksum(data)
+//     data.append(checksum & 0xFF)
+//     data.append((checksum >> 8) & 0xFF)
+//     return bytes(data)
+
+
+module.exports = {
+  MODBUS_READ_CMD,
+  MODBUS_WRITE_CMD,
+  MODBUS_WRITE_MULTI_CMD,
+  FAILURE_CODES,
+  CRC_16_ARRAY,
+  modbusChecksum,
+  createModbusRtuRequest,
+}
 
 
 /*
+
 import logging
 from typing import Union
 
@@ -48,76 +104,7 @@ from .exceptions import PartialResponseException, RequestRejectedException
 
 logger = logging.getLogger(__name__)
 
-MODBUS_READ_CMD: int = 0x3
-MODBUS_WRITE_CMD: int = 0x6
-MODBUS_WRITE_MULTI_CMD: int = 0x10
-
-ILLEGAL_DATA_ADDRESS: str = 'ILLEGAL DATA ADDRESS'
-
-FAILURE_CODES = {
-    1: "ILLEGAL FUNCTION",
-    2: ILLEGAL_DATA_ADDRESS,
-    3: "ILLEGAL DATA VALUE",
-    4: "SLAVE DEVICE FAILURE",
-    5: "ACKNOWLEDGE",
-    6: "SLAVE DEVICE BUSY",
-    7: "NEGATIVE ACKNOWLEDGEMENT",
-    8: "MEMORY PARITY ERROR",
-    10: "GATEWAY PATH UNAVAILABLE",
-    11: "GATEWAY TARGET DEVICE FAILED TO RESPOND",
-}
-
-
-def _create_crc16_table() -> tuple:
-    """Construct (modbus) CRC-16 table"""
-    table = []
-    for i in range(256):
-        buffer = i << 1
-        crc = 0
-        for _ in range(8, 0, -1):
-            buffer >>= 1
-            if (buffer ^ crc) & 0x0001:
-                crc = (crc >> 1) ^ 0xA001
-            else:
-                crc >>= 1
-        table.append(crc)
-    return tuple(table)
-
-
-_CRC_16_TABLE = _create_crc16_table()
-
 ==> Hier!
-
-def _modbus_checksum(data: Union[bytearray, bytes]) -> int:
-    """
-    Calculate modbus crc-16 checksum
-    """
-    crc = 0xFFFF
-    for ch in data:
-        crc = (crc >> 8) ^ _CRC_16_TABLE[(crc ^ ch) & 0xFF]
-    return crc
-
-
-def create_modbus_rtu_request(comm_addr: int, cmd: int, offset: int, value: int) -> bytes:
-    """
-    Create modbus RTU request.
-    data[0] is inverter address
-    data[1] is modbus command
-    data[2:3] is command offset parameter
-    data[4:5] is command value parameter
-    data[6:7] is crc-16 checksum
-    """
-    data: bytearray = bytearray(6)
-    data[0] = comm_addr
-    data[1] = cmd
-    data[2] = (offset >> 8) & 0xFF
-    data[3] = offset & 0xFF
-    data[4] = (value >> 8) & 0xFF
-    data[5] = value & 0xFF
-    checksum = _modbus_checksum(data)
-    data.append(checksum & 0xFF)
-    data.append((checksum >> 8) & 0xFF)
-    return bytes(data)
 
 
 def create_modbus_tcp_request(comm_addr: int, cmd: int, offset: int, value: int) -> bytes:

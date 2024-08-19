@@ -43,7 +43,17 @@ describe('test for modbus.js', function () { // describe() cannot be async
 
   it('checks for correct modbus_checksum', function () {
     const {createModbusRtuRequest} = require('../src/modbus')
-    const message = createModbusRtuRequest(0x11, 0x3, 0x006b, 0x0003)
+    let message
+    message = createModbusRtuRequest(0x11, 0x3, 0x006b, 0x0003)
     expect(message.toString('hex')).to.equal('1103006b00037687')
+
+    message = createModbusRtuRequest(0xf7, 0x3, 0x88b8, 0x0021)
+    expect(message.toString('hex')).to.equal('f70388b800213ac1')
+
+    message = createModbusRtuRequest(0xf7, 0x6, 0x88b8, 0x00FF)
+    expect(message.toString('hex')).to.equal('f70688b800ff7699')
+
+    message = createModbusRtuRequest(0xf7, 0x6, 0x88b8, -1)
+    expect(message.toString('hex')).to.equal('f70688b8ffff3769')
   })
 })

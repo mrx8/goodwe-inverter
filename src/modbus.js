@@ -70,19 +70,6 @@ function createModbusRtuRequest (commAddr, cmd, offset, value) {
   return message
 }
 
-// def create_modbus_rtu_request(comm_addr: int, cmd: int, offset: int, value: int) -> bytes:
-//     data: bytearray = bytearray(6)
-//     data[0] = comm_addr
-//     data[1] = cmd
-//     data[2] = (offset >> 8) & 0xFF
-//     data[3] = offset & 0xFF
-//     data[4] = (value >> 8) & 0xFF
-//     data[5] = value & 0xFF
-//     checksum = _modbus_checksum(data)
-//     data.append(checksum & 0xFF)
-//     data.append((checksum >> 8) & 0xFF)
-//     return bytes(data)
-
 
 module.exports = {
   MODBUS_READ_CMD,

@@ -1,20 +1,22 @@
 'use strict'
 
+const {PartialResponseException, RequestRejectedException} = require('./exceptions')
+
 const MODBUS_READ_CMD = 0x3
 const MODBUS_WRITE_CMD = 0x6
 const MODBUS_WRITE_MULTI_CMD = 0x10
 
 const FAILURE_CODES = {
-  1 : 'ILLEGAL FUNCTION',
-  2 : 'ILLEGAL DATA ADDRESS',
-  3 : 'ILLEGAL DATA VALUE',
-  4 : 'SLAVE DEVICE FAILURE',
+  1 : 'ILLEGAL_FUNCTION',
+  2 : 'ILLEGAL_DATA_ADDRESS',
+  3 : 'ILLEGAL_DATA_VALUE',
+  4 : 'SLAVE_DEVICE_FAILURE',
   5 : 'ACKNOWLEDGE',
-  6 : 'SLAVE DEVICE BUSY',
-  7 : 'NEGATIVE ACKNOWLEDGEMENT',
-  8 : 'MEMORY PARITY ERROR',
-  10: 'GATEWAY PATH UNAVAILABLE',
-  11: 'GATEWAY TARGET DEVICE FAILED TO RESPOND',
+  6 : 'SLAVE_DEVICE_BUSY',
+  7 : 'NEGATIVE_ACKNOWLEDGEMENT',
+  8 : 'MEMORY_PARITY_ERROR',
+  10: 'GATEWAY_PATH_UNAVAILABLE',
+  11: 'GATEWAY_TARGET_DEVICE_FAILED_TO_RESPOND',
 }
 
 
@@ -95,6 +97,68 @@ function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
 }
 
 
+function validateModbusRtuResponse (data, cmd, offset, value) {
+  let expectedLength
+
+  if (data.length <= 4) {
+    console.debug('Response is too short.')
+
+    return false
+  }
+
+  if (data[3] === MODBUS_READ_CMD) {
+    if (data[4] !== value * 2) {
+      console.debug(`Response has unexpected length: ${data[4]}, expected: ${value * 2}.`)
+
+      return false
+    }
+
+    expectedLength = data[4] + 7
+    if (data.length < expectedLength) {
+      throw PartialResponseException(data.length, expectedLength)
+    }
+  } else if ([MODBUS_WRITE_CMD, MODBUS_WRITE_MULTI_CMD].includes(data[3])) {
+    expectedLength = 10
+    if (data.length < expectedLength) {
+      console.debug(`Response has unexpected length: ${data.length}, expected: ${expectedLength}.`)
+
+      return false
+    }
+    const responseOffset = data.readUInt16BE(4)
+    if (responseOffset !== offset) {
+      console.debug(`Response has wrong offset: ${responseOffset}, expected: ${offset}.`)
+
+      return false
+    }
+
+    const responseValue = data.readInt16BE(6)
+    if (responseValue !== value) {
+      console.debug(`Response has wrong value: ${responseValue}, expected: ${value}.`)
+
+      return false
+    }
+  } else {
+    expectedLength = data.length
+  }
+
+
+  const checksumOffset = expectedLength - 2
+  if (modbusChecksum(data.subarray(2, checksumOffset)) !== (data[checksumOffset + 1] << 8) + data[checksumOffset]) {
+    console.debug('Response CRC-16 checksum does not match.')
+
+    return false
+  }
+
+  if (data[3] !== cmd) {
+    const failureCode = FAILURE_CODES[data[4]] || 'UNKNOWN'
+    console.debug(`Response command failure: ${failureCode}.`)
+    throw RequestRejectedException(failureCode)
+  }
+
+  return true
+}
+
+
 module.exports = {
   MODBUS_READ_CMD,
   MODBUS_WRITE_CMD,
@@ -104,6 +168,7 @@ module.exports = {
   modbusChecksum,
   createModbusRtuRequest,
   createModbusRtuMultiRequest,
+  validateModbusRtuResponse,
 }
 
 
@@ -118,32 +183,7 @@ logger = logging.getLogger(__name__)
 
 ==> Hier!
 
-
-def create_modbus_rtu_multi_request(comm_addr: int, cmd: int, offset: int, values: bytes) -> bytes:
-    data: bytearray = bytearray(7)
-    data[0] = comm_addr
-    data[1] = cmd
-    data[2] = (offset >> 8) & 0xFF
-    data[3] = offset & 0xFF
-    data[4] = 0
-    data[5] = len(values) // 2
-    data[6] = len(values)
-    data.extend(values)
-    checksum = _modbus_checksum(data)
-    data.append(checksum & 0xFF)
-    data.append((checksum >> 8) & 0xFF)
-    return bytes(data)
-
-
 def validate_modbus_rtu_response(data: bytes, cmd: int, offset: int, value: int) -> bool:
-    """
-    Validate the modbus RTU response.
-    data[0:1] is header
-    data[2] is source address
-    data[3] is command return type
-    data[4] is response payload length (for read commands)
-    data[-2:] is crc-16 checksum
-    """
     if len(data) <= 4:
         logger.debug("Response is too short.")
         return False
@@ -170,6 +210,7 @@ def validate_modbus_rtu_response(data: bytes, cmd: int, offset: int, value: int)
     else:
         expected_length = len(data)
 
+
     checksum_offset = expected_length - 2
     if _modbus_checksum(data[2:checksum_offset]) != ((data[checksum_offset + 1] << 8) + data[checksum_offset]):
         logger.debug("Response CRC-16 checksum does not match.")
@@ -181,52 +222,4 @@ def validate_modbus_rtu_response(data: bytes, cmd: int, offset: int, value: int)
         raise RequestRejectedException(failure_code)
 
     return True
-
-
-def validate_modbus_tcp_response(data: bytes, cmd: int, offset: int, value: int) -> bool:
-    """
-    Validate the modbus TCP response.
-    data[0:1] is transaction identifier
-    data[2:3] is protocol identifier (0)
-    data[4:5] message length
-    data[6] is source address
-    data[7] is command return type
-    data[8] is response payload length (for read commands)
-    """
-    if len(data) <= 8:
-        logger.debug("Response is too short.")
-        return False
-
-    # The Modbus/TCP message length check is completely ignore due to Goodwe bugs
-    # expected_length = int.from_bytes(data[4:6], byteorder='big', signed=False) + 6
-    # if len(data) < expected_length:
-    #    raise PartialResponseException(len(data), expected_length)
-
-    if data[7] == MODBUS_READ_CMD:
-        expected_length = data[8] + 9
-        if len(data) < expected_length:
-            raise PartialResponseException(len(data), expected_length)
-        if data[8] != value * 2:
-            logger.debug("Response has unexpected length: %d, expected %d.", data[8], value * 2)
-            return False
-    elif data[7] in (MODBUS_WRITE_CMD, MODBUS_WRITE_MULTI_CMD):
-        if len(data) < 12:
-            logger.debug("Response has unexpected length: %d, expected %d.", len(data), 12)
-            return False
-        response_offset = int.from_bytes(data[8:10], byteorder='big', signed=False)
-        if response_offset != offset:
-            logger.debug("Response has wrong offset: %X, expected %X.", response_offset, offset)
-            return False
-        response_value = int.from_bytes(data[10:12], byteorder='big', signed=True)
-        if response_value != value:
-            logger.debug("Response has wrong value: %X, expected %X.", response_value, value)
-            return False
-
-    if data[7] != cmd:
-        failure_code = FAILURE_CODES.get(data[8], "UNKNOWN")
-        logger.debug("Response is command failure: %s.", FAILURE_CODES.get(data[8], "UNKNOWN"))
-        raise RequestRejectedException(failure_code)
-
-    return True
-
 */

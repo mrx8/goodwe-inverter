@@ -60,8 +60,65 @@ describe('test for modbus.js', function () { // describe() cannot be async
 
   it('checks for correct createModbusRtuMultiRequest', function () {
     const {createModbusRtuMultiRequest} = require('../src/modbus')
-
     const message = createModbusRtuMultiRequest(0xf7, 0x10, 0x88b8, Buffer.from('010203040506', 'hex'))
     expect(message.toString('hex')).to.equal('f71088b8000306010203040506102e')
+  })
+
+
+  it('checks for valid ModbusRtuResponse', function () {
+    const {validateModbusRtuResponse} = require('../src/modbus')
+    const status = validateModbusRtuResponse(Buffer.from('aa55f7030401020304cd33', 'hex'), 0x03, 0x0401, 2)
+    expect(status).to.be.true
+  })
+
+
+  it('checks for garbage after response end in ModbusRtuResponse', function () {
+    const {validateModbusRtuResponse} = require('../src/modbus')
+    const status = validateModbusRtuResponse(Buffer.from('aa55f7030401020304cd33ffffff', 'hex'), 0x03, 0x0401, 2)
+    expect(status).to.be.true
+  })
+
+
+  it('checks for wrong checksum in ModbusRtuResponse', function () {
+    const {validateModbusRtuResponse} = require('../src/modbus')
+    const status = validateModbusRtuResponse(Buffer.from('aa55f70304010203043346', 'hex'), 0x03, 0x0401, 2)
+    expect(status).to.be.false
+  })
+
+
+  it('checks for unexpected message length in ModbusRtuResponse', function () {
+    const {validateModbusRtuResponse} = require('../src/modbus')
+    const status = validateModbusRtuResponse(Buffer.from('aa55f70306010203040506b417', 'hex'), 0x03, 0x0401, 2)
+    expect(status).to.be.false
+  })
+
+
+  it('checks for partial response exception in ModbusRtuResponse', function () {
+    const {validateModbusRtuResponse} = require('../src/modbus')
+    let error = new Error()
+
+    try {
+      validateModbusRtuResponse(Buffer.from('aa55f7030401020304', 'hex'), 0x03, 0x0401, 2)
+    } catch (e) {
+      error = e
+    } finally {
+      expect(error.code).to.equal('PARTIAL_RESPONSE')
+      expect(error.length).to.equal(9)
+      expect(error.expected).to.equal(11)
+    }
+  })
+
+
+  it('checks for failure code exception in ModbusRtuResponse', function () {
+    const {validateModbusRtuResponse} = require('../src/modbus')
+    let error = new Error()
+
+    try {
+      validateModbusRtuResponse(Buffer.from('aa55f783040102030405b35e', 'hex'), 0x03, 0x0401, 2)
+    } catch (e) {
+      error = e
+    } finally {
+      expect(error.code).to.equal('SLAVE_DEVICE_FAILURE')
+    }
   })
 })

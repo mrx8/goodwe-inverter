@@ -4,7 +4,10 @@ const Protocol = require('./protocol')
 
 module.exports = Protocol
   .methods({
-    requestDeviceInfo () {
-      return this.requestResponse(Buffer.from('aa55c07f0102000241', 'hex'))
+    getDeviceInfo () {
+      return this.requestResponse(Buffer.from('7F03753100280409', 'hex'))
     },
   })
+
+
+//      self._READ_DEVICE_VERSION_INFO: ProtocolCommand = self._read_command(0x7531, 0x0028)

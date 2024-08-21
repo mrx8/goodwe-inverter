@@ -2,6 +2,8 @@
 
 const Program = require('commander')
 const Discover = require('../src/discover')
+const Inverter = require('../src/inverter')
+
 
 async function main () {
   Program
@@ -29,9 +31,18 @@ async function main () {
   }
 
   console.log('res', foundInverters)
-  // for (const {data} of foundInverters) {
-  //   console.log(data.toString())
-  // }
+  for (const {ip} of foundInverters) {
+    console.log(`check ${ip}`)
+    const inverter = await Inverter({address: ip}) // eslint-disable-line no-await-in-loop
+    try {
+      const response = await inverter.getDeviceInfo() // eslint-disable-line no-await-in-loop
+      console.log(response, response.data.toString())
+    } catch (e) {
+      if (e.code !== 'REQUEST_TIMED_OUT') {
+        throw e
+      }
+    }
+  }
   process.exit(0)
 }
 

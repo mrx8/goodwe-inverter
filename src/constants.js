@@ -1,8 +1,8 @@
 'use strict'
 
 module.exports = {
-  GOODWE_TCP_PORT: 502,
-  GOODWE_UDP_PORT: 8899,
+  GOODWE_BROADCAST_PORT: 48899,
+  GOODWE_UDP_PORT      : 8899,
 
   BATTERY_MODES: {
     0: 'No battery',

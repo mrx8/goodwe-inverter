@@ -9,9 +9,16 @@
   },
   "author": "Andreas Vierengel",
   "license": "ISC",
+  "bin": {
+    "discover-inverters": "src/discover.js"
+  },
   "devDependencies": {
     "chai": "5.1.1",
     "eslint": "9.9.0",
     "mocha": "10.7.3"
+  },
+  "dependencies": {
+    "commander": "11.1.0",
+    "stampit": "4.3.2"
   }
 }

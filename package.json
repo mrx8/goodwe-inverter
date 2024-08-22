@@ -3,14 +3,15 @@
   "version": "0.0.1",
   "description": "read/write registers via modbus-rtu interface (UDP) from GoodWe-Inverters",
   "main": "src/main.js",
+  "type": "module",
   "scripts": {
-    "test": "mocha --timeout 10000 $(find test/ -name 'test-*.js' -type f)",
+    "test": "mocha --timeout 10000 $(find test/ -name 'test-*.mjs' -type f)",
     "eslint": "eslint eslint.config.js 'src/**/*.js'"
   },
   "author": "Andreas Vierengel",
   "license": "ISC",
   "bin": {
-    "discover-inverters": "src/discover.js"
+    "discover-inverters": "bin/discover.cjs"
   },
   "devDependencies": {
     "chai": "5.1.1",
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "commander": "11.1.0",
+    "dgram-as-promised": "6.0.0",
     "stampit": "4.3.2"
   }
 }

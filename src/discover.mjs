@@ -1,8 +1,5 @@
-'use strict'
-
-const {GOODWE_BROADCAST_PORT} = require('../src/constants')
-// const {validateModbusRtuResponse} = require('../src/modbus')
-const Protocol = require('./protocol')
+import {GOODWE_BROADCAST_PORT} from './constants.mjs'
+import Protocol from './protocol.mjs'
 
 
 function bind (socket, port = 0) {
@@ -20,7 +17,7 @@ function bind (socket, port = 0) {
 }
 
 
-module.exports = Protocol
+export default Protocol
   .init(async ({
     request,
     timeout = 3000,

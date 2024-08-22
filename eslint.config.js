@@ -8,8 +8,8 @@ module.exports = [
   js.configs.recommended,
   {
     languageOptions: {
-      ecmaVersion: 2022,
-      sourceType : 'commonjs',
+      ecmaVersion: 2024,
+      sourceType : 'modules',
       globals    : {
         ...globals.node,
       },

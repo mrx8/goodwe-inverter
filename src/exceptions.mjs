@@ -1,6 +1,4 @@
-'use strict'
-
-function RequestFailedException (message = '', consecutiveFailuresCount = 0) {
+export function RequestFailedException (message = '', consecutiveFailuresCount = 0) {
   const exception = new Error(message)
 
   exception.code = 'REQUEST_FAILED'
@@ -10,7 +8,7 @@ function RequestFailedException (message = '', consecutiveFailuresCount = 0) {
 }
 
 
-function RequestRejectedException (code = 'UNKNOWN') {
+export function RequestRejectedException (code = 'UNKNOWN') {
   const exception = new Error('request rejected')
 
   exception.code = code
@@ -19,7 +17,7 @@ function RequestRejectedException (code = 'UNKNOWN') {
 }
 
 
-function PartialResponseException (length, expected) {
+export function PartialResponseException (length, expected) {
   const exception = new Error('partial response')
 
   exception.code = 'PARTIAL_RESPONSE'
@@ -30,18 +28,10 @@ function PartialResponseException (length, expected) {
 }
 
 
-function MaxRetriesException (message = 'max retries reached') {
+export function MaxRetriesException (message = 'max retries reached') {
   const exception = new Error(message)
 
   exception.code = 'MAX_RETRIES_REACHED'
 
   return exception
-}
-
-
-module.exports = {
-  RequestFailedException,
-  RequestRejectedException,
-  PartialResponseException,
-  MaxRetriesException,
 }

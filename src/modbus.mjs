@@ -1,6 +1,4 @@
-'use strict'
-
-const {PartialResponseException, RequestRejectedException} = require('./exceptions')
+import {PartialResponseException, RequestRejectedException} from './exceptions.mjs'
 
 const MODBUS_READ_CMD = 0x3
 const MODBUS_WRITE_CMD = 0x6
@@ -39,7 +37,7 @@ function create_crc16_array () {
   return array
 }
 
-const CRC_16_ARRAY = create_crc16_array()
+export const CRC_16_ARRAY = create_crc16_array()
 // console.log(require('node:util').inspect(CRC_16_ARRAY, {maxArrayLength: Infinity}))
 
 
@@ -54,7 +52,7 @@ function modbusChecksum (data) {
 }
 
 
-function createModbusRtuRequest (commAddr, cmd, offset, value) {
+export function createModbusRtuRequest (commAddr, cmd, offset, value) {
   const message = Buffer.allocUnsafe(8)
 
   message[0] = commAddr
@@ -73,7 +71,7 @@ function createModbusRtuRequest (commAddr, cmd, offset, value) {
 }
 
 
-function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
+export function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
   const size = values.length
   const totalMessageSize = 9 + size
   const message = Buffer.allocUnsafe(totalMessageSize)
@@ -97,7 +95,7 @@ function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
 }
 
 
-function validateModbusRtuResponse (data, cmd, offset, value) {
+export function validateModbusRtuResponse (data, cmd, offset, value) {
   let expectedLength
 
   if (data.length <= 4) {
@@ -159,17 +157,17 @@ function validateModbusRtuResponse (data, cmd, offset, value) {
 }
 
 
-module.exports = {
-  MODBUS_READ_CMD,
-  MODBUS_WRITE_CMD,
-  MODBUS_WRITE_MULTI_CMD,
-  FAILURE_CODES,
-  CRC_16_ARRAY,
-  modbusChecksum,
-  createModbusRtuRequest,
-  createModbusRtuMultiRequest,
-  validateModbusRtuResponse,
-}
+// module.exports = {
+//   MODBUS_READ_CMD,
+//   MODBUS_WRITE_CMD,
+//   MODBUS_WRITE_MULTI_CMD,
+//   FAILURE_CODES,
+//   CRC_16_ARRAY,
+//   modbusChecksum,
+//   createModbusRtuRequest,
+//   createModbusRtuMultiRequest,
+//   validateModbusRtuResponse,
+// }
 
 
 /*

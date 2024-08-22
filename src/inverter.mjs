@@ -1,8 +1,6 @@
-'use strict'
+import Protocol from './protocol.mjs'
 
-const Protocol = require('./protocol')
-
-module.exports = Protocol
+export default Protocol
   .methods({
     getDeviceInfo () {
       return this.requestResponse(Buffer.from('7F03753100280409', 'hex'))

@@ -1,17 +1,11 @@
-'use strict'
-const {describe, it, before} = require('mocha')
+import {describe, it, before} from 'mocha'
+import {expect} from 'chai'
+import {createModbusRtuRequest, createModbusRtuMultiRequest, validateModbusRtuResponse} from '../src/modbus.mjs'
+import {CRC_16_ARRAY} from '../src/modbus.mjs'
 
 
 describe('test for modbus.js', function () { // describe() cannot be async
-  let expect
-
-  before(async function () {
-    ({expect} = await import('chai'))
-  })
-
-
   it('checks for correct crc16-array', function () {
-    const {CRC_16_ARRAY} = require('../src/modbus')
     expect(CRC_16_ARRAY).to.deep.equal([
       0, 49345, 49537, 320, 49921, 960, 640, 49729, 50689, 1728, 1920,
       51009, 1280, 50625, 50305, 1088, 52225, 3264, 3456, 52545, 3840, 53185,
@@ -42,7 +36,6 @@ describe('test for modbus.js', function () { // describe() cannot be async
 
 
   it('checks for correct createModbusRtuRequest', function () {
-    const {createModbusRtuRequest} = require('../src/modbus')
     let message
     message = createModbusRtuRequest(0x11, 0x3, 0x006b, 0x0003)
     expect(message.toString('hex')).to.equal('1103006b00037687')
@@ -59,42 +52,36 @@ describe('test for modbus.js', function () { // describe() cannot be async
 
 
   it('checks for correct createModbusRtuMultiRequest', function () {
-    const {createModbusRtuMultiRequest} = require('../src/modbus')
     const message = createModbusRtuMultiRequest(0xf7, 0x10, 0x88b8, Buffer.from('010203040506', 'hex'))
     expect(message.toString('hex')).to.equal('f71088b8000306010203040506102e')
   })
 
 
   it('checks for valid ModbusRtuResponse', function () {
-    const {validateModbusRtuResponse} = require('../src/modbus')
     const status = validateModbusRtuResponse(Buffer.from('aa55f7030401020304cd33', 'hex'), 0x03, 0x0401, 2)
     expect(status).to.be.true
   })
 
 
   it('checks for garbage after response end in ModbusRtuResponse', function () {
-    const {validateModbusRtuResponse} = require('../src/modbus')
     const status = validateModbusRtuResponse(Buffer.from('aa55f7030401020304cd33ffffff', 'hex'), 0x03, 0x0401, 2)
     expect(status).to.be.true
   })
 
 
   it('checks for wrong checksum in ModbusRtuResponse', function () {
-    const {validateModbusRtuResponse} = require('../src/modbus')
     const status = validateModbusRtuResponse(Buffer.from('aa55f70304010203043346', 'hex'), 0x03, 0x0401, 2)
     expect(status).to.be.false
   })
 
 
   it('checks for unexpected message length in ModbusRtuResponse', function () {
-    const {validateModbusRtuResponse} = require('../src/modbus')
     const status = validateModbusRtuResponse(Buffer.from('aa55f70306010203040506b417', 'hex'), 0x03, 0x0401, 2)
     expect(status).to.be.false
   })
 
 
   it('checks for partial response exception in ModbusRtuResponse', function () {
-    const {validateModbusRtuResponse} = require('../src/modbus')
     let error = new Error()
 
     try {
@@ -110,7 +97,6 @@ describe('test for modbus.js', function () { // describe() cannot be async
 
 
   it('checks for failure code exception in ModbusRtuResponse', function () {
-    const {validateModbusRtuResponse} = require('../src/modbus')
     let error = new Error()
 
     try {

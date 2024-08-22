@@ -1,13 +1,13 @@
-'use strict'
+import Factory from 'stampit'
+import dgram from "node:dgram"
+import {GOODWE_UDP_PORT} from './constants.mjs'
 
-const Factory = require('stampit')
 
-
-module.exports = Factory
+export default Factory
   .configuration({
-    dgram         : require('node:dgram'),
+    dgram         : dgram,
     defaultIp     : '127.0.0.1',
-    defaultPort   : require('./constants').GOODWE_UDP_PORT,
+    defaultPort   : GOODWE_UDP_PORT,
     defaultTimeout: 3000,
     maxRetries    : 5,
   })

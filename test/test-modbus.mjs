@@ -1,7 +1,7 @@
-import {describe, it, before} from 'mocha'
-import {expect} from 'chai'
-import {createModbusRtuRequest, createModbusRtuMultiRequest, validateModbusRtuResponse} from '../src/modbus.mjs'
+import {createModbusRtuMultiRequest, createModbusRtuRequest, validateModbusRtuResponse} from '../src/modbus.mjs'
+import {describe, it} from 'mocha'
 import {CRC_16_ARRAY} from '../src/modbus.mjs'
+import {expect} from 'chai'
 
 
 describe('test for modbus.js', function () { // describe() cannot be async

@@ -1,6 +1,7 @@
 import {PartialResponseException, RequestRejectedException} from './exceptions.mjs'
 
-const MODBUS_READ_CMD = 0x3
+export const MODBUS_ADDRESS = 0x7f
+export const MODBUS_READ_CMD = 0x3
 const MODBUS_WRITE_CMD = 0x6
 const MODBUS_WRITE_MULTI_CMD = 0x10
 
@@ -52,11 +53,16 @@ function modbusChecksum (data) {
 }
 
 
-export function createModbusRtuRequest (commAddr, cmd, offset, value) {
+export function createRtuRequestMessage ({
+  address,
+  command,
+  offset,
+  value,
+}) {
   const message = Buffer.allocUnsafe(8)
 
-  message[0] = commAddr
-  message[1] = cmd
+  message[0] = address
+  message[1] = command
   message[2] = offset >> 8 & 0xFF
   message[3] = offset & 0xFF
   message[4] = value >> 8 & 0xFF

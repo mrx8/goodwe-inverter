@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "mocha --timeout 10000 $(find test/ -name 'test-*.mjs' -type f)",
-    "eslint": "eslint eslint.config.js 'src/**/*.js'"
+    "eslint": "eslint eslint.config.mjs '**/*.mjs'"
   },
   "author": "Andreas Vierengel",
   "license": "ISC",
@@ -14,6 +14,7 @@
     "discover-inverters": "bin/discover.cjs"
   },
   "devDependencies": {
+    "@eslint/js": "9.9.0",
     "chai": "5.1.1",
     "eslint": "9.9.0",
     "mocha": "10.7.3"

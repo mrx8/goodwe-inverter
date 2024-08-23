@@ -1,6 +1,6 @@
 import Factory from 'stampit'
-import dgram from "node:dgram"
 import {GOODWE_UDP_PORT} from './constants.mjs'
+import dgram from 'node:dgram'
 
 
 export default Factory
@@ -9,7 +9,7 @@ export default Factory
     defaultIp     : '127.0.0.1',
     defaultPort   : GOODWE_UDP_PORT,
     defaultTimeout: 3000,
-    maxRetries    : 5,
+    maxRetries    : 3,
   })
 
 

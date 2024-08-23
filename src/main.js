@@ -1,5 +1,3 @@
-'use strict'
-
 // const Inverter = require('./inverter')
 
 async function main () {

@@ -1,9 +1,12 @@
 #!/usr/bin/env node
-import {program as Program} from 'commander'
 import Discover from '../src/discover.mjs'
 import Inverter from '../src/inverter.mjs'
-import packageJson from '../package.json' with { type: "json" }
+import {program as Program} from 'commander'
+import {createRequire} from 'module'
 
+// import packageJson from '../package.json' with { type: "json" }
+const require = createRequire(import.meta.url)
+const packageJson = require('../package.json')
 
 Program
   .version(packageJson.version)
@@ -20,7 +23,6 @@ const timeout = Options.timeout * 1000
 
 const foundInverters = await Discover({
   address: '255.255.255.255:48899',
-  request: Buffer.from('WIFIKIT-214028-READ'),
   timeout,
 })
 

@@ -19,7 +19,6 @@ function bind (socket, port = 0) {
 
 export default Protocol
   .init(async ({
-    request,
     timeout = 3000,
   }, {
     instance: instancePromise,
@@ -32,13 +31,13 @@ export default Protocol
       const responses = []
       const receiver = (data, rinfo) => {
         if (rinfo.port === GOODWE_BROADCAST_PORT) {
-          const [ip, macAdressRaw, ssid] = data.toString().split(',')
-          if (ssid.startsWith('Solar-WiFi')) {
+          const [ip, macAdressRaw, name] = data.toString().split(',')
+          if (name.startsWith('Solar-WiFi')) {
             const macAdress = macAdressRaw.match(/.{2}/g).join(':')
             responses.push({
               ip,
               macAdress,
-              ssid,
+              name,
             })
           }
         }
@@ -51,6 +50,7 @@ export default Protocol
         resolve(responses)
       }, timeout)
 
+      const request = Buffer.from('WIFIKIT-214028-READ')
       instance.client.send(request, instance.port, instance.ip, err => {
         if (err) {
           clearTimeout(timeoutId)

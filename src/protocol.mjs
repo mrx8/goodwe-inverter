@@ -2,7 +2,6 @@ import Factory from 'stampit'
 import {GOODWE_UDP_PORT} from './constants.mjs'
 import dgram from 'node:dgram'
 
-
 export default Factory
   .configuration({
     dgram         : dgram,
@@ -50,12 +49,10 @@ export default Factory
           const result = await new Promise((resolve, reject) => { // eslint-disable-line no-await-in-loop
             let timeoutId // eslint-disable-line prefer-const
 
-            const receiver = (data, rinfo) => {
+            const receiver = message => {
               clearTimeout(timeoutId)
-              resolve({
-                rinfo,
-                data,
-              })
+              // console.log(`received message ${message.toString('hex')} from ${rinfo.address}:${rinfo.port}`)
+              resolve(message)
             }
             this.client.once('message', receiver)
 
@@ -66,7 +63,7 @@ export default Factory
               reject(error)
             }, this.timeout)
 
-
+            // console.log(`send message ${message.toString('hex')} to ${this.ip}:${this.port}`)
             this.client.send(message, this.port, this.ip, err => {
               if (err) {
                 clearTimeout(timeoutId)

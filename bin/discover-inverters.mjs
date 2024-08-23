@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import Discover from '../src/discover.mjs'
-import Inverter from '../src/inverter.mjs'
 import {program as Program} from 'commander'
 import {createRequire} from 'module'
 
@@ -33,16 +32,4 @@ if (foundInverters.length === 0) {
   process.exit(1)
 }
 
-console.log('res', foundInverters)
-for (const {ip} of foundInverters) {
-  console.log(`check ${ip}`)
-  const inverter = await Inverter({address: ip}) // eslint-disable-line no-await-in-loop
-  try {
-    const response = await inverter.getDeviceInfo() // eslint-disable-line no-await-in-loop
-    console.log(response, response.data.toString())
-  } catch (e) {
-    if (e.code !== 'REQUEST_TIMED_OUT') {
-      throw e
-    }
-  }
-}
+console.log(foundInverters)

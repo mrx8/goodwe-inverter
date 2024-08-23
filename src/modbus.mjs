@@ -1,7 +1,9 @@
-import {PartialResponseException, RequestRejectedException} from './exceptions.mjs'
+// import {PartialResponseException, RequestRejectedException} from './exceptions.mjs'
 
 export const MODBUS_ADDRESS = 0x7f
 export const MODBUS_READ_CMD = 0x3
+const MODBUS_HEADER_HIGH = 0xaa
+const MODBUS_HEADER_LOW = 0x55
 const MODBUS_WRITE_CMD = 0x6
 const MODBUS_WRITE_MULTI_CMD = 0x10
 
@@ -73,106 +75,146 @@ export function createRtuRequestMessage ({
   message[6] = checksum
   message[7] = checksum >> 8 & 0xFF
 
-  return message
-}
-
-
-export function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
-  const size = values.length
-  const totalMessageSize = 9 + size
-  const message = Buffer.allocUnsafe(totalMessageSize)
-  const checksumIndex = totalMessageSize - 2
-
-  message[0] = commAddr
-  message[1] = cmd
-  message[2] = offset >> 8 & 0xFF
-  message[3] = offset & 0xFF
-  message[4] = 0x00
-  message[5] = Math.floor(size / 2)
-  message[6] = size
-
-  values.copy(message, 7)
-
-  const checksum = modbusChecksum(message.subarray(0, 7 + size))
-  message[checksumIndex] = checksum
-  message[checksumIndex + 1] = checksum >> 8 & 0xFF
+  // console.log('construct message', message.toString('hex'))
 
   return message
 }
 
 
-export function validateModbusRtuResponse (data, cmd, offset, value) {
+// export function validatePacket (message, CtrCode, FctCode) {
+// export function validatePacket (message) {
+//   console.log('validate message', message.toString('hex'))
+//   const packetFormat = message.slice(0, 7)
+//   const packetCrc = message.slice(message.length - 2, message.length)
+
+//   let crc = 0
+//   for (let i = 0, max = message.length - 2; i < max; i++) {
+//     crc = crc + message[i]
+//   }
+
+//   const high = crc >> 8
+//   const low = crc & 0x00ff
+
+//   if (packetCrc[0] === high && packetCrc[1] === low) {
+//     console.log('crc correct')
+//     if (packetFormat[0] === 0xaa && packetFormat[1] === 0x55) {
+//       console.log('header correct')
+//       if (packetFormat[2] === 0x7f && packetFormat[3] === 0xc0) {
+//         console.log('valid')
+
+//         return true
+//         // if (packetFormat[4] === CtrCode) {
+//         //   if (packetFormat[5] === (FctCode | 0x80)) {
+//         //     return true
+//         //   }
+//         // }
+//       }
+//     }
+//   }
+
+//   console.log('not valid')
+
+//   return false
+// }
+
+export function validatePacket (message, cmd, offset, value) {
   let expectedLength
 
-  if (data.length <= 4) {
+  if (message.length <= 4) {
     console.debug('Response is too short.')
 
     return false
   }
 
-  if (data[3] === MODBUS_READ_CMD) {
-    if (data[4] !== value * 2) {
-      console.debug(`Response has unexpected length: ${data[4]}, expected: ${value * 2}.`)
+  if (message[0] !== MODBUS_HEADER_HIGH || message[1] !== MODBUS_HEADER_LOW) {
+    console.debug(`Response has no valid header: ${message[0]}:${message[1]}, expected: ${MODBUS_HEADER_HIGH}:${MODBUS_HEADER_LOW}.`)
+
+    return false
+  }
+
+  if (message[2] !== MODBUS_ADDRESS) {
+    console.debug(`Response has no valid address-header: ${message[2]}, expected: ${MODBUS_ADDRESS}.`)
+
+    return false
+  }
+
+  if (message[3] === MODBUS_READ_CMD) {
+    if (message[4] !== value * 2) {
+      console.debug(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`)
 
       return false
     }
 
-    expectedLength = data[4] + 7
-    if (data.length < expectedLength) {
-      throw PartialResponseException(data.length, expectedLength)
+    expectedLength = message[4] + 7
+    if (message.length < expectedLength) {
+      console.debug(`partial message received. Length should be ${message.length} but was ${expectedLength}`)
+
+      return false
     }
-  } else if ([MODBUS_WRITE_CMD, MODBUS_WRITE_MULTI_CMD].includes(data[3])) {
+  } else if ([MODBUS_WRITE_CMD, MODBUS_WRITE_MULTI_CMD].includes(message[3])) {
     expectedLength = 10
-    if (data.length < expectedLength) {
-      console.debug(`Response has unexpected length: ${data.length}, expected: ${expectedLength}.`)
+    if (message.length < expectedLength) {
+      console.debug(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`)
 
       return false
     }
-    const responseOffset = data.readUInt16BE(4)
+    const responseOffset = message.readUInt16BE(4)
     if (responseOffset !== offset) {
       console.debug(`Response has wrong offset: ${responseOffset}, expected: ${offset}.`)
 
       return false
     }
 
-    const responseValue = data.readInt16BE(6)
+    const responseValue = message.readInt16BE(6)
     if (responseValue !== value) {
       console.debug(`Response has wrong value: ${responseValue}, expected: ${value}.`)
 
       return false
     }
   } else {
-    expectedLength = data.length
+    expectedLength = message.length
   }
 
 
   const checksumOffset = expectedLength - 2
-  if (modbusChecksum(data.subarray(2, checksumOffset)) !== (data[checksumOffset + 1] << 8) + data[checksumOffset]) {
+  if (modbusChecksum(message.subarray(2, checksumOffset)) !== (message[checksumOffset + 1] << 8) + message[checksumOffset]) {
     console.debug('Response CRC-16 checksum does not match.')
 
     return false
   }
 
-  if (data[3] !== cmd) {
-    const failureCode = FAILURE_CODES[data[4]] || 'UNKNOWN'
+  if (message[3] !== cmd) {
+    const failureCode = FAILURE_CODES[message[4]] || 'UNKNOWN'
     console.debug(`Response command failure: ${failureCode}.`)
-    throw RequestRejectedException(failureCode)
+
+    return false
   }
 
   return true
 }
 
 
-// module.exports = {
-//   MODBUS_READ_CMD,
-//   MODBUS_WRITE_CMD,
-//   MODBUS_WRITE_MULTI_CMD,
-//   FAILURE_CODES,
-//   CRC_16_ARRAY,
-//   modbusChecksum,
-//   createModbusRtuRequest,
-//   createModbusRtuMultiRequest,
-//   validateModbusRtuResponse,
+// export function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
+//   const size = values.length
+//   const totalMessageSize = 9 + size
+//   const message = Buffer.allocUnsafe(totalMessageSize)
+//   const checksumIndex = totalMessageSize - 2
+
+//   message[0] = commAddr
+//   message[1] = cmd
+//   message[2] = offset >> 8 & 0xFF
+//   message[3] = offset & 0xFF
+//   message[4] = 0x00
+//   message[5] = Math.floor(size / 2)
+//   message[6] = size
+
+//   values.copy(message, 7)
+
+//   const checksum = modbusChecksum(message.subarray(0, 7 + size))
+//   message[checksumIndex] = checksum
+//   message[checksumIndex + 1] = checksum >> 8 & 0xFF
+
+//   return message
 // }
 
 

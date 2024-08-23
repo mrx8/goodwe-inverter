@@ -1,89 +1,135 @@
-import {MODBUS_ADDRESS, MODBUS_READ_CMD, createRtuRequestMessage} from './modbus.mjs'
+import {MODBUS_ADDRESS, MODBUS_READ_CMD, createRtuRequestMessage, validatePacket} from './modbus.mjs'
+import Factory from 'stampit'
 import Protocol from './protocol.mjs'
 
 
-export default Protocol
-  .methods({
-    getDeviceInfo () {
-      const message = createRtuRequestMessage({
-        address: MODBUS_ADDRESS,
-        command: MODBUS_READ_CMD,
-        offset : 0x7531,
-        value  : 0x28,
-      })
-      console.log(message.toString('hex'))
+const SINGLE_PHASE_MODELS = [
+  'DSN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', // DT
+  'MSU', 'MST', 'PSB', 'PSC',
+  'MSC', // Found on third gen MS
+  'EHU', 'EHR', 'HSB', // ET
+  'ESN', 'EMN', 'ERN', 'EBN', 'HLB', 'HMB', 'HBB', 'SPN',
+]
 
-      return this.requestResponse(message)
-    },
-  })
 
-//  return this.requestResponse(Buffer.from('7F03753100280409', 'hex'))
-
-/*
-MODBUS_READ_CMD: int = 0x3
-MODBUS_WRITE_CMD: int = 0x6
-MODBUS_WRITE_MULTI_CMD: int = 0x10
-*/
-/* send
-
-let sendbuf = new Uint8Array(9);
-  let i;
-  let crc = 0;
-
-  sendbuf[0] = GoodWePacket.Header.High;
-  sendbuf[1] = GoodWePacket.Header.Low;
-  sendbuf[2] = GoodWePacket.Addr.AP;
-  sendbuf[3] = GoodWePacket.Addr.Inverter;
-  sendbuf[4] = GoodWePacket.CtrCode.Read;
-  sendbuf[5] = GoodWePacket.FcCodeRead.QueryIdInfo;
-  sendbuf[6] = 0;
-
-  for (i = 0; i <= 6; i++) {
-    crc = crc + sendbuf[i];
+function determinePhases (serialNumber) {
+  for (const model of SINGLE_PHASE_MODELS) {
+    if (serialNumber.includes(model)) {
+      return 1
+    }
   }
 
-  sendbuf[7] = crc >> 8;
-  sendbuf[8] = crc & 0x00ff;
-*/
+  return 3
+}
 
 
-/* receive and parse
-        self._READ_DEVICE_VERSION_INFO: ProtocolCommand = self._read_command(0x7531, 0x0028)
+const utf16beDecoder = new TextDecoder('utf-16be')
 
 
-        response = await self._read_from_socket(self._READ_DEVICE_VERSION_INFO)
-        response = response.response_data()
-        try:
-            self.model_name = response[22:32].decode("ascii").rstrip()
-        except:
-            print("No model name sent from the inverter.")
-        # Modbus registers from 30001 - 30040
-        self.serial_number = self._decode(response[6:22])  # 30004 - 30012
-        self.dsp1_version = read_unsigned_int(response, 66)  # 30034
-        self.dsp2_version = read_unsigned_int(response, 68)  # 30035
-        self.arm_version = read_unsigned_int(response, 70)  # 30036
-        self.dsp_svn_version = read_unsigned_int(response, 72)  # 35037
-        self.arm_svn_version = read_unsigned_int(response, 74)  # 35038
-        self.firmware = f"{self.dsp1_version}.{self.dsp2_version}.{self.arm_version:02x}"
+function decode (message) {
+  let isBinary = false
+  for (const byte of message) {
+    if (byte < 32) {
+      isBinary = true
+    }
+  }
 
-        if is_single_phase(self):
-            # this is single phase inverter, filter out all L2 and L3 sensors
-            self._sensors = tuple(filter(self._single_phase_only, self.__all_sensors))
-            self._settings.update({s.id_: s for s in self.__settings_single_phase})
-        else:
-            self._settings.update({s.id_: s for s in self.__settings_three_phase})
+  if (isBinary) {
+    return utf16beDecoder.decode(message).replace('\x00', '').trimEnd()
+  }
 
-        if is_3_mppt(self):
-            # this is 3 PV strings inverter, keep all sensors
-            pass
-        else:
-            # this is only 2 PV strings inverter
-            self._sensors = tuple(filter(self._pv1_pv2_only, self._sensors))
-
-            */
+  return message.toString('ascii').trimEnd()
+}
 
 
-/* device info message parse
+function readUInt16BE (message, offset) {
+  let value = message.readUInt16BE(offset)
+  if (value === 65535) {
+    value = 0
+  }
+
+  return value
+}
+
+
+async function getDeviceInfo () {
+  const offset = 0x7531
+  const value = 0x28
+
+  const message = createRtuRequestMessage({
+    address: MODBUS_ADDRESS,
+    command: MODBUS_READ_CMD,
+    offset,
+    value,
+  })
+
+  const responseMessage = await this.requestResponse(message)
+
+  const isValid = validatePacket(responseMessage, MODBUS_READ_CMD, offset, value)
+  if (isValid) {
+    const serialNumber = decode(responseMessage.subarray(11, 31)) // 30004 - 30012
+    const modelName = responseMessage.subarray(27, 37).toString('ascii').trimEnd()
+    const dsp1Version = responseMessage.readUInt16BE(71) // 30034
+    const dsp2Version = responseMessage.readUInt16BE(73) // 30035
+    const armVersion = responseMessage.readUInt16BE(75) // 30036
+    const dspSvnVersion = readUInt16BE(responseMessage, 77) // 35037
+    const armSvnVersion = readUInt16BE(responseMessage, 79) // 35038
+    const firmware = `${dsp1Version}.${dsp2Version}.${armVersion}`
+    const numberOfPhases = determinePhases(serialNumber)
+
+    return {
+      valid: true,
+      serialNumber,
+      modelName,
+      dsp1Version,
+      dsp2Version,
+      armVersion,
+      dspSvnVersion,
+      armSvnVersion,
+      firmware,
+      numberOfPhases,
+    }
+  }
+
+  return {
+    valid: false,
+  }
+}
+
+
+const InverterInfo = Protocol
+  .init(async (param, {
+    instance: instancePromise,
+  }) => {
+    const instance = await instancePromise
+    const deviceInfo = await getDeviceInfo.call(instance)
+
+    return deviceInfo
+  })
+
+
+export default Factory
+  .statics({
+    async from (param) {
+      const deviceInfo = await InverterInfo(param)
+
+      // ToDo. determine which inverter to load
+      if (deviceInfo.serialNumber) {
+        const {default: Inverter} = await import('./inverter-dt.mjs')
+
+        const inverter = await Inverter(param)
+        inverter.deviceInfo = deviceInfo
+
+        return inverter
+      }
+
+      throw new Error('Inverter not known!')
+    },
+  })
+  //  return this.requestResponse(Buffer.from('7F03753100280409', 'hex'))
+
+
+/* device info message parse ET
     this.#client.once("message", (rcvbuf) => {
       if (this.#CheckRecPacket(rcvbuf, sendbuf[4], sendbuf[5])) {
         this.#idInfo.FirmwareVersion = this.#GetStringFromByteArray(rcvbuf, 7, 5);

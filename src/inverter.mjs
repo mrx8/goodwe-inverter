@@ -1,98 +1,86 @@
-import {MODBUS_ADDRESS, MODBUS_READ_CMD, createRtuRequestMessage, validatePacket} from './modbus.mjs'
+// import {MODBUS_ADDRESS, MODBUS_READ_CMD, createRtuRequestMessage, validatePacket} from './modbus.mjs'
 import Factory from 'stampit'
 import Protocol from './protocol.mjs'
+import {decode} from './shared.mjs'
+import {ET_MODEL_TAGS} from './constants.mjs'
 
 
-const SINGLE_PHASE_MODELS = [
-  'DSN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', // DT
-  'MSU', 'MST', 'PSB', 'PSC',
-  'MSC', // Found on third gen MS
-  'EHU', 'EHR', 'HSB', // ET
-  'ESN', 'EMN', 'ERN', 'EBN', 'HLB', 'HMB', 'HBB', 'SPN',
-]
+function validateAa55Packet (message) {
+  const CtrCode = 0x01
+  const FctCode = 0x02
+
+  const packetFormat = message.slice(0, 7)
+  const packetCrc = message.slice(message.length - 2, message.length)
+
+  let crc = 0
+  for (let i = 0, maxLen = message.length - 2; i < maxLen; i++) {
+    crc = crc + message[i]
+  }
+
+  const high = crc >> 8
+  const low = crc & 0x00ff
+
+  if (packetCrc[0] === high && packetCrc[1] === low) {
+    if (packetFormat[0] === 0xaa && packetFormat[1] === 0x55) {
+      if (packetFormat[2] === 0x7f && packetFormat[3] === 0xc0) {
+        if (packetFormat[4] === CtrCode) {
+          if (packetFormat[5] === (FctCode | 0x80)) {
+            return true
+          }
+        }
+      }
+    }
+  }
+
+  return false
+}
 
 
-function determinePhases (serialNumber) {
-  for (const model of SINGLE_PHASE_MODELS) {
+async function determineInverter (model, serialNumber) {
+  for (const model of ET_MODEL_TAGS) {
     if (serialNumber.includes(model)) {
-      return 1
+      console.debug(`Detected ET/EH/BT/BH/GEH inverter ${model}, S/N: ${serialNumber}.`)
+      // import specific inverter and return instance
     }
   }
-
-  return 3
 }
+// i: Inverter | None = None
+// for model_tag in ET_MODEL_TAGS:
+//     if model_tag in serial_number:
+//         logger.debug("Detected ET/EH/BT/BH/GEH inverter %s, S/N:%s.", model_name, serial_number)
+//         i = ET(host, port, 0, timeout, retries)
+//         break
+// if not i:
+//     for model_tag in ES_MODEL_TAGS:
+//         if model_tag in serial_number:
+//             logger.debug("Detected ES/EM/BP inverter %s, S/N:%s.", model_name, serial_number)
+//             i = ES(host, port, 0, timeout, retries)
+//             break
+// if not i:
+//     for model_tag in DT_MODEL_TAGS:
+//         if model_tag in serial_number:
+//             logger.debug("Detected DT/MS/D-NS/XS/GEP inverter %s, S/N:%s.", model_name, serial_number)
+//             i = DT(host, port, 0, timeout, retries)
+//             break
+// if i:
+//     await i.read_device_info()
+//     logger.debug("Connected to inverter %s, S/N:%s.", i.model_name, i.serial_number)
+//     return i
 
 
-const utf16beDecoder = new TextDecoder('utf-16be')
-
-
-function decode (message) {
-  let isBinary = false
-  for (const byte of message) {
-    if (byte < 32) {
-      isBinary = true
-    }
-  }
-
-  if (isBinary) {
-    return utf16beDecoder.decode(message).replace('\x00', '').trimEnd()
-  }
-
-  return message.toString('ascii').trimEnd()
-}
-
-
-function readUInt16BE (message, offset) {
-  let value = message.readUInt16BE(offset)
-  if (value === 65535) {
-    value = 0
-  }
-
-  return value
-}
-
-
-async function getDeviceInfo () {
-  const offset = 0x7531
-  const value = 0x28
-
-  const message = createRtuRequestMessage({
-    address: MODBUS_ADDRESS,
-    command: MODBUS_READ_CMD,
-    offset,
-    value,
-  })
-
-  const responseMessage = await this.requestResponse(message)
-
-  const isValid = validatePacket(responseMessage, MODBUS_READ_CMD, offset, value)
+async function getDeviceIdViaAa55 () {
+  const responseMessage = await this.requestResponse(Buffer.from('AA55C07F0102000241', 'hex'))
+  const isValid = validateAa55Packet(responseMessage)
   if (isValid) {
-    const serialNumber = decode(responseMessage.subarray(11, 31)) // 30004 - 30012
-    const modelName = responseMessage.subarray(27, 37).toString('ascii').trimEnd()
-    const dsp1Version = responseMessage.readUInt16BE(71) // 30034
-    const dsp2Version = responseMessage.readUInt16BE(73) // 30035
-    const armVersion = responseMessage.readUInt16BE(75) // 30036
-    const dspSvnVersion = readUInt16BE(responseMessage, 77) // 35037
-    const armSvnVersion = readUInt16BE(responseMessage, 79) // 35038
-    const firmware = `${dsp1Version}.${dsp2Version}.${armVersion}`
-    const numberOfPhases = determinePhases(serialNumber)
-
     return {
-      valid: true,
-      serialNumber,
-      modelName,
-      dsp1Version,
-      dsp2Version,
-      armVersion,
-      dspSvnVersion,
-      armSvnVersion,
-      firmware,
-      numberOfPhases,
+      isValid,
+      model       : responseMessage.subarray(12, 22).toString().trimEnd(),
+      serialNumber: responseMessage.subarray(38, 54).toString(),
     }
   }
 
   return {
-    valid: false,
+    isValid,
   }
 }
 
@@ -102,9 +90,17 @@ const InverterInfo = Protocol
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
-    const deviceInfo = await getDeviceInfo.call(instance)
 
-    return deviceInfo
+    const {isValid, model, serialNumber} = await getDeviceIdViaAa55.call(instance)
+    if (isValid) {
+      const inverter = await determineInverter(model, serialNumber)
+
+      return inverter
+    }
+
+    // try Inverter one by one
+
+    return instance
   })
 
 
@@ -112,7 +108,6 @@ export default Factory
   .statics({
     async from (param) {
       const deviceInfo = await InverterInfo(param)
-
       // ToDo. determine which inverter to load
       if (deviceInfo.serialNumber) {
         const {default: Inverter} = await import('./inverter-dt.mjs')

@@ -1,12 +1,14 @@
 import Inverter from './inverter.mjs'
+import {program as Program} from 'commander'
 import {inspect} from 'node:util'
 
+Program
+  .requiredOption('-i, --ip <ip>', 'ip of the inverter to connect to')
+  .showHelpAfterError()
+  .parse(process.argv)
 
-try {
-  const inverter = await Inverter.from({address: '192.168.30.203'})
-  console.log(inspect(inverter, {depth: Infinity}))
-} catch (e) {
-  if (e.code !== 'REQUEST_TIMED_OUT') {
-    throw e
-  }
-}
+
+const Options = Program.opts()
+console.log(Options)
+const inverter = await Inverter.from({address: Options.ip})
+console.log(inspect(inverter, {depth: Infinity}))

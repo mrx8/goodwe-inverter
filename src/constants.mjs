@@ -1,7 +1,6 @@
 export const GOODWE_BROADCAST_PORT = 48899
 export const GOODWE_UDP_PORT = 8899
 
-
 export const SINGLE_PHASE_MODELS = [
   'DSN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', // DT
   'MSU', 'MST', 'PSB', 'PSC',
@@ -44,26 +43,26 @@ export const DT_MODEL_TAGS = [
   'DTU', 'DTS', 'MSU', 'MST', 'MSC', 'DSN', 'DTN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', 'PSB', 'PSC',
 ]
 
-export const BATTERY_MODES = {
-  0: 'No battery',
-  1: 'Standby',
-  2: 'Discharge',
-  3: 'Charge',
-  4: 'To be charged',
-  5: 'To be discharged',
-}
+// export const BATTERY_MODES = {
+//   0: 'No battery',
+//   1: 'Standby',
+//   2: 'Discharge',
+//   3: 'Charge',
+//   4: 'To be charged',
+//   5: 'To be discharged',
+// }
 
-export const ENERGY_MODES = {
-  0  : 'Check Mode',
-  1  : 'Wait Mode',
-  2  : 'Normal (On-Grid)',
-  4  : 'Normal (Off-Grid)',
-  8  : 'Flash Mode',
-  16 : 'Fault Mode',
-  32 : 'Battery Standby',
-  64 : 'Battery Charging',
-  128: 'Battery Discharging',
-}
+// export const ENERGY_MODES = {
+//   0  : 'Check Mode',
+//   1  : 'Wait Mode',
+//   2  : 'Normal (On-Grid)',
+//   4  : 'Normal (Off-Grid)',
+//   8  : 'Flash Mode',
+//   16 : 'Fault Mode',
+//   32 : 'Battery Standby',
+//   64 : 'Battery Charging',
+//   128: 'Battery Discharging',
+// }
 
 // GRID_MODES: {
 //   0: 'Not connected to grid',

@@ -7,8 +7,8 @@ export default Factory
     dgram         : dgram,
     defaultIp     : '127.0.0.1',
     defaultPort   : GOODWE_UDP_PORT,
-    defaultTimeout: 3000,
-    maxRetries    : 3,
+    defaultTimeout: 2000,
+    maxRetries    : 2,
   })
 
 
@@ -49,9 +49,9 @@ export default Factory
           const result = await new Promise((resolve, reject) => { // eslint-disable-line no-await-in-loop
             let timeoutId // eslint-disable-line prefer-const
 
-            const receiver = message => {
+            const receiver = (message, rinfo) => {
               clearTimeout(timeoutId)
-              // console.log(`received message ${message.toString('hex')} from ${rinfo.address}:${rinfo.port}`)
+              console.log(`received message ${message.toString('hex')} from ${rinfo.address}:${rinfo.port}`)
               resolve(message)
             }
             this.client.once('message', receiver)
@@ -63,7 +63,7 @@ export default Factory
               reject(error)
             }, this.timeout)
 
-            // console.log(`send message ${message.toString('hex')} to ${this.ip}:${this.port}`)
+            console.log(`send message ${message.toString('hex')} to ${this.ip}:${this.port}`)
             this.client.send(message, this.port, this.ip, err => {
               if (err) {
                 clearTimeout(timeoutId)

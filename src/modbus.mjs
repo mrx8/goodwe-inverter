@@ -1,10 +1,28 @@
 // import {PartialResponseException, RequestRejectedException} from './exceptions.mjs'
 
-export const MODBUS_ADDRESS = 0x7f
-export const MODBUS_READ_CMD = 0x3
+const AA55PACKET = {
+  HEADER_HIGH  : 0xaa,
+  HEADER_LOW   : 0x55,
+  ADDRESS      : 0x7f,
+  ADDRESS_AP   : 0xc0,
+  READ_COMMAND : 0x01,
+  QUERY_ID_INFO: 0x02,
+}
+
+const PACKET = {
+  ADDRESS     : 0x7f,
+  READ_COMMAND: 0x03,
+}
+
+// const REGISTER = {
+//   ADDRESS     : 0xf7,
+//   READ_COMMAND: 0x03,
+// }
+
+const CHECKSUM_LENGTH = 2
 const MODBUS_HEADER_HIGH = 0xaa
 const MODBUS_HEADER_LOW = 0x55
-const MODBUS_WRITE_CMD = 0x6
+const MODBUS_WRITE_CMD = 0x06
 const MODBUS_WRITE_MULTI_CMD = 0x10
 
 const FAILURE_CODES = {
@@ -29,7 +47,7 @@ function create_crc16_array () {
     for (let j = 0; j < 8; j++) {
       buffer >>= 1
       if ((buffer ^ crc) & 0x0001) {
-        crc = crc >> 1 ^ 0xA001
+        crc = crc >> 1 ^ 0xa001
       } else {
         crc >>= 1
       }
@@ -45,35 +63,30 @@ export const CRC_16_ARRAY = create_crc16_array()
 
 
 function modbusChecksum (data) {
-  let crc = 0xFFFF
+  let crc = 0xffff
 
   for (const byte of data) {
-    crc = crc >> 8 ^ CRC_16_ARRAY[(crc ^ byte) & 0xFF]
+    crc = crc >> 8 ^ CRC_16_ARRAY[(crc ^ byte) & 0xff]
   }
 
   return crc
 }
 
 
-export function createRtuRequestMessage ({
-  address,
-  command,
-  offset,
-  value,
-}) {
+export function createRtuRequestMessage (offset, value) {
   const message = Buffer.allocUnsafe(8)
 
-  message[0] = address
-  message[1] = command
-  message[2] = offset >> 8 & 0xFF
-  message[3] = offset & 0xFF
-  message[4] = value >> 8 & 0xFF
-  message[5] = value & 0xFF
+  message[0] = PACKET.ADDRESS
+  message[1] = PACKET.READ_COMMAND
+  message[2] = offset >> 8 & 0xff
+  message[3] = offset & 0xff
+  message[4] = value >> 8 & 0xff
+  message[5] = value & 0xff
 
   const checksum = modbusChecksum(message.subarray(0, 6))
 
-  message[6] = checksum
-  message[7] = checksum >> 8 & 0xFF
+  message[6] = checksum & 0xff
+  message[7] = checksum >> 8 & 0xff
 
   // console.log('construct message', message.toString('hex'))
 
@@ -117,7 +130,7 @@ export function createRtuRequestMessage ({
 //   return false
 // }
 
-export function validatePacket (message, cmd, offset, value) {
+export function validateRtuRequestMessage (message, offset, value) {
   let expectedLength
 
   if (message.length <= 4) {
@@ -132,13 +145,13 @@ export function validatePacket (message, cmd, offset, value) {
     return false
   }
 
-  if (message[2] !== MODBUS_ADDRESS) {
-    console.debug(`Response has no valid address-header: ${message[2]}, expected: ${MODBUS_ADDRESS}.`)
+  if (message[2] !== PACKET.ADDRESS) {
+    console.debug(`Response has no valid address-header: ${message[2]}, expected: ${PACKET.ADDRESS}.`)
 
     return false
   }
 
-  if (message[3] === MODBUS_READ_CMD) {
+  if (message[3] === PACKET.READ_COMMAND) {
     if (message[4] !== value * 2) {
       console.debug(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`)
 
@@ -183,7 +196,7 @@ export function validatePacket (message, cmd, offset, value) {
     return false
   }
 
-  if (message[3] !== cmd) {
+  if (message[3] !== PACKET.READ_COMMAND) {
     const failureCode = FAILURE_CODES[message[4]] || 'UNKNOWN'
     console.debug(`Response command failure: ${failureCode}.`)
 
@@ -269,3 +282,58 @@ def validate_modbus_rtu_response(data: bytes, cmd: int, offset: int, value: int)
 
     return True
 */
+
+// Buffer.from('AA55C07F0102000241', 'hex')
+export function createAa55Packet (data) {
+  const headerLength = 6
+  let crc = 0
+  const message = Buffer.allocUnsafe(headerLength + data.length + CHECKSUM_LENGTH)
+
+  message[0] = AA55PACKET.HEADER_HIGH
+  message[1] = AA55PACKET.HEADER_LOW
+  message[2] = AA55PACKET.ADDRESS_AP
+  message[3] = AA55PACKET.ADDRESS
+  message[4] = AA55PACKET.READ_COMMAND
+  message[5] = AA55PACKET.QUERY_ID_INFO
+
+  data.copy(message, 6)
+
+  for (let i = 0, maxLen = message.length - CHECKSUM_LENGTH; i < maxLen; i++) {
+    crc = crc + message[i]
+  }
+
+  message[message.length - 2] = crc & 0xff
+  message[message.length - 1] = crc >> 8 & 0xff
+
+  // console.log('createAa55Packet', message, message.toString('hex'))
+
+  return message
+}
+
+
+export function validateAa55Packet (message) {
+  const packetHeader = message.slice(0, 7)
+  const packetCrc = message.slice(message.length - 2, message.length)
+
+  let crc = 0
+  for (let i = 0, maxLen = message.length - 2; i < maxLen; i++) {
+    crc = crc + message[i]
+  }
+
+  const high = crc >> 8
+  const low = crc & 0xff
+
+  if (packetCrc[0] === high && packetCrc[1] === low) {
+    if (packetHeader[0] === AA55PACKET.HEADER_HIGH && packetHeader[1] === AA55PACKET.HEADER_LOW) {
+      if (packetHeader[2] === AA55PACKET.ADDRESS && packetHeader[3] === AA55PACKET.ADDRESS_AP) {
+        if (packetHeader[4] === AA55PACKET.READ_COMMAND) {
+          if (packetHeader[5] === (AA55PACKET.QUERY_ID_INFO | 0x80)) {
+            return true
+          }
+        }
+      }
+    }
+  }
+
+  return false
+}

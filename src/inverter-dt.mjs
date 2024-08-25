@@ -7,10 +7,9 @@ async function getDeviceInfo () {
   const offset = 0x7531
   const value = 0x0028
 
-  const message = createRtuRequestMessage(offset, value)
+  const message = createRtuRequestMessage(this.modbusCommandAdress, offset, value)
   const responseMessage = await this.requestResponse(message)
-
-  const isValid = validateRtuRequestMessage(responseMessage, offset, value)
+  const isValid = validateRtuRequestMessage(responseMessage, this.modbusCommandAdress, offset, value)
   if (isValid) {
     return {
       valid        : true,
@@ -35,7 +34,8 @@ export default Protocol
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
-    instance.interface = 'DT'
+    instance.family = 'DT'
+    instance.modbusCommandAdress = 0x7f
     instance.deviceInfo = await getDeviceInfo.call(instance)
 
     return instance

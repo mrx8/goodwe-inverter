@@ -73,10 +73,10 @@ function modbusChecksum (data) {
 }
 
 
-export function createRtuRequestMessage (offset, value) {
+export function createRtuRequestMessage (commandAddress, offset, value) {
   const message = Buffer.allocUnsafe(8)
 
-  message[0] = PACKET.ADDRESS
+  message[0] = commandAddress
   message[1] = PACKET.READ_COMMAND
   message[2] = offset >> 8 & 0xff
   message[3] = offset & 0xff
@@ -130,7 +130,7 @@ export function createRtuRequestMessage (offset, value) {
 //   return false
 // }
 
-export function validateRtuRequestMessage (message, offset, value) {
+export function validateRtuRequestMessage (message, commandAdress, offset, value) {
   let expectedLength
 
   if (message.length <= 4) {
@@ -145,8 +145,8 @@ export function validateRtuRequestMessage (message, offset, value) {
     return false
   }
 
-  if (message[2] !== PACKET.ADDRESS) {
-    console.debug(`Response has no valid address-header: ${message[2]}, expected: ${PACKET.ADDRESS}.`)
+  if (message[2] !== commandAdress) {
+    console.debug(`Response has no valid address-header: ${message[2]}, expected: ${PACKET.commandAdress}.`)
 
     return false
   }
@@ -202,6 +202,7 @@ export function validateRtuRequestMessage (message, offset, value) {
 
     return false
   }
+  // console.debug('response message is valid')
 
   return true
 }
@@ -302,10 +303,10 @@ export function createAa55Packet (data) {
     crc = crc + message[i]
   }
 
-  message[message.length - 2] = crc & 0xff
-  message[message.length - 1] = crc >> 8 & 0xff
+  message[message.length - 1] = crc & 0xff
+  message[message.length - 2] = crc >> 8 & 0xff
 
-  // console.log('createAa55Packet', message, message.toString('hex'))
+  console.log('createAa55Packet', message, message.toString('hex'))
 
   return message
 }

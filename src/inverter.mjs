@@ -86,6 +86,8 @@ const InverterInfo = Protocol
       } catch (e) {
         if (e.code === 'REQUEST_TIMED_OUT') {
           continue
+        } else {
+          throw e
         }
       }
     }

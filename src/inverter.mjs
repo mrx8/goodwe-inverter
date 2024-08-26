@@ -2,15 +2,13 @@
 import {DT_MODEL_TAGS, ET_MODEL_TAGS} from './constants.mjs'
 import {createAa55Packet, validateAa55Packet} from './modbus.mjs'
 import Factory from 'stampit'
+import Log from './log.mjs'
 import Protocol from './protocol.mjs'
 // import {decode} from './shared.mjs'
 
-
 async function getDeviceIdViaAa55 () {
   const requestMessage = createAa55Packet(Buffer.from('00', 'hex'))
-  console.debug('getDeviceIdViaAa55 request', requestMessage)
   const responseMessage = await this.requestResponse(requestMessage)
-  console.debug('getDeviceIdViaAa55 response', requestMessage)
   const isValid = validateAa55Packet(responseMessage)
   if (isValid) {
     return {
@@ -34,13 +32,14 @@ const InverterInfo = Protocol
 
     // Determine via serialNumber
     try {
-      console.debug('Determine Inverter via AA55-protocol')
+      Log.debug('try to determine Inverter via AA55-protocol.')
       const {isValid, modelName, serialNumber} = await getDeviceIdViaAa55.call(instance)
+      Log.debug('inverter responded via AA55-protocol.')
       if (isValid) {
-        console.debug(`Determine Inverter from ${serialNumber}`)
+        Log.debug('now try to determine inverter from S/N: %s.', serialNumber)
         for (const model of ET_MODEL_TAGS) {
           if (serialNumber.includes(model)) {
-            console.debug(`Detected ET/EH/BT/BH/GEH inverter ${modelName}, S/N: ${serialNumber}.`)
+            Log.debug('SUCCESS! Detected ET/EH/BT/BH/GEH inverter %s, S/N: %s.', modelName, serialNumber)
             const {default: Inverter} = await import('./inverter-et.mjs') // eslint-disable-line no-await-in-loop
             const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
 
@@ -50,7 +49,7 @@ const InverterInfo = Protocol
 
         // for (const model of ES_MODEL_TAGS) {
         //   if (serialNumber.includes(model)) {
-        //     console.debug(`Detected ES/EM/BP inverter ${modelName}, S/N: ${serialNumber}.`)
+        //     console.debug(`SUCCESS! Detected ES/EM/BP inverter ${modelName}, S/N: ${serialNumber}.`)
         //     const {default: Inverter} = await import('./inverter-es.mjs') // eslint-disable-line no-await-in-loop
 
         //     return Inverter
@@ -59,32 +58,37 @@ const InverterInfo = Protocol
 
         for (const model of DT_MODEL_TAGS) {
           if (serialNumber.includes(model)) {
-            console.debug(`Detected DT/MS/D-NS/XS/GEP inverter ${modelName}, S/N: ${serialNumber}.`)
+            Log.debug('SUCCESS! Detected DT/MS/D-NS/XS/GEP inverter %s, S/N: %s.', modelName, serialNumber)
             const {default: Inverter} = await import('./inverter-dt.mjs') // eslint-disable-line no-await-in-loop
             const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
 
             return inverter
           }
         }
+      } else {
+        Log.debug('response is invalid.')
       }
     } catch (e) {
       if (e.code !== 'REQUEST_TIMED_OUT') {
         throw e
       }
+      Log.debug('inverter timed out via AA55-protocol.')
     }
 
     // else try Inverter one by one
-    // for (const inverter of ['ET', 'DT', 'ES']) {
-    console.debug('Determine Inverter manually')
+    Log.debug('finally try to determine inverter directly')
+    // for (const model of ['ET', 'DT', "ES"]) {
     for (const model of ['ET', 'DT']) {
       try {
-        console.debug('check for model', model)
+        Log.debug('check for model %s.', model)
         const {default: Inverter} = await import(`./inverter-${model.toLowerCase()}.mjs`) // eslint-disable-line no-await-in-loop
         const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
+        Log.debug('SUCCESS! Found model %s-type inverter', model)
 
         return inverter
       } catch (e) {
         if (e.code === 'REQUEST_TIMED_OUT') {
+          Log.debug('check for model %s timed out.', model)
           continue
         } else {
           throw e
@@ -92,6 +96,7 @@ const InverterInfo = Protocol
       }
     }
 
+    Log.debug('FAILURE! I cannot determine your inverter.')
     const error = new Error('unknown inverter')
     error.code = 'UNKNOWN_INVERTER'
     throw error

@@ -9,6 +9,5 @@ Program
 
 
 const Options = Program.opts()
-console.log(Options)
 const inverter = await Inverter.from({address: Options.ip})
 console.log(inspect(inverter, {depth: Infinity}))

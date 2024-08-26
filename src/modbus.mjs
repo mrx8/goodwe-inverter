@@ -1,5 +1,6 @@
 // import {PartialResponseException, RequestRejectedException} from './exceptions.mjs'
 
+
 const AA55PACKET = {
   HEADER_HIGH  : 0xaa,
   HEADER_LOW   : 0x55,
@@ -305,8 +306,6 @@ export function createAa55Packet (data) {
 
   message[message.length - 1] = crc & 0xff
   message[message.length - 2] = crc >> 8 & 0xff
-
-  console.log('createAa55Packet', message, message.toString('hex'))
 
   return message
 }

@@ -1,6 +1,8 @@
 import Factory from 'stampit'
 import {GOODWE_UDP_PORT} from './constants.mjs'
+import Log from './log.mjs'
 import dgram from 'node:dgram'
+
 
 export default Factory
   .configuration({
@@ -8,7 +10,7 @@ export default Factory
     defaultIp     : '127.0.0.1',
     defaultPort   : GOODWE_UDP_PORT,
     defaultTimeout: 2000,
-    maxRetries    : 2,
+    maxTries      : 2,
   })
 
 
@@ -21,7 +23,7 @@ export default Factory
       defaultIp,
       defaultPort,
       defaultTimeout,
-      maxRetries,
+      maxTries,
     }}},
 
     instance: instancePromise,
@@ -31,7 +33,7 @@ export default Factory
     instance.ip = ip || defaultIp
     instance.port = port || defaultPort
     instance.timeout = timeout || defaultTimeout
-    instance.maxRetries = maxRetries
+    instance.maxTries = maxTries
 
     const client = dgram.createSocket('udp4')
     client.unref()
@@ -44,14 +46,15 @@ export default Factory
   .methods({
     async requestResponse (message) {
       let error
-      for (let i = 0; i < this.maxRetries; i++) {
+      for (let i = 1; i <= this.maxTries; i++) {
+        Log.trace('request try #%d/%d', i, this.maxTries)
         try {
           const result = await new Promise((resolve, reject) => { // eslint-disable-line no-await-in-loop
             let timeoutId // eslint-disable-line prefer-const
 
             const receiver = (message, rinfo) => {
               clearTimeout(timeoutId)
-              console.log(`received message ${message.toString('hex')} from ${rinfo.address}:${rinfo.port}`)
+              Log.trace('received message %s from %s:%d', message.toString('hex'), rinfo.address, rinfo.port)
               resolve(message)
             }
             this.client.once('message', receiver)
@@ -63,7 +66,7 @@ export default Factory
               reject(error)
             }, this.timeout)
 
-            console.log(`send message ${message.toString('hex')} to ${this.ip}:${this.port}`)
+            Log.trace('send message %s to %s:%d', message.toString('hex'), this.ip, this.port)
             this.client.send(message, this.port, this.ip, err => {
               if (err) {
                 clearTimeout(timeoutId)
@@ -75,13 +78,13 @@ export default Factory
           return result
         } catch (e) {
           if (e.code === 'REQUEST_TIMED_OUT') {
-            console.log('retry', i)
             error = e
           } else {
             throw e
           }
         }
       }
+      Log.trace('request failed with %s', error.code)
 
       throw error
     },

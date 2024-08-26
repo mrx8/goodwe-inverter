@@ -22,7 +22,7 @@ export function decode (message) {
       isBinary = true
     }
   }
-  console.log('isBinary', isBinary, message)
+  // console.log('isBinary', isBinary, message)
   if (isBinary) {
     return utf16beDecoder.decode(message).replace('\x00', '').trimEnd()
   }

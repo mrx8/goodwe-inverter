@@ -29,13 +29,3 @@ export function decode (message) {
 
   return message.toString('ascii').trimEnd()
 }
-
-
-export function readUInt16BE (message, offset) {
-  let value = message.readUInt16BE(offset)
-  if (value === 65535) {
-    value = 0
-  }
-
-  return value
-}

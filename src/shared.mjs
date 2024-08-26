@@ -10,22 +10,3 @@ export function determinePhases (serialNumber) {
 
   return 3
 }
-
-
-const utf16beDecoder = new TextDecoder('utf-16be')
-
-
-export function decode (message) {
-  let isBinary = false
-  for (const byte of message) {
-    if (byte < 32) {
-      isBinary = true
-    }
-  }
-  // console.log('isBinary', isBinary, message)
-  if (isBinary) {
-    return utf16beDecoder.decode(message).replace('\x00', '').trimEnd()
-  }
-
-  return message.toString('ascii').trimEnd()
-}

@@ -1,22 +1,18 @@
+import Base from './parser-base.mjs'
 import Factory from 'stampit'
+import IndexRegister from './index-register.mjs'
 
 const utf16beDecoder = new TextDecoder('utf-16be')
 
 export default Factory
+  .compose(Base, IndexRegister)
+
   .methods({
-    readUInt16BE (offset) {
-      let value = this.message.readUInt16BE(offset)
-      if (value === 65535) {
-        value = 0
-      }
+    _decodeString (register, length) {
+      const index = this._getIndexFromRegister(register)
 
-      return value
-    },
-
-
-    decode (offset, length) {
       let isBinary = false
-      const message = this.message.subarray(offset, offset + length)
+      const message = this.message.subarray(index, index + length)
 
       for (const byte of message) {
         if (byte < 32) {
@@ -30,5 +26,4 @@ export default Factory
 
       return message.toString('ascii').trimEnd()
     },
-
   })

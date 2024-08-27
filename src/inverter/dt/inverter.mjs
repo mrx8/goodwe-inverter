@@ -1,7 +1,7 @@
-import {createRtuRequestMessage, validateRtuResponseMessage} from './modbus.mjs'
-import DeviceInfoParser from './parser/device-info-parser.mjs'
-import Protocol from './protocol.mjs'
-import RegisterParser from './parser/register-parser.mjs'
+import {createRtuRequestMessage, validateRtuResponseMessage} from '../../modbus.mjs'
+import DeviceInfoParser from '../../parser/device-info-parser.mjs'
+import Protocol from '../../protocol.mjs'
+import RegisterParser from '../../parser/register-parser.mjs'
 
 
 async function readDeviceInfo () {

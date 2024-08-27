@@ -1,9 +1,9 @@
 // import {MODBUS_ADDRESS, MODBUS_READ_CMD, createRtuRequestMessage, validatePacket} from './modbus.mjs'
-import {DT_MODEL_TAGS, ET_MODEL_TAGS} from './constants.mjs'
-import {createAa55Packet, validateAa55Packet} from './modbus.mjs'
+import {DT_MODEL_TAGS, ET_MODEL_TAGS} from '../constants.mjs'
+import {createAa55Packet, validateAa55Packet} from '../modbus.mjs'
 import Factory from 'stampit'
-import Log from './log.mjs'
-import Protocol from './protocol.mjs'
+import Log from '../log.mjs'
+import Protocol from '../protocol.mjs'
 // import {decode} from './shared.mjs'
 
 async function getDeviceIdViaAa55 () {
@@ -40,7 +40,7 @@ const InverterInfo = Protocol
         for (const model of ET_MODEL_TAGS) {
           if (serialNumber.includes(model)) {
             Log.debug('SUCCESS! Detected ET/EH/BT/BH/GEH inverter %s, S/N: %s.', modelName, serialNumber)
-            const {default: Inverter} = await import('./inverter-et.mjs') // eslint-disable-line no-await-in-loop
+            const {default: Inverter} = await import('./et/inverter.mjs')// eslint-disable-line no-await-in-loop
             const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
 
             return inverter
@@ -59,7 +59,7 @@ const InverterInfo = Protocol
         for (const model of DT_MODEL_TAGS) {
           if (serialNumber.includes(model)) {
             Log.debug('SUCCESS! Detected DT/MS/D-NS/XS/GEP inverter %s, S/N: %s.', modelName, serialNumber)
-            const {default: Inverter} = await import('./inverter-dt.mjs') // eslint-disable-line no-await-in-loop
+            const {default: Inverter} = await import('./dt/inverter.mjs') // eslint-disable-line no-await-in-loop
             const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
 
             return inverter
@@ -81,7 +81,7 @@ const InverterInfo = Protocol
     for (const model of ['ET', 'DT']) {
       try {
         Log.debug('check for model %s.', model)
-        const {default: Inverter} = await import(`./inverter-${model.toLowerCase()}.mjs`) // eslint-disable-line no-await-in-loop
+        const {default: Inverter} = await import(`./${model.toLowerCase()}/inverter.mjs`) // eslint-disable-line no-await-in-loop
         const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
         Log.debug('SUCCESS! Found model %s-type inverter', model)
 

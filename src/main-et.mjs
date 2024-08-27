@@ -1,4 +1,4 @@
-import Inverter from './inverter-dt.mjs'
+import Inverter from './inverter/et/inverter.mjs'
 import {program as Program} from 'commander'
 import {inspect} from 'node:util'
 

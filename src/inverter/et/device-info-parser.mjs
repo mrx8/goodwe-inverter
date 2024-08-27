@@ -1,4 +1,6 @@
 import Factory from 'stampit'
+
+// import only what is needed and not the whole jungle like in plain OO
 import ReadArmFirmware from '../../parser/bricks/read-arm-firmware.mjs'
 import ReadArmSubVersion from '../../parser/bricks/read-arm-sub-version.mjs'
 import ReadArmVersion from '../../parser/bricks/read-arm-version.mjs'
@@ -11,7 +13,7 @@ import ReadRatedPower from '../../parser/bricks/read-rated-power.mjs'
 import ReadSerialNumber from '../../parser/bricks/read-serial-number.mjs'
 
 export default Factory
-  .compose(
+  .compose( // compose it
     ReadArmFirmware,
     ReadArmSubVersion,
     ReadArmVersion,
@@ -26,7 +28,7 @@ export default Factory
 
   .methods({
     parse () {
-      return {
+      return { // use it
         ratedPower   : this._readRatedPower(35001),
         serialNumber : this._readSerialNumber(35003),
         modelName    : this._readModelName(35011),
@@ -40,5 +42,3 @@ export default Factory
       }
     },
   })
-// self.firmware = self._decode(response[42:54])  # 35021 - 35027
-// self.arm_firmware = self._decode(response[54:66])  # 35027 - 35032

@@ -1,13 +1,13 @@
 import Factory from 'stampit'
 
 // import only what is needed and not the whole jungle like in plain OO
-import ReadArmSubVersion from '../../parser/bricks/read-arm-sub-version.mjs'
-import ReadArmVersion from '../../parser/bricks/read-arm-version.mjs'
-import ReadDsp1Version from '../../parser/bricks/read-dsp1-version.mjs'
-import ReadDsp2Version from '../../parser/bricks/read-dsp2-version.mjs'
-import ReadDspSubVersion from '../../parser/bricks/read-dsp-sub-version.mjs'
-import ReadModelName from '../../parser/bricks/read-model-name.mjs'
-import ReadSerialNumber from '../../parser/bricks/read-serial-number.mjs'
+import ReadArmSubVersion from '../../bricks/read-arm-sub-version.mjs'
+import ReadArmVersion from '../../bricks/read-arm-version.mjs'
+import ReadDsp1Version from '../../bricks/read-dsp1-version.mjs'
+import ReadDsp2Version from '../../bricks/read-dsp2-version.mjs'
+import ReadDspSubVersion from '../../bricks/read-dsp-sub-version.mjs'
+import ReadModelName from '../../bricks/read-model-name.mjs'
+import ReadSerialNumber from '../../bricks/read-serial-number.mjs'
 
 export default Factory
   .compose( // compose it

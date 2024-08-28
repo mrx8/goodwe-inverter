@@ -9,25 +9,18 @@ async function getDeviceInfo () {
   const registerStart = 35000
   const registerCount = 33
 
-  const [isValid, responseMessage] = await this.readDeviceInfo({
+  const responseMessage = await this.readMessage({
     registerStart,
     registerCount,
   })
 
-  if (isValid) {
-    const deviceInfoParser = DeviceInfoParser({
-      message: responseMessage.subarray(MODBUS_HEADER_LENGTH),
-      registerStart,
-    })
-
-    return {
-      valid: true,
-      ...deviceInfoParser.parse(),
-    }
-  }
+  const deviceInfoParser = DeviceInfoParser({
+    message: responseMessage.subarray(MODBUS_HEADER_LENGTH),
+    registerStart,
+  })
 
   return {
-    valid: false,
+    ...deviceInfoParser.parse(),
   }
 }
 

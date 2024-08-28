@@ -1,32 +1,30 @@
 import {createRtuRequestMessage, validateRtuResponseMessage} from '../../modbus.mjs'
-import DeviceInfoParser from '../../parser/device-info-parser.mjs'
+import DeviceInfoParser from './device-info-parser.mjs'
+import Factory from 'stampit'
+import InverterBase from '../inverter-base.mjs'
+import {MODBUS_HEADER_LENGTH} from '../../modbus.mjs'
 import Protocol from '../../protocol.mjs'
 import RegisterParser from '../../parser/register-parser.mjs'
 
 
-async function readDeviceInfo () {
-  const registerStart = 0x7531
-  const registerCount = 0x0028
+async function getDeviceInfo () {
+  const registerStart = 30001
+  const registerCount = 40
 
-  const message = createRtuRequestMessage(this.modbusCommandAdress, registerStart, registerCount)
-  const responseMessage = await this.requestResponse(message)
-  const isValid = validateRtuResponseMessage(responseMessage, this.modbusCommandAdress, registerStart, registerCount)
+  const [isValid, responseMessage] = await this.readDeviceInfo({
+    registerStart,
+    registerCount,
+  })
+
   if (isValid) {
-    const parser = DeviceInfoParser({
-      message       : responseMessage.subarray(6),
-      registerOffset: registerStart,
+    const deviceInfoParser = DeviceInfoParser({
+      message: responseMessage.subarray(MODBUS_HEADER_LENGTH),
+      registerStart,
     })
 
     return {
-      valid       : true,
-      serialNumber: parser.readSerialNumber(30004),
-      // serialNumber : decode(responseMessage.subarray(11, 27)), // 30004 - 30012
-      // modelName    : responseMessage.subarray(27, 37).toString('ascii').trimEnd(),
-      // dsp1Version  : responseMessage.readUInt16BE(71), // 30034
-      // dsp2Version  : responseMessage.readUInt16BE(73), // 30035
-      // armVersion   : responseMessage.readUInt16BE(75), // 30036
-      // dspSvnVersion: readUInt16BE(responseMessage, 77), // 35037
-      // armSvnVersion: readUInt16BE(responseMessage, 79), // 35038
+      valid: true,
+      ...deviceInfoParser.parse(),
     }
   }
 
@@ -63,15 +61,17 @@ async function readRunningData () {
 }
 
 
-export default Protocol
+export default Factory
+  .compose(Protocol, InverterBase)
+
   .init(async (param, {
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
     instance.family = 'DT'
     instance.modbusCommandAdress = 0x7f
-    instance.deviceInfo = await readDeviceInfo.call(instance)
-    instance.deviceInfo = await readRunningData.call(instance)
+    instance.deviceInfo = await getDeviceInfo.call(instance)
+    instance.runningData = await readRunningData.call(instance)
 
     return instance
   })

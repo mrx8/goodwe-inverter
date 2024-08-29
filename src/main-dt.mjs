@@ -10,4 +10,5 @@ Program
 
 const Options = Program.opts()
 const inverter = await Inverter({address: Options.ip})
-console.log(inspect(inverter, {depth: Infinity, maxArrayLength: Infinity, maxStringLength: Infinity}))
+console.log(inspect(inverter.deviceInfo, {depth: Infinity, maxArrayLength: Infinity, maxStringLength: Infinity}))
+console.log(inspect(inverter.runningData, {depth: Infinity, maxArrayLength: Infinity, maxStringLength: Infinity}))

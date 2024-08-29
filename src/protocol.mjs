@@ -54,7 +54,7 @@ export default Factory
 
             const receiver = (message, rinfo) => {
               clearTimeout(timeoutId)
-              Log.trace('received message %s from %s:%d', message.toString('hex'), rinfo.address, rinfo.port)
+              Log.trace('received %d bytes length message %s from %s:%d', message.length, message.toString('hex'), rinfo.address, rinfo.port)
               resolve(message)
             }
             this.client.once('message', receiver)
@@ -66,7 +66,7 @@ export default Factory
               reject(error)
             }, this.timeout)
 
-            Log.trace('send message %s to %s:%d', message.toString('hex'), this.ip, this.port)
+            Log.trace('send %d bytes length message %s to %s:%d', message.length, message.toString('hex'), this.ip, this.port)
             this.client.send(message, this.port, this.ip, err => {
               if (err) {
                 clearTimeout(timeoutId)

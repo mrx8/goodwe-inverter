@@ -8,9 +8,9 @@ export default Factory
       registerStart,
       registerCount,
     }) {
-      const message = createRtuRequestMessage(this.modbusCommandAdress, registerStart, registerCount)
+      const message = createRtuRequestMessage(this.address, registerStart, registerCount)
       const responseMessage = await this.requestResponse(message)
-      const isValid = validateRtuResponseMessage(responseMessage, this.modbusCommandAdress, registerStart, registerCount)
+      const isValid = validateRtuResponseMessage(responseMessage, this.address, registerStart, registerCount)
       if (isValid === false) {
         throw new Error('response message is invalid!')
       }

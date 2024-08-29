@@ -6,6 +6,7 @@ import ReadErrorCodes from '../../bricks/read-error-codes.mjs'
 import ReadFrequency from '../../bricks/read-frequency.mjs'
 import ReadInverterPower from '../../bricks/read-inverter-power.mjs'
 import ReadSafetyCountry from '../../bricks/read-safety-country.mjs'
+import ReadTemperature from '../../bricks/read-temperature.mjs'
 import ReadTimestamp from '../../bricks/read-timestamp.mjs'
 import ReadVoltage from '../../bricks/read-voltage.mjs'
 
@@ -19,6 +20,7 @@ export default Factory
     ReadFrequency,
     ReadInverterPower,
     ReadSafetyCountry,
+    ReadTemperature,
     ReadTimestamp,
     ReadVoltage,
   )
@@ -51,9 +53,10 @@ export default Factory
 
         safetyCountryCode : this._readSafetyCountryCode(30149),
         safetyCountryLabel: this._readSafetyCountryLabel(30149),
+        temperature       : this._readTemperature(30141),
       }
 
-      if (this.deviceInfo.numberOfPhases === 3) {
+      if (this.deviceInfo.numberOfPhases === 3) { // only for 3-phase models
         Object.assign(data, {
           gridL1L2Voltage: this._readVoltage(30115),
           gridL2L3Voltage: this._readVoltage(30116),
@@ -78,7 +81,7 @@ export default Factory
         gridL1Power: Math.round(data.gridL1Voltage * data.gridL1Current),
       })
 
-      if (this.deviceInfo.numberOfPhases === 3) {
+      if (this.deviceInfo.numberOfPhases === 3) { // only for 3-phase models
         Object.assign(data, { // virtual-fields
           gridL2Power: Math.round(data.gridL2Voltage * data.gridL2Current),
           gridL3Power: Math.round(data.gridL3Voltage * data.gridL3Current),

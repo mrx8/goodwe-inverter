@@ -4,6 +4,7 @@ import InverterBase from '../inverter-base.mjs'
 import Protocol from '../../protocol.mjs'
 import RunningDataParser from './running-data-parser.mjs'
 
+// see https://github.com/MiG-41/Modbus-GoodWe-DT
 
 async function getDeviceInfo () {
   const registerStart = 30001
@@ -54,7 +55,7 @@ export default Factory
   }) => {
     const instance = await instancePromise
     instance.family = 'DT'
-    instance.modbusCommandAdress = 0x7f
+    instance.address = 0x7f
     instance.deviceInfo = await getDeviceInfo.call(instance)
     instance.runningData = await getRunningData.call(instance)
 

@@ -1,0 +1,17 @@
+import Factory from 'stampit'
+import {readInt16BE as ReadInt16BE} from './read-int16be.mjs'
+
+
+export default Factory
+  .compose(ReadInt16BE)
+
+  .methods({
+    _readTemperature (register) {
+      const value = this._readInt16BE(register)
+      if (value === -1 || value === 32767) {
+        return 0
+      }
+
+      return value / 10
+    },
+  })

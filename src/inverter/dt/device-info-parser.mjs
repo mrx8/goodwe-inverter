@@ -23,17 +23,15 @@ export default Factory
     ReadSerialNumber,
   )
 
-  .methods({
-    parse () {
-      return { // use it
-        armSubVersion : this._readArmSubVersion(30038),
-        armVersion    : this._readArmVersion(30036),
-        dsp1Version   : this._readDsp2Version(30034),
-        dsp2Version   : this._readDsp2Version(30035),
-        dspSubVersion : this._readDspSubVersion(30037),
-        modelName     : this._readModelName(30012),
-        numberOfPhases: this._readNumberOfPhases(30004), // same register since it is determined via the serialNumber
-        serialNumber  : this._readSerialNumber(30004),
-      }
-    },
+  .init((param, {instance}) => {
+    return { // use it
+      armSubVersion : instance._readArmSubVersion(30038),
+      armVersion    : instance._readArmVersion(30036),
+      dsp1Version   : instance._readDsp2Version(30034),
+      dsp2Version   : instance._readDsp2Version(30035),
+      dspSubVersion : instance._readDspSubVersion(30037),
+      modelName     : instance._readModelName(30012),
+      numberOfPhases: instance._readNumberOfPhases(30004), // same register since it is determined via the serialNumber
+      serialNumber  : instance._readSerialNumber(30004),
+    }
   })

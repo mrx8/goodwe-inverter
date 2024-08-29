@@ -27,7 +27,7 @@ export default Factory
     ReadVoltage,
   )
 
-  .init((param, {instance}) => {
+  .init(({deviceInfo}, {instance}) => {
     const data = {
       timestamp: instance._readTimestamp(35100),
 
@@ -63,7 +63,7 @@ export default Factory
       // temperature       : instance._readTemperature(30141),
     }
 
-    if (instance.deviceInfo.numberOfPhases === 3) { // only for 3-phase models
+    if (deviceInfo.numberOfPhases === 3) { // only for 3-phase models
       Object.assign(data, {
         // gridL1L2Voltage: instance._readVoltage(30115),
         // gridL2L3Voltage: instance._readVoltage(30116),
@@ -84,7 +84,7 @@ export default Factory
       // gridL1Power: Math.round(data.gridL1Voltage * data.gridL1Current),
     })
 
-    if (instance.deviceInfo.numberOfPhases === 3) { // only for 3-phase models
+    if (deviceInfo.numberOfPhases === 3) { // only for 3-phase models
       Object.assign(data, { // virtual-fields
         // gridL2Power: Math.round(data.gridL2Voltage * data.gridL2Current),
         // gridL3Power: Math.round(data.gridL3Voltage * data.gridL3Current),

@@ -9,7 +9,7 @@ const packageJson = require('../package.json')
 
 Program
   .version(packageJson.version)
-  .option('-t, --timeout <timeout>', 'timeout to wait for inverters', '3')
+  .option('-t, --timeout <timeout>', 'timeout in seconds to wait for inverters', '2')
   .showHelpAfterError()
   .parse(process.argv)
 

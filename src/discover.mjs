@@ -19,7 +19,7 @@ function bind (socket, port = 0) {
 
 export default Protocol
   .init(async ({
-    timeout = 3000,
+    timeout = 2000,
   }, {
     instance: instancePromise,
   }) => {

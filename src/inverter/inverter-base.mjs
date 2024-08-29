@@ -1,4 +1,4 @@
-import {createRtuRequestMessage, validateRtuResponseMessage} from '../modbus.mjs'
+import {MODBUS_HEADER_LENGTH, createRtuRequestMessage, validateRtuResponseMessage} from '../modbus.mjs'
 import Factory from 'stampit'
 
 
@@ -15,6 +15,6 @@ export default Factory
         throw new Error('response message is invalid!')
       }
 
-      return responseMessage
+      return responseMessage.subarray(MODBUS_HEADER_LENGTH)
     },
   })

@@ -3,15 +3,15 @@ import Factory from 'stampit'
 import IndexRegister from './index-register.mjs'
 
 
-export const readUInt16BE = Factory
+export const readInt32BE = Factory
   .compose(Base, IndexRegister)
 
   .methods({
-    _readUInt16BE (register) {
+    _readInt32BE (register) {
       const index = this._getIndexFromRegister(register)
 
-      let value = this.message.readUInt16BE(index)
-      if (value === 0xffff) {
+      let value = this.message.readInt32BE(index)
+      if (value === 0xffffffff) {
         value = 0
       }
 

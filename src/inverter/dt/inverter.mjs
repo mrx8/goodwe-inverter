@@ -1,9 +1,8 @@
 import DeviceInfoParser from './device-info-parser.mjs'
 import Factory from 'stampit'
 import InverterBase from '../inverter-base.mjs'
-import {MODBUS_HEADER_LENGTH} from '../../modbus.mjs'
 import Protocol from '../../protocol.mjs'
-import RegisterParser from './register-parser.mjs'
+import RunningDataParser from './running-data-parser.mjs'
 
 
 async function getDeviceInfo () {
@@ -16,7 +15,7 @@ async function getDeviceInfo () {
   })
 
   const deviceInfoParser = DeviceInfoParser({
-    message: responseMessage.subarray(MODBUS_HEADER_LENGTH),
+    message: responseMessage,
     registerStart,
   })
 
@@ -34,13 +33,15 @@ async function getRunningData () {
     registerStart,
     registerCount,
   })
-  const registerParser = RegisterParser({
-    message: responseMessage.subarray(MODBUS_HEADER_LENGTH),
+
+  const runningDataParser = RunningDataParser({
+    deviceInfo: this.deviceInfo,
+    message   : responseMessage,
     registerStart,
   })
 
   return {
-    ...registerParser.parse(),
+    ...runningDataParser.parse(),
   }
 }
 

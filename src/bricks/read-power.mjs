@@ -6,9 +6,7 @@ export default Factory
   .compose(ReadUInt32BE)
 
   .methods({
-    _readEnergyGenerationTotal (register) {
-      const value = this._readUInt32BE(register)
-
-      return value / 10
+    _readPower (register) {
+      return this._readUInt32BE(register)
     },
   })

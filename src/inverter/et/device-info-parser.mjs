@@ -28,21 +28,19 @@ export default Factory
     ReadNumberOfPhases,
   )
 
-  .methods({
-    parse () {
-      return { // use it
-        ratedPower    : this._readRatedPower(35001),
-        serialNumber  : this._readSerialNumber(35003),
-        modelName     : this._readModelName(35011),
-        dsp1Version   : this._readDsp2Version(35016),
-        dsp2Version   : this._readDsp2Version(35017),
-        dspSubVersion : this._readDspSubVersion(35018),
-        armVersion    : this._readArmVersion(35019),
-        armSubVersion : this._readArmSubVersion(35020),
-        numberOfPhases: this._readNumberOfPhases(35003), // same register since it is determined via the serialNumber
+  .init((param, {instance}) => {
+    return { // use it
+      ratedPower    : instance._readRatedPower(35001),
+      serialNumber  : instance._readSerialNumber(35003),
+      modelName     : instance._readModelName(35011),
+      dsp1Version   : instance._readDsp2Version(35016),
+      dsp2Version   : instance._readDsp2Version(35017),
+      dspSubVersion : instance._readDspSubVersion(35018),
+      armVersion    : instance._readArmVersion(35019),
+      armSubVersion : instance._readArmSubVersion(35020),
+      numberOfPhases: instance._readNumberOfPhases(35003), // same register since it is determined via the serialNumber
 
-        // firmware     : this._readFirmware(35021),
-        // armFirmware  : this._readArmFirmware(35027),
-      }
-    },
+      // firmware     : instance._readFirmware(35021),
+      // armFirmware  : instance._readArmFirmware(35027),
+    }
   })

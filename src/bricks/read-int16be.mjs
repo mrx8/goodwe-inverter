@@ -3,7 +3,7 @@ import Factory from 'stampit'
 import IndexRegister from './index-register.mjs'
 
 
-export const readInt16BE = Factory
+export default Factory
   .compose(Base, IndexRegister)
 
   .methods({

@@ -1,5 +1,5 @@
 import Factory from 'stampit'
-import {readInt32BE as ReadInt32BE} from './read-int32be.mjs'
+import ReadInt32BE from './read-int32be.mjs'
 
 
 export default Factory

@@ -1,5 +1,5 @@
 import Factory from 'stampit'
-import {readInt16BE as ReadInt16BE} from './read-int16be.mjs'
+import ReadInt16BE from './read-int16be.mjs'
 
 
 export default Factory

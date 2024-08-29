@@ -7,14 +7,9 @@ export default Factory
   .compose(Base, IndexRegister)
 
   .methods({
-    _readUInt16BE (register) {
+    _readInt8 (register) {
       const index = this._getIndexFromRegister(register)
 
-      let value = this.message.readUInt16BE(index)
-      if (value === 0xffff) {
-        value = 0
-      }
-
-      return value
+      return this.message.readInt8(index)
     },
   })

@@ -15,14 +15,10 @@ async function getDeviceInfo () {
     registerCount,
   })
 
-  const deviceInfoParser = DeviceInfoParser({
+  return DeviceInfoParser({
     message: responseMessage,
     registerStart,
   })
-
-  return {
-    ...deviceInfoParser.parse(),
-  }
 }
 
 
@@ -35,15 +31,11 @@ async function getRunningData () {
     registerCount,
   })
 
-  const runningDataParser = RunningDataParser({
+  return RunningDataParser({
     deviceInfo: this.deviceInfo,
     message   : responseMessage,
     registerStart,
   })
-
-  return {
-    ...runningDataParser.parse(),
-  }
 }
 
 

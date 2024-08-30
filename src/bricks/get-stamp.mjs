@@ -26,3 +26,9 @@ export default Factory
       return stamp
     }
   })
+
+  .methods({
+    getStampConfiguration () {
+      return this.getStamp().compose.configuration
+    },
+  })

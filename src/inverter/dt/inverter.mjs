@@ -1,7 +1,7 @@
 import DeviceInfoParser from './device-info-parser.mjs'
 import Factory from 'stampit'
 import InverterBase from '../inverter-base.mjs'
-import Protocol from '../../protocol.mjs'
+import Protocol from '../../network.mjs'
 import RunningDataParser from './running-data-parser.mjs'
 
 // see https://github.com/MiG-41/Modbus-GoodWe-DT

@@ -3,7 +3,7 @@ import {createAa55Packet, validateAa55Packet} from '../modbus.mjs'
 import Factory from 'stampit'
 import Log from '../log.mjs'
 import {ProgrammerError} from '../error.mjs'
-import Protocol from '../protocol.mjs'
+import Protocol from '../network.mjs'
 // import {decode} from './shared.mjs'
 
 async function getDeviceIdViaAa55 () {

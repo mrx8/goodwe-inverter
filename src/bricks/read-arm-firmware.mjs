@@ -7,6 +7,6 @@ export default Factory
 
   .methods({
     readArmFirmware (register) {
-      return this._decodeString(register, 12)
+      return this.decodeString(register, 12)
     },
   })

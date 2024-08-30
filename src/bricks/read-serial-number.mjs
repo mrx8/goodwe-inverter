@@ -7,6 +7,6 @@ export default Factory
 
   .methods({
     readSerialNumber (register) {
-      return this._decodeString(register, 16)
+      return this.decodeString(register, 16)
     },
   })

@@ -8,7 +8,7 @@ export default Factory
   .compose(Base, IndexRegister)
 
   .methods({
-    _decodeString (register, length) {
+    decodeString (register, length) {
       const index = this._getIndexFromRegister(register)
 
       let isBinary = false

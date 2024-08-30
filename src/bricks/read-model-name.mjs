@@ -7,6 +7,6 @@ export default Factory
 
   .methods({
     readModelName (register) {
-      return this._decodeString(register, 10)
+      return this.decodeString(register, 10)
     },
   })

@@ -8,7 +8,7 @@ export default Factory
 
   .methods({
     readInt16BE (register) {
-      const index = this._getIndexFromRegister(register)
+      const index = this.getIndexFromRegister(register)
 
       let value = this.message.readInt16BE(index)
       if (value === 0xffff) {

@@ -1,4 +1,5 @@
 import Factory from 'stampit'
+import {ProgrammerError} from '../error.mjs'
 
 
 export default Factory
@@ -12,7 +13,7 @@ export default Factory
 
 
   .methods({
-    _getIndexFromRegister (register) {
+    getIndexFromRegister (register) {
       const index = (register - this.registerStart) * 2
       if (index < 0) {
         throw new ProgrammerError('register index is negative', 'CONFIG_ERROR')

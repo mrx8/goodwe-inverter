@@ -7,7 +7,7 @@ export default Factory
 
   .methods({
     readTimestamp (register) {
-      const index = this._getIndexFromRegister(register)
+      const index = this.getIndexFromRegister(register)
 
       const year = 2000 + this.message[index]
       const month = this.message[index + 1]

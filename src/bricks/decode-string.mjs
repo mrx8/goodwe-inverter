@@ -9,7 +9,7 @@ export default Factory
 
   .methods({
     decodeString (register, length) {
-      const index = this._getIndexFromRegister(register)
+      const index = this.getIndexFromRegister(register)
 
       let isBinary = false
       const message = this.message.subarray(index, index + length)

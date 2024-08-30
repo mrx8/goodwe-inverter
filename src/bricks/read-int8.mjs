@@ -8,7 +8,7 @@ export default Factory
 
   .methods({
     readInt8 (register) {
-      const index = this._getIndexFromRegister(register)
+      const index = this.getIndexFromRegister(register)
 
       return this.message.readInt8(index)
     },

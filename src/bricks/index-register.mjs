@@ -15,7 +15,7 @@ export default Factory
     _getIndexFromRegister (register) {
       const index = (register - this.registerStart) * 2
       if (index < 0) {
-        throw new Error('register index is negative', 'CONFIG_ERROR')
+        throw new ProgrammerError('register index is negative', 'CONFIG_ERROR')
       }
 
       return index

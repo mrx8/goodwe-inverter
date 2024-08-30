@@ -1,5 +1,4 @@
-// import {PartialResponseException, RequestRejectedException} from './exceptions.mjs'
-
+import {from as ErrorFrom, ProgrammerError} from './error.mjs'
 
 const AA55PACKET = {
   HEADER       : 0xaa55,
@@ -82,18 +81,22 @@ function modbusChecksum (data) {
 
 
 export function createRtuRequestMessage (commandAddress, command, offset, value) {
-  const message = Buffer.allocUnsafe(8)
-  value = value >>> 0 // convert from possible signed to unsigned
+  try {
+    const message = Buffer.allocUnsafe(8)
+    value = value >>> 0 // convert from possible signed to unsigned
 
-  message[0] = commandAddress
-  message[1] = command
-  message.writeUInt16BE(offset, 2)
-  message.writeUInt16BE(value, 4)
+    message[0] = commandAddress
+    message[1] = command
+    message.writeUInt16BE(offset, 2)
+    message.writeUInt16BE(value, 4)
 
-  const checksum = modbusChecksum(message.subarray(0, 6))
-  message.writeUInt16LE(checksum, 6)
+    const checksum = modbusChecksum(message.subarray(0, 6))
+    message.writeUInt16LE(checksum, 6)
 
-  return message
+    return message
+  } catch (e) {
+    throw ErrorFrom(e)
+  }
 }
 
 
@@ -137,40 +140,43 @@ export function validateRtuResponseMessage (message, address, command, offset, v
   let expectedLength
 
   if (message.length <= 4) {
-    throw new Error('Response is too short.')
+    throw new ProgrammerError('Response is too short.', 'PROTOCOL_ERROR')
   }
 
   if (message.readUInt16BE(0) !== MODBUS_HEADER) {
-    throw new Error(`Response has no valid header: ${message.subarray(0, 2).toString('hex')}, expected: ${MODBUS_HEADER.toString(16)}.`)
+    throw new ProgrammerError(
+      `Response has no valid header: ${message.subarray(0, 2).toString('hex')}, expected: ${MODBUS_HEADER.toString(16)}.`,
+      'PROTOCOL_ERROR',
+    )
   }
 
   if (message[2] !== address) {
-    throw new Error(`Response has no valid address-header: ${message[2]}, expected: ${address}.`)
+    throw new ProgrammerError(`Response has no valid address-header: ${message[2]}, expected: ${address}.`, 'PROTOCOL_ERROR')
   }
 
 
   if (message[3] === command) {
     if (message[4] !== value * 2) {
-      throw new Error(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`)
+      throw new ProgrammerError(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`, 'PROTOCOL_ERROR')
     }
 
     expectedLength = message[4] + 7
     if (message.length < expectedLength) {
-      throw new Error(`partial message received. Length should be ${message.length} but was ${expectedLength}`)
+      throw new ProgrammerError(`partial message received. Length should be ${message.length} but was ${expectedLength}`, 'PROTOCOL_ERROR')
     }
   } else if ([MODBUS_WRITE_COMMAND, MODBUS_WRITE_MULTI_COMMAND].includes(message[3])) {
     expectedLength = 10
     if (message.length < expectedLength) {
-      throw new Error(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`)
+      throw new ProgrammerError(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`, 'PROTOCOL_ERROR')
     }
     const responseOffset = message.readUInt16BE(4)
     if (responseOffset !== offset) {
-      throw new Error(`Response has wrong offset: ${responseOffset}, expected: ${offset}.`)
+      throw new ProgrammerError(`Response has wrong offset: ${responseOffset}, expected: ${offset}.`, 'PROTOCOL_ERROR')
     }
 
     const responseValue = message.readInt16BE(6)
     if (responseValue !== value) {
-      throw new Error(`Response has wrong value: ${responseValue}, expected: ${value}.`)
+      throw new ProgrammerError(`Response has wrong value: ${responseValue}, expected: ${value}.`, 'PROTOCOL_ERROR')
     }
   } else {
     expectedLength = message.length
@@ -179,12 +185,12 @@ export function validateRtuResponseMessage (message, address, command, offset, v
 
   const checksumOffset = expectedLength - 2
   if (modbusChecksum(message.subarray(2, checksumOffset)) !== message.readUInt16LE(checksumOffset)) {
-    throw new Error('Response CRC-16 checksum does not match.')
+    throw new ProgrammerError('Response CRC-16 checksum does not match.', 'PROTOCOL_ERROR')
   }
 
   if (message[3] !== PACKET.READ_COMMAND) {
     const failureCode = FAILURE_CODES[message[4]] || 'UNKNOWN'
-    throw new Error(`Response command failure: ${failureCode}.`)
+    throw new ProgrammerError(`Response command failure: ${failureCode}.`, 'PROTOCOL_ERROR')
   }
 
   return true
@@ -260,7 +266,6 @@ export function validateRtuResponseMessage (message, address, command, offset, v
 import logging
 from typing import Union
 
-from .exceptions import PartialResponseException, RequestRejectedException
 
 logger = logging.getLogger(__name__)
 
@@ -309,25 +314,29 @@ def validate_modbus_rtu_response(data: bytes, cmd: int, offset: int, value: int)
 
 // Buffer.from('AA55C07F0102000241', 'hex')
 export function createAa55Packet (data) {
-  const headerLength = 6
-  let crc = 0
-  const message = Buffer.allocUnsafe(headerLength + data.length + CHECKSUM_LENGTH)
+  try {
+    const headerLength = 6
+    let crc = 0
+    const message = Buffer.allocUnsafe(headerLength + data.length + CHECKSUM_LENGTH)
 
-  message.writeUInt16BE(AA55PACKET.HEADER, 0)
-  message[2] = AA55PACKET.ADDRESS_AP
-  message[3] = AA55PACKET.ADDRESS
-  message[4] = AA55PACKET.READ_COMMAND
-  message[5] = AA55PACKET.QUERY_ID_INFO
+    message.writeUInt16BE(AA55PACKET.HEADER, 0)
+    message[2] = AA55PACKET.ADDRESS_AP
+    message[3] = AA55PACKET.ADDRESS
+    message[4] = AA55PACKET.READ_COMMAND
+    message[5] = AA55PACKET.QUERY_ID_INFO
 
-  data.copy(message, 6)
+    data.copy(message, 6)
 
-  for (let i = 0, maxLen = message.length - CHECKSUM_LENGTH; i < maxLen; i++) {
-    crc = crc + message[i]
+    for (let i = 0, maxLen = message.length - CHECKSUM_LENGTH; i < maxLen; i++) {
+      crc = crc + message[i]
+    }
+
+    message.writeUInt16BE(crc, message.length - 2)
+
+    return message
+  } catch (e) {
+    throw ErrorFrom(e)
   }
-
-  message.writeUInt16BE(crc, message.length - 2)
-
-  return message
 }
 
 
@@ -338,27 +347,27 @@ export function validateAa55Packet (message) {
   }
 
   if (message.readUInt16BE(message.length - 2) !== crc) {
-    throw new Error('crc is incorrect')
+    throw new ProgrammerError('crc is incorrect', 'PROTOCOL_ERROR')
   }
 
   if (message.readUInt16BE(0) !== AA55PACKET.HEADER) {
-    throw new Error('header is incorrect')
+    throw new ProgrammerError('header is incorrect', 'PROTOCOL_ERROR')
   }
 
   if (message[2] !== AA55PACKET.ADDRESS) {
-    throw new Error('address is incorrect')
+    throw new ProgrammerError('address is incorrect', 'PROTOCOL_ERROR')
   }
 
   if (message[3] !== AA55PACKET.ADDRESS_AP) {
-    throw new Error('address_ap is incorrect')
+    throw new ProgrammerError('address_ap is incorrect', 'PROTOCOL_ERROR')
   }
 
   if (message[4] !== AA55PACKET.READ_COMMAND) {
-    throw new Error('read_command is incorrect')
+    throw new ProgrammerError('read_command is incorrect', 'PROTOCOL_ERROR')
   }
 
   if (message[5] !== (AA55PACKET.QUERY_ID_INFO | 0x80)) {
-    throw new Error('query_id_info is incorrect')
+    throw new ProgrammerError('query_id_info is incorrect', 'PROTOCOL_ERROR')
   }
 
   return true

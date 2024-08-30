@@ -2,6 +2,7 @@ import {DT_MODEL_TAGS, ET_MODEL_TAGS} from '../constants.mjs'
 import {createAa55Packet, validateAa55Packet} from '../modbus.mjs'
 import Factory from 'stampit'
 import Log from '../log.mjs'
+import {ProgrammerError} from '../error.mjs'
 import Protocol from '../protocol.mjs'
 // import {decode} from './shared.mjs'
 
@@ -86,7 +87,7 @@ const InverterInfo = Protocol
     }
 
     Log.debug('FAILURE! I cannot determine your inverter.')
-    const error = new Error('unknown inverter')
+    const error = new ProgrammerError('unknown inverter', 'ERROR_UNKNOWN_INVERTER')
     error.code = 'UNKNOWN_INVERTER'
     throw error
   })

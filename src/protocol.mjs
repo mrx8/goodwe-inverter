@@ -1,6 +1,7 @@
 import Factory from 'stampit'
 import {GOODWE_UDP_PORT} from './constants.mjs'
 import Log from './log.mjs'
+import {ProgrammerError} from './error.mjs'
 import dgram from 'node:dgram'
 
 
@@ -61,7 +62,7 @@ export default Factory
 
             timeoutId = setTimeout(() => {
               this.client.removeListener('message', receiver)
-              const error = new Error('request timed out')
+              const error = new ProgrammerError('request timed out', 'ERROR_TIMED_OUT')
               error.code = 'REQUEST_TIMED_OUT'
               reject(error)
             }, this.timeout)

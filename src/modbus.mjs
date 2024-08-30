@@ -135,56 +135,40 @@ export function validateRtuResponseMessage (message, commandAdress, offset, valu
   let expectedLength
 
   if (message.length <= 4) {
-    console.debug('Response is too short.')
-
-    return false
+    throw new Error('Response is too short.')
   }
 
   if (message.readUInt16BE(0) !== MODBUS_HEADER) {
-    console.debug(`Response has no valid header: ${message.subarray(0, 2).toString('hex')}, expected: ${MODBUS_HEADER.toString(16)}.`)
-
-    return false
+    throw new Error(`Response has no valid header: ${message.subarray(0, 2).toString('hex')}, expected: ${MODBUS_HEADER.toString(16)}.`)
   }
 
   if (message[2] !== commandAdress) {
-    console.debug(`Response has no valid address-header: ${message[2]}, expected: ${PACKET.commandAdress}.`)
-
-    return false
+    throw new Error(`Response has no valid address-header: ${message[2]}, expected: ${PACKET.commandAdress}.`)
   }
 
 
   if (message[3] === PACKET.READ_COMMAND) {
     if (message[4] !== value * 2) {
-      console.debug(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`)
-
-      return false
+      throw new Error(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`)
     }
 
     expectedLength = message[4] + 7
     if (message.length < expectedLength) {
-      console.debug(`partial message received. Length should be ${message.length} but was ${expectedLength}`)
-
-      return false
+      throw new Error(`partial message received. Length should be ${message.length} but was ${expectedLength}`)
     }
   } else if ([MODBUS_WRITE_CMD, MODBUS_WRITE_MULTI_CMD].includes(message[3])) {
     expectedLength = 10
     if (message.length < expectedLength) {
-      console.debug(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`)
-
-      return false
+      throw new Error(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`)
     }
     const responseOffset = message.readUInt16BE(4)
     if (responseOffset !== offset) {
-      console.debug(`Response has wrong offset: ${responseOffset}, expected: ${offset}.`)
-
-      return false
+      throw new Error(`Response has wrong offset: ${responseOffset}, expected: ${offset}.`)
     }
 
     const responseValue = message.readInt16BE(6)
     if (responseValue !== value) {
-      console.debug(`Response has wrong value: ${responseValue}, expected: ${value}.`)
-
-      return false
+      throw new Error(`Response has wrong value: ${responseValue}, expected: ${value}.`)
     }
   } else {
     expectedLength = message.length
@@ -193,16 +177,12 @@ export function validateRtuResponseMessage (message, commandAdress, offset, valu
 
   const checksumOffset = expectedLength - 2
   if (modbusChecksum(message.subarray(2, checksumOffset)) !== message.readUInt16LE(checksumOffset)) {
-    console.debug('Response CRC-16 checksum does not match.')
-
-    return false
+    throw new Error('Response CRC-16 checksum does not match.')
   }
 
   if (message[3] !== PACKET.READ_COMMAND) {
     const failureCode = FAILURE_CODES[message[4]] || 'UNKNOWN'
-    console.debug(`Response command failure: ${failureCode}.`)
-
-    return false
+    throw new Error(`Response command failure: ${failureCode}.`)
   }
 
   return true

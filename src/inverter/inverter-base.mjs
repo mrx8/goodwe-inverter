@@ -10,10 +10,7 @@ export default Factory
     }) {
       const message = createRtuRequestMessage(this.address, registerStart, registerCount)
       const responseMessage = await this.requestResponse(message)
-      const isValid = validateRtuResponseMessage(responseMessage, this.address, registerStart, registerCount)
-      if (isValid === false) {
-        throw new Error('response message is invalid!')
-      }
+      validateRtuResponseMessage(responseMessage, this.address, registerStart, registerCount)
 
       return responseMessage.subarray(MODBUS_HEADER_LENGTH)
     },

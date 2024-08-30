@@ -1,15 +1,17 @@
 import Factory from 'stampit'
-import ReadBatterySoc from '../../bricks/read-battery-soc.mjs'
-
+import ReadBatteryStateOfCharge from '../../bricks/read-battery-state-of-charge.mjs'
+import ReadBatteryStateOfHealth from '../../bricks/read-battery-state-of-health.mjs'
 
 export default Factory
   .compose(
-    ReadBatterySoc,
+    ReadBatteryStateOfCharge,
+    ReadBatteryStateOfHealth,
   )
 
   .init((param, {instance}) => {
     const data = {
       batteryStateOfCharge: instance._readBatteryStateOfCharge(37007),
+      batteryStateOfHealth: instance._readBatteryStateOfHealth(37008),
     }
 
     return data

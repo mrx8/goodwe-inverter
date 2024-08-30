@@ -62,9 +62,7 @@ export default Factory
 
             timeoutId = setTimeout(() => {
               this.client.removeListener('message', receiver)
-              const error = new ProgrammerError('request timed out', 'ERROR_TIMED_OUT')
-              error.code = 'REQUEST_TIMED_OUT'
-              reject(error)
+              reject(new ProgrammerError('request timed out', 'REQUEST_TIMED_OUT'))
             }, this.timeout)
 
             Log.trace('send %d bytes length message %s to %s:%d', message.length, message.toString('hex'), this.ip, this.port)

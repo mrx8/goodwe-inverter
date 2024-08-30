@@ -87,9 +87,7 @@ const InverterInfo = Protocol
     }
 
     Log.debug('FAILURE! I cannot determine your inverter.')
-    const error = new ProgrammerError('unknown inverter', 'ERROR_UNKNOWN_INVERTER')
-    error.code = 'UNKNOWN_INVERTER'
-    throw error
+    throw new ProgrammerError('unknown inverter', 'ERROR_UNKNOWN_INVERTER')
   })
 
 

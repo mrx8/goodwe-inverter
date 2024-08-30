@@ -10,15 +10,14 @@ export default Factory
   )
 
   .methods({
-    async getDeviceInfo (registerStart, registerCount) {
-      const {DeviceInfoParser} = this.getStampConfiguration()
-
+    async getMeterData (registerStart, registerCount) {
+      const {MeterDataParser} = this.getStampConfiguration()
       const responseMessage = await this.readMessage({
         registerStart,
         registerCount,
       })
 
-      return DeviceInfoParser({
+      return MeterDataParser({
         message: responseMessage,
         registerStart,
       })

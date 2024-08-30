@@ -4,7 +4,10 @@ import IndexRegister from './index-register.mjs'
 
 
 export default Factory
-  .compose(Base, IndexRegister)
+  .compose(
+    Base,
+    IndexRegister,
+  )
 
   .methods({
     readInt8 (register) {

@@ -49,9 +49,9 @@ export default Factory
 
       errorCodes: instance.readErrorCodes(30130),
 
-      safetyCountryCode : instance.readSafetyCountryCode(30149),
-      safetyCountryLabel: instance.readSafetyCountryLabel(30149),
-      temperature       : instance.readTemperature(30141),
+      safetyCountryCode: instance.readSafetyCountryCode(30149),
+      safetyCountry    : instance.readSafetyCountry(30149),
+      temperature      : instance.readTemperature(30141),
     }
 
     if (deviceInfo.numberOfPhases === 3) { // only for 3-phase models

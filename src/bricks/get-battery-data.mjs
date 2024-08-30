@@ -2,6 +2,7 @@ import Factory from 'stampit'
 import GetStamp from './get-stamp.mjs'
 import InverterBase from './inverter-base.mjs'
 
+
 export default Factory
   .compose(
     GetStamp,

@@ -3,8 +3,10 @@ import DeviceInfoParser from './device-info-parser.mjs'
 import Factory from 'stampit'
 import GetBatteryData from '../../bricks/get-battery-data.mjs'
 import GetDeviceInfo from '../../bricks/get-device-info.mjs'
+import GetMeterData from '../../bricks/get-meter-data.mjs'
 import GetRunningData from '../../bricks/get-running-data.mjs'
 import InverterBase from '../../bricks/inverter-base.mjs'
+import MeterDataParser from './meter-data-parser.mjs'
 import Network from '../../network.mjs'
 import RunningDataParser from './running-data-parser.mjs'
 
@@ -15,6 +17,7 @@ export default Factory
     InverterBase,
     GetBatteryData,
     GetDeviceInfo,
+    GetMeterData,
     GetRunningData,
   )
 
@@ -22,6 +25,7 @@ export default Factory
     BatteryDataParser,
     DeviceInfoParser,
     RunningDataParser,
+    MeterDataParser,
   })
 
   .init(async (param, {
@@ -32,9 +36,11 @@ export default Factory
     instance.address = 0xf7
     instance.deviceInfo = await instance.getDeviceInfo(35000, 33)
     instance.runningData = await instance.getRunningData(35100, 125)
+    instance.batteryData = {}
     if (instance.runningData.batteryModeCode > 0) {
-      Object.assign(instance.runningData, await instance.getBatteryData(37000, 24))
+      Object.assign(instance.batteryData, await instance.getBatteryData(37000, 24))
     }
+    instance.meterData = await instance.getMeterData(36000, 58)
 
     return instance
   })

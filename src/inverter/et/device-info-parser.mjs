@@ -8,6 +8,7 @@ import ReadDsp1Version from '../../bricks/read-dsp1-version.mjs'
 import ReadDsp2Version from '../../bricks/read-dsp2-version.mjs'
 import ReadDspSubVersion from '../../bricks/read-dsp-sub-version.mjs'
 // import ReadFirmware from '../../bricks/read-firmware.mjs'
+import ReadIs745platform from '../../bricks/read-is-745platform.mjs'
 import ReadModelName from '../../bricks/read-model-name.mjs'
 import ReadNumberOfPhases from '../../bricks/read-number-of-phases.mjs'
 import ReadRatedPower from '../../bricks/read-rated-power.mjs'
@@ -22,6 +23,7 @@ export default Factory
     ReadDsp2Version,
     ReadDspSubVersion,
     // ReadFirmware,
+    ReadIs745platform,
     ReadModelName,
     ReadRatedPower,
     ReadSerialNumber,
@@ -39,6 +41,7 @@ export default Factory
       armVersion    : instance.readArmVersion(35019),
       armSubVersion : instance.readArmSubVersion(35020),
       numberOfPhases: instance.readNumberOfPhases(35003), // same register since it is determined via the serialNumber
+      is745Platform : instance.readIs745Platform(35003), // same register since it is determined via the serialNumber
 
       // firmware     : instance.readFirmware(35021),
       // armFirmware  : instance.readArmFirmware(35027),

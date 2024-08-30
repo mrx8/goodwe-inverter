@@ -9,19 +9,19 @@ export const SINGLE_PHASE_MODELS = [
   'ESN', 'EMN', 'ERN', 'EBN', 'HLB', 'HMB', 'HBB', 'SPN',
 ]
 
-const PLATFORM_105_MODELS = [
-  'ESU', 'EMU', 'ESA', 'BPS', 'BPU', 'EMJ', 'IJL',
-]
+// const PLATFORM_105_MODELS = [
+//   'ESU', 'EMU', 'ESA', 'BPS', 'BPU', 'EMJ', 'IJL',
+// ]
 
 const PLATFORM_205_MODELS = [
   'ETU', 'ETL', 'ETR', 'BHN', 'EHU', 'BHU', 'EHR', 'BTU',
 ]
 
-const PLATFORM_745_LV_MODELS = [
+export const PLATFORM_745_LV_MODELS = [
   'ESN', 'EBN', 'EMN', 'SPN', 'ERN', 'ESC', 'HLB', 'HMB', 'HBB', 'EOA',
 ]
 
-const PLATFORM_745_HV_MODELS = [
+export const PLATFORM_745_HV_MODELS = [
   'ETT', 'HTA', 'HUB', 'AEB', 'SPB', 'CUB', 'EUB', 'HEB', 'ERB', 'BTT', 'ETF', 'ARB', 'URB', 'EBR',
 ]
 
@@ -37,7 +37,7 @@ export const ET_MODEL_TAGS = [
   'ETC', 'BTC', 'BTN',
 ]
 
-export const ES_MODEL_TAGS = [...PLATFORM_105_MODELS]
+// export const ES_MODEL_TAGS = [...PLATFORM_105_MODELS]
 
 export const DT_MODEL_TAGS = [
   'DTU', 'DTS', 'MSU', 'MST', 'MSC', 'DSN', 'DTN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', 'PSB', 'PSC',

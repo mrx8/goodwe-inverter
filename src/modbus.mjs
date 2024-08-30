@@ -27,8 +27,9 @@ const PACKET = {
 
 const CHECKSUM_LENGTH = 2
 const MODBUS_HEADER = 0xaa55
-const MODBUS_WRITE_CMD = 0x06
-const MODBUS_WRITE_MULTI_CMD = 0x10
+export const MODBUS_READ_COMMAND = 0x03
+const MODBUS_WRITE_COMMAND = 0x06
+const MODBUS_WRITE_MULTI_COMMAND = 0x10
 export const MODBUS_HEADER_LENGTH = 5
 
 
@@ -80,11 +81,12 @@ function modbusChecksum (data) {
 }
 
 
-export function createRtuRequestMessage (commandAddress, offset, value) {
+export function createRtuRequestMessage (commandAddress, command, offset, value) {
   const message = Buffer.allocUnsafe(8)
+  value = value >>> 0 // convert from possible signed to unsigned
 
   message[0] = commandAddress
-  message[1] = PACKET.READ_COMMAND
+  message[1] = command
   message.writeUInt16BE(offset, 2)
   message.writeUInt16BE(value, 4)
 
@@ -131,7 +133,7 @@ export function createRtuRequestMessage (commandAddress, offset, value) {
 //   return false
 // }
 
-export function validateRtuResponseMessage (message, commandAdress, offset, value) {
+export function validateRtuResponseMessage (message, address, command, offset, value) {
   let expectedLength
 
   if (message.length <= 4) {
@@ -142,12 +144,12 @@ export function validateRtuResponseMessage (message, commandAdress, offset, valu
     throw new Error(`Response has no valid header: ${message.subarray(0, 2).toString('hex')}, expected: ${MODBUS_HEADER.toString(16)}.`)
   }
 
-  if (message[2] !== commandAdress) {
-    throw new Error(`Response has no valid address-header: ${message[2]}, expected: ${PACKET.commandAdress}.`)
+  if (message[2] !== address) {
+    throw new Error(`Response has no valid address-header: ${message[2]}, expected: ${address}.`)
   }
 
 
-  if (message[3] === PACKET.READ_COMMAND) {
+  if (message[3] === command) {
     if (message[4] !== value * 2) {
       throw new Error(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`)
     }
@@ -156,7 +158,7 @@ export function validateRtuResponseMessage (message, commandAdress, offset, valu
     if (message.length < expectedLength) {
       throw new Error(`partial message received. Length should be ${message.length} but was ${expectedLength}`)
     }
-  } else if ([MODBUS_WRITE_CMD, MODBUS_WRITE_MULTI_CMD].includes(message[3])) {
+  } else if ([MODBUS_WRITE_COMMAND, MODBUS_WRITE_MULTI_COMMAND].includes(message[3])) {
     expectedLength = 10
     if (message.length < expectedLength) {
       throw new Error(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`)

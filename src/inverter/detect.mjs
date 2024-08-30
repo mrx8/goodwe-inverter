@@ -1,4 +1,3 @@
-// import {MODBUS_ADDRESS, MODBUS_READ_CMD, createRtuRequestMessage, validatePacket} from './modbus.mjs'
 import {DT_MODEL_TAGS, ET_MODEL_TAGS} from '../constants.mjs'
 import {createAa55Packet, validateAa55Packet} from '../modbus.mjs'
 import Factory from 'stampit'

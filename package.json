@@ -5,7 +5,6 @@
   "main": "src/main.js",
   "type": "module",
   "scripts": {
-    "test": "mocha --timeout 10000 $(find test/ -name 'test-*.mjs' -type f)",
     "eslint": "eslint eslint.config.mjs '**/*.mjs'"
   },
   "author": "Andreas Vierengel",

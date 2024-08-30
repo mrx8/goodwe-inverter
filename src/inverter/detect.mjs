@@ -9,17 +9,11 @@ import Protocol from '../protocol.mjs'
 async function getDeviceIdViaAa55 () {
   const requestMessage = createAa55Packet(Buffer.from('00', 'hex'))
   const responseMessage = await this.requestResponse(requestMessage)
-  const isValid = validateAa55Packet(responseMessage)
-  if (isValid) {
-    return {
-      isValid,
-      modelName   : responseMessage.subarray(12, 22).toString().trimEnd(),
-      serialNumber: responseMessage.subarray(38, 54).toString(),
-    }
-  }
+  validateAa55Packet(responseMessage)
 
   return {
-    isValid,
+    modelName   : responseMessage.subarray(12, 22).toString().trimEnd(),
+    serialNumber: responseMessage.subarray(38, 54).toString(),
   }
 }
 
@@ -33,40 +27,36 @@ const InverterInfo = Protocol
     // Determine via serialNumber
     try {
       Log.debug('try to determine Inverter via AA55-protocol.')
-      const {isValid, modelName, serialNumber} = await getDeviceIdViaAa55.call(instance)
+      const {modelName, serialNumber} = await getDeviceIdViaAa55.call(instance)
       Log.debug('inverter responded via AA55-protocol.')
-      if (isValid) {
-        Log.debug('now try to determine inverter from S/N: %s.', serialNumber)
-        for (const model of ET_MODEL_TAGS) {
-          if (serialNumber.includes(model)) {
-            Log.debug('SUCCESS! Detected ET/EH/BT/BH/GEH inverter %s, S/N: %s.', modelName, serialNumber)
-            const {default: Inverter} = await import('./et/inverter.mjs')// eslint-disable-line no-await-in-loop
-            const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
+      Log.debug('now try to determine inverter from S/N: %s.', serialNumber)
+      for (const model of ET_MODEL_TAGS) {
+        if (serialNumber.includes(model)) {
+          Log.debug('SUCCESS! Detected ET/EH/BT/BH/GEH inverter %s, S/N: %s.', modelName, serialNumber)
+          const {default: Inverter} = await import('./et/inverter.mjs')// eslint-disable-line no-await-in-loop
+          const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
 
-            return inverter
-          }
+          return inverter
         }
+      }
 
-        // for (const model of ES_MODEL_TAGS) {
-        //   if (serialNumber.includes(model)) {
-        //     console.debug(`SUCCESS! Detected ES/EM/BP inverter ${modelName}, S/N: ${serialNumber}.`)
-        //     const {default: Inverter} = await import('./inverter-es.mjs') // eslint-disable-line no-await-in-loop
+      // for (const model of ES_MODEL_TAGS) {
+      //   if (serialNumber.includes(model)) {
+      //     console.debug(`SUCCESS! Detected ES/EM/BP inverter ${modelName}, S/N: ${serialNumber}.`)
+      //     const {default: Inverter} = await import('./inverter-es.mjs') // eslint-disable-line no-await-in-loop
 
-        //     return Inverter
-        //   }
-        // }
+      //     return Inverter
+      //   }
+      // }
 
-        for (const model of DT_MODEL_TAGS) {
-          if (serialNumber.includes(model)) {
-            Log.debug('SUCCESS! Detected DT/MS/D-NS/XS/GEP inverter %s, S/N: %s.', modelName, serialNumber)
-            const {default: Inverter} = await import('./dt/inverter.mjs') // eslint-disable-line no-await-in-loop
-            const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
+      for (const model of DT_MODEL_TAGS) {
+        if (serialNumber.includes(model)) {
+          Log.debug('SUCCESS! Detected DT/MS/D-NS/XS/GEP inverter %s, S/N: %s.', modelName, serialNumber)
+          const {default: Inverter} = await import('./dt/inverter.mjs') // eslint-disable-line no-await-in-loop
+          const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
 
-            return inverter
-          }
+          return inverter
         }
-      } else {
-        Log.debug('response is invalid.')
       }
     } catch (e) {
       if (e.code !== 'REQUEST_TIMED_OUT') {

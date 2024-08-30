@@ -1,3 +1,4 @@
+import Factory from 'stampit'
 import {GOODWE_BROADCAST_PORT} from './constants.mjs'
 import Protocol from './protocol.mjs'
 
@@ -17,7 +18,9 @@ function bind (socket, port = 0) {
 }
 
 
-export default Protocol
+export default Factory
+  .compose(Protocol)
+
   .init(async ({
     timeout = 2000,
   }, {

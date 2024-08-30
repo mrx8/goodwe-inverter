@@ -1,4 +1,4 @@
-import Inverter from './inverter.mjs'
+import DetectInverter from './inverter/detect.mjs'
 import {program as Program} from 'commander'
 import {inspect} from 'node:util'
 
@@ -9,5 +9,5 @@ Program
 
 
 const Options = Program.opts()
-const inverter = await Inverter.from({address: Options.ip})
+const inverter = await DetectInverter.from({address: Options.ip})
 console.log(inspect(inverter, {depth: Infinity}))

@@ -2,8 +2,7 @@
 
 
 const AA55PACKET = {
-  HEADER_HIGH  : 0xaa,
-  HEADER_LOW   : 0x55,
+  HEADER       : 0xaa55,
   ADDRESS      : 0x7f,
   ADDRESS_AP   : 0xc0,
   READ_COMMAND : 0x01,
@@ -15,11 +14,11 @@ const PACKET = {
   READ_COMMAND   : 0x03,
 }
 
-const PACKET_REVERSE = {
-  0x7f: 'COMMAND_ADDRESS_DT_FAMILY',
-  0xf7: 'COMMAND_ADDRESS_ET_FAMILY',
-  0x03: 'READ_COMMAND',
-}
+// const PACKET_REVERSE = {
+//   0x7f: 'COMMAND_ADDRESS_DT_FAMILY',
+//   0xf7: 'COMMAND_ADDRESS_ET_FAMILY',
+//   0x03: 'READ_COMMAND',
+// }
 
 // const REGISTER = {
 //   ADDRESS     : 0xf7,
@@ -27,8 +26,7 @@ const PACKET_REVERSE = {
 // }
 
 const CHECKSUM_LENGTH = 2
-const MODBUS_HEADER_HIGH = 0xaa
-const MODBUS_HEADER_LOW = 0x55
+const MODBUS_HEADER = 0xaa55
 const MODBUS_WRITE_CMD = 0x06
 const MODBUS_WRITE_MULTI_CMD = 0x10
 export const MODBUS_HEADER_LENGTH = 5
@@ -87,17 +85,11 @@ export function createRtuRequestMessage (commandAddress, offset, value) {
 
   message[0] = commandAddress
   message[1] = PACKET.READ_COMMAND
-  message[2] = offset >> 8 & 0xff
-  message[3] = offset & 0xff
-  message[4] = value >> 8 & 0xff
-  message[5] = value & 0xff
+  message.writeUInt16BE(offset, 2)
+  message.writeUInt16BE(value, 4)
 
   const checksum = modbusChecksum(message.subarray(0, 6))
-  console.log('checksum', checksum)
-  message[6] = checksum & 0xff
-  message[7] = checksum >> 8 & 0xff
-
-  // console.log('construct message', message.toString('hex'))
+  message.writeUInt16LE(checksum, 6)
 
   return message
 }
@@ -148,8 +140,8 @@ export function validateRtuResponseMessage (message, commandAdress, offset, valu
     return false
   }
 
-  if (message[0] !== MODBUS_HEADER_HIGH || message[1] !== MODBUS_HEADER_LOW) {
-    console.debug(`Response has no valid header: ${message[0]}:${message[1]}, expected: ${MODBUS_HEADER_HIGH}:${MODBUS_HEADER_LOW}.`)
+  if (message.readUInt16BE(0) !== MODBUS_HEADER) {
+    console.debug(`Response has no valid header: ${message.subarray(0, 2).toString('hex')}, expected: ${MODBUS_HEADER.toString(16)}.`)
 
     return false
   }
@@ -200,7 +192,7 @@ export function validateRtuResponseMessage (message, commandAdress, offset, valu
 
 
   const checksumOffset = expectedLength - 2
-  if (modbusChecksum(message.subarray(2, checksumOffset)) !== (message[checksumOffset + 1] << 8) + message[checksumOffset]) {
+  if (modbusChecksum(message.subarray(2, checksumOffset)) !== message.readUInt16LE(checksumOffset)) {
     console.debug('Response CRC-16 checksum does not match.')
 
     return false
@@ -212,51 +204,50 @@ export function validateRtuResponseMessage (message, commandAdress, offset, valu
 
     return false
   }
-  // console.debug('response message is valid')
 
   return true
 }
 
 
-export function debugRtuResponseMessage (message) {
-  if (validateRtuResponseMessage === false) {
-    console.error('cannot debug invalid message', message)
-  }
+// export function debugRtuResponseMessage (message) {
+//   if (validateRtuResponseMessage === false) {
+//     console.error('cannot debug invalid message', message)
+//   }
 
-  console.log(message[2])
+//   console.log(message[2])
 
-  const debug = [
-    {
-      header_high: message[0].toString(16),
-    }, {
-      header_low: message[1].toString(16),
-    },
-  ]
+//   const debug = [
+//     {
+//       header_high: message[0].toString(16),
+//     }, {
+//       header_low: message[1].toString(16),
+//     },
+//   ]
 
-  if (message[3] !== PACKET.READ_COMMAND) {
-    debug.push({failure_code: FAILURE_CODES[message[4]] || 'UNKNOWN'})
+//   if (message[3] !== PACKET.READ_COMMAND) {
+//     debug.push({failure_code: FAILURE_CODES[message[4]] || 'UNKNOWN'})
 
-    return debug
-  }
+//     return debug
+//   }
 
-  const command = PACKET_REVERSE[message[2]] || 'UNKNOWN'
-  debug.push({command})
+//   const command = PACKET_REVERSE[message[2]] || 'UNKNOWN'
+//   debug.push({command})
 
 
-  for (let i = 5, maxLen = message.length - 2; i < maxLen; i += 2) {
-    debug.push({
-      data      : message.subarray(i, i + 2).toString('hex'),
-      asBE      : message.readUInt16BE(i),
-      asBESigned: message.readInt16BE(i),
-      asLE      : message.readUInt16LE(i),
-      asLESigned: message.readInt16LE(i),
-    })
-  }
+//   for (let i = 5, maxLen = message.length - 2; i < maxLen; i += 2) {
+//     debug.push({
+//       data      : message.subarray(i, i + 2).toString('hex'),
+//       asBE      : message.readUInt16BE(i),
+//       asBESigned: message.readInt16BE(i),
+//       asLE      : message.readUInt16LE(i),
+//       asLESigned: message.readInt16LE(i),
+//     })
+//   }
 
-  debug.push({checksum: message.subarray(message.length - 2, message.length)})
+//   debug.push({checksum: message.subarray(message.length - 2, message.length)})
 
-  return debug
-}
+//   return debug
+// }
 
 // export function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
 //   const size = values.length
@@ -340,8 +331,7 @@ export function createAa55Packet (data) {
   let crc = 0
   const message = Buffer.allocUnsafe(headerLength + data.length + CHECKSUM_LENGTH)
 
-  message[0] = AA55PACKET.HEADER_HIGH
-  message[1] = AA55PACKET.HEADER_LOW
+  message.writeUInt16BE(AA55PACKET.HEADER, 0)
   message[2] = AA55PACKET.ADDRESS_AP
   message[3] = AA55PACKET.ADDRESS
   message[4] = AA55PACKET.READ_COMMAND
@@ -353,36 +343,41 @@ export function createAa55Packet (data) {
     crc = crc + message[i]
   }
 
-  message[message.length - 1] = crc & 0xff
-  message[message.length - 2] = crc >> 8 & 0xff
+  message.writeUInt16BE(crc, message.length - 2)
 
   return message
 }
 
 
 export function validateAa55Packet (message) {
-  const packetHeader = message.slice(0, 7)
-  const packetCrc = message.slice(message.length - 2, message.length)
-
   let crc = 0
   for (let i = 0, maxLen = message.length - 2; i < maxLen; i++) {
     crc = crc + message[i]
   }
 
-  const high = crc >> 8
-  const low = crc & 0xff
-
-  if (packetCrc[0] === high && packetCrc[1] === low) {
-    if (packetHeader[0] === AA55PACKET.HEADER_HIGH && packetHeader[1] === AA55PACKET.HEADER_LOW) {
-      if (packetHeader[2] === AA55PACKET.ADDRESS && packetHeader[3] === AA55PACKET.ADDRESS_AP) {
-        if (packetHeader[4] === AA55PACKET.READ_COMMAND) {
-          if (packetHeader[5] === (AA55PACKET.QUERY_ID_INFO | 0x80)) {
-            return true
-          }
-        }
-      }
-    }
+  if (message.readUInt16BE(message.length - 2) !== crc) {
+    throw new Error('crc is incorrect')
   }
 
-  return false
+  if (message.readUInt16BE(0) !== AA55PACKET.HEADER) {
+    throw new Error('header is incorrect')
+  }
+
+  if (message[2] !== AA55PACKET.ADDRESS) {
+    throw new Error('address is incorrect')
+  }
+
+  if (message[3] !== AA55PACKET.ADDRESS_AP) {
+    throw new Error('address_ap is incorrect')
+  }
+
+  if (message[4] !== AA55PACKET.READ_COMMAND) {
+    throw new Error('read_command is incorrect')
+  }
+
+  if (message[5] !== (AA55PACKET.QUERY_ID_INFO | 0x80)) {
+    throw new Error('query_id_info is incorrect')
+  }
+
+  return true
 }

@@ -28,6 +28,9 @@ export default Factory
         try {
           const message = createRtuRequestMessage(this.address, MODBUS_READ_COMMAND, registerStart, registerCount)
           const responseMessage = await this.requestResponse(message) // eslint-disable-line no-await-in-loop
+          // Note: Sometimes we get back invalid data. Maybe the inverter sends out a response to us which was intended for another requester.
+          // I have no documentation about the request/response-cycle from GoodWe-Inverters...
+          // therefore we try it again even in this case
           validateRtuResponseMessage(responseMessage, this.address, MODBUS_READ_COMMAND, registerStart, registerCount)
 
           return responseMessage.subarray(MODBUS_HEADER_LENGTH)

@@ -43,14 +43,14 @@ export const DT_MODEL_TAGS = [
   'DTU', 'DTS', 'MSU', 'MST', 'MSC', 'DSN', 'DTN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', 'PSB', 'PSC',
 ]
 
-// export const BATTERY_MODES = {
-//   0: 'No battery',
-//   1: 'Standby',
-//   2: 'Discharge',
-//   3: 'Charge',
-//   4: 'To be charged',
-//   5: 'To be discharged',
-// }
+export const BATTERY_MODES = {
+  0: 'No battery',
+  1: 'Standby',
+  2: 'Discharge',
+  3: 'Charge',
+  4: 'To be charged',
+  5: 'To be discharged',
+}
 
 // export const ENERGY_MODES = {
 //   0  : 'Check Mode',

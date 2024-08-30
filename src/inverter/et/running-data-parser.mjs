@@ -1,9 +1,15 @@
 import Factory from 'stampit'
+import ReadBatteryMode from '../../bricks/read-battery-mode.mjs'
+import ReadBatteryPower from '../../bricks/read-battery-power.mjs'
 import ReadCurrent from '../../bricks/read-current.mjs'
+import ReadEnergyBatteryChargeToday from '../../bricks/read-energy-battery-charge-today.mjs'
+import ReadEnergyBatteryDischargeToday from '../../bricks/read-energy-battery-discharge-today.mjs'
 import ReadEnergyGenerationToday from '../../bricks/read-energy-generation-today.mjs'
+import ReadEnergyGenerationToday32 from '../../bricks/read-energy-generation-today32.mjs'
 import ReadEnergyGenerationTotal from '../../bricks/read-energy-generation-total.mjs'
 import ReadErrorCodes from '../../bricks/read-error-codes.mjs'
 import ReadFrequency from '../../bricks/read-frequency.mjs'
+import ReadInverterActivePower from '../../bricks/read-inverter-active-power.mjs'
 import ReadInverterPower from '../../bricks/read-inverter-power.mjs'
 import ReadPower from '../../bricks/read-power.mjs'
 import ReadSafetyCountry from '../../bricks/read-safety-country.mjs'
@@ -11,14 +17,19 @@ import ReadTemperature from '../../bricks/read-temperature.mjs'
 import ReadTimestamp from '../../bricks/read-timestamp.mjs'
 import ReadVoltage from '../../bricks/read-voltage.mjs'
 
-
 export default Factory
   .compose(
+    ReadBatteryMode,
+    ReadBatteryPower,
     ReadCurrent,
+    ReadEnergyBatteryChargeToday,
     ReadEnergyGenerationToday,
+    ReadEnergyBatteryDischargeToday,
+    ReadEnergyGenerationToday32,
     ReadEnergyGenerationTotal,
     ReadErrorCodes,
     ReadFrequency,
+    ReadInverterActivePower,
     ReadInverterPower,
     ReadPower,
     ReadSafetyCountry,
@@ -47,20 +58,28 @@ export default Factory
       pv4Current: instance._readCurrent(35116),
       pv4Power  : instance._readPower(35117),
 
-      // energyGenerationToday: instance._readEnergyGenerationToday(30144),
-      // energyGenerationTotal: instance._readEnergyGenerationTotal(30145),
+      energyGenerationToday: instance._readEnergyGenerationToday32(35193),
+      energyGenerationTotal: instance._readEnergyGenerationTotal(35191),
 
       // gridL1Voltage  : instance._readVoltage(30118),
       // gridL1Current  : instance._readCurrent(30121),
       // gridL1Frequency: instance._readFrequency(30124),
 
-      // inverterPower: instance._readInverterPower(30128),
+      inverterActivePower: instance._readInverterActivePower(35140),
+      inverterPower      : instance._readInverterPower(35138),
 
       // errorCodes: instance._readErrorCodes(30130),
 
-      // safetyCountryCode : instance._readSafetyCountryCode(30149),
-      // safetyCountryLabel: instance._readSafetyCountryLabel(30149),
-      // temperature       : instance._readTemperature(30141),
+      safetyCountryCode: instance._readSafetyCountryCode(35186),
+      safetyCountry    : instance._readSafetyCountry(35186),
+      temperatureAir   : instance._readTemperature(35174),
+      temperature      : instance._readTemperature(35176),
+
+      batteryPower               : instance._readBatteryPower(35182),
+      batteryModeCode            : instance._readBatteryModeCode(35184),
+      batteryMode                : instance._readBatteryMode(35184),
+      energyBatteryChargeToday   : instance._readEnergyBatteryChargeToday(35208),
+      energyBatteryDischargeToday: instance._readEnergyBatteryDischargeToday(35211),
     }
 
     if (deviceInfo.numberOfPhases === 3) { // only for 3-phase models
@@ -82,6 +101,7 @@ export default Factory
 
     Object.assign(data, { // virtual-fields
       // gridL1Power: Math.round(data.gridL1Voltage * data.gridL1Current),
+      houseConsumption: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power + data.batteryPower - data.inverterActivePower,
     })
 
     if (deviceInfo.numberOfPhases === 3) { // only for 3-phase models

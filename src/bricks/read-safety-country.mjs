@@ -10,9 +10,9 @@ export default Factory
       return this._readUInt16BE(register)
     },
 
-    _readSafetyCountryLabel (register) {
+    _readSafetyCountry (register) {
       const value = this._readSafetyCountryCode(register)
 
-      return SAFETY_COUNTRIES[value] || undefined
+      return SAFETY_COUNTRIES[value] || 'unknown'
     },
   })

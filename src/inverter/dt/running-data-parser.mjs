@@ -27,47 +27,47 @@ export default Factory
 
   .init(({deviceInfo}, {instance}) => {
     const data = {
-      timestamp: instance._readTimestamp(30100),
+      timestamp: instance.readTimestamp(30100),
 
-      pv1Voltage: instance._readVoltage(30103),
-      pv1Current: instance._readCurrent(30104),
+      pv1Voltage: instance.readVoltage(30103),
+      pv1Current: instance.readCurrent(30104),
 
-      pv2Voltage: instance._readVoltage(30105),
-      pv2Current: instance._readCurrent(30106),
+      pv2Voltage: instance.readVoltage(30105),
+      pv2Current: instance.readCurrent(30106),
 
-      pv3Voltage: instance._readVoltage(30107),
-      pv3Current: instance._readCurrent(30108),
+      pv3Voltage: instance.readVoltage(30107),
+      pv3Current: instance.readCurrent(30108),
 
-      energyGenerationToday: instance._readEnergyGenerationToday(30144),
-      energyGenerationTotal: instance._readEnergyGenerationTotal(30145),
+      energyGenerationToday: instance.readEnergyGenerationToday(30144),
+      energyGenerationTotal: instance.readEnergyGenerationTotal(30145),
 
-      gridL1Voltage  : instance._readVoltage(30118),
-      gridL1Current  : instance._readCurrent(30121),
-      gridL1Frequency: instance._readFrequency(30124),
+      gridL1Voltage  : instance.readVoltage(30118),
+      gridL1Current  : instance.readCurrent(30121),
+      gridL1Frequency: instance.readFrequency(30124),
 
-      inverterPower: instance._readInverterPower(30128),
+      inverterPower: instance.readInverterPower(30128),
 
-      errorCodes: instance._readErrorCodes(30130),
+      errorCodes: instance.readErrorCodes(30130),
 
-      safetyCountryCode : instance._readSafetyCountryCode(30149),
-      safetyCountryLabel: instance._readSafetyCountryLabel(30149),
-      temperature       : instance._readTemperature(30141),
+      safetyCountryCode : instance.readSafetyCountryCode(30149),
+      safetyCountryLabel: instance.readSafetyCountryLabel(30149),
+      temperature       : instance.readTemperature(30141),
     }
 
     if (deviceInfo.numberOfPhases === 3) { // only for 3-phase models
       Object.assign(data, {
-        gridL1L2Voltage: instance._readVoltage(30115),
-        gridL2L3Voltage: instance._readVoltage(30116),
-        gridL3L1Voltage: instance._readVoltage(30117),
+        gridL1L2Voltage: instance.readVoltage(30115),
+        gridL2L3Voltage: instance.readVoltage(30116),
+        gridL3L1Voltage: instance.readVoltage(30117),
 
-        gridL2Voltage: instance._readVoltage(30119),
-        gridL3Voltage: instance._readVoltage(30120),
+        gridL2Voltage: instance.readVoltage(30119),
+        gridL3Voltage: instance.readVoltage(30120),
 
-        gridL2Current: instance._readCurrent(30122),
-        gridL3Current: instance._readCurrent(30123),
+        gridL2Current: instance.readCurrent(30122),
+        gridL3Current: instance.readCurrent(30123),
 
-        gridL2Frequency: instance._readFrequency(30125),
-        gridL3Frequency: instance._readFrequency(30126),
+        gridL2Frequency: instance.readFrequency(30125),
+        gridL3Frequency: instance.readFrequency(30126),
       })
     }
 

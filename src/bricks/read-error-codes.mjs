@@ -6,7 +6,7 @@ export default Factory
   .compose(ReadInt32BE)
 
   .methods({
-    _readErrorCodes (register) {
-      return this._readInt32BE(register)
+    readErrorCodes (register) {
+      return this.readInt32BE(register)
     },
   })

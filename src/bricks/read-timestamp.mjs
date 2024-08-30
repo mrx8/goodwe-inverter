@@ -6,7 +6,7 @@ export default Factory
   .compose(Base, IndexRegister)
 
   .methods({
-    _readTimestamp (register) {
+    readTimestamp (register) {
       const index = this._getIndexFromRegister(register)
 
       const year = 2000 + this.message[index]

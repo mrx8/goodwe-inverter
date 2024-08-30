@@ -6,8 +6,8 @@ export default Factory
   .compose(ReadInt16BE)
 
   .methods({
-    _readTemperature (register) {
-      const value = this._readInt16BE(register)
+    readTemperature (register) {
+      const value = this.readInt16BE(register)
       if (value === -1 || value === 32767) {
         return 0
       }

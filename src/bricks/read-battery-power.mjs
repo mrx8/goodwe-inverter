@@ -6,7 +6,7 @@ export default Factory
   .compose(ReadInt32BE)
 
   .methods({
-    _readBatteryPower (register) {
-      return this._readInt32BE(register)
+    readBatteryPower (register) {
+      return this.readInt32BE(register)
     },
   })

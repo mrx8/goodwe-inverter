@@ -6,7 +6,7 @@ export default Factory
   .compose(DecodeString)
 
   .methods({
-    _readModelName (register) {
+    readModelName (register) {
       return this._decodeString(register, 10)
     },
   })

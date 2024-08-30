@@ -6,7 +6,7 @@ export default Factory
   .compose(ReadUInt16BE)
 
   .methods({
-    _readArmVersion (register) {
-      return this._readUInt16BE(register)
+    readArmVersion (register) {
+      return this.readUInt16BE(register)
     },
   })

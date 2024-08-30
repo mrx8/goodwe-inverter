@@ -6,8 +6,8 @@ export default Factory
   .compose(ReadUInt16BE)
 
   .methods({
-    _readEnergyBatteryChargeToday (register) {
-      const value = this._readUInt16BE(register)
+    readEnergyBatteryChargeToday (register) {
+      const value = this.readUInt16BE(register)
 
       return value / 10
     },

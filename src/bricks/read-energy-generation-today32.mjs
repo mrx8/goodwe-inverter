@@ -6,8 +6,8 @@ export default Factory
   .compose(ReadUInt32BE)
 
   .methods({
-    _readEnergyGenerationToday32 (register) {
-      let value = this._readUInt32BE(register)
+    readEnergyGenerationToday32 (register) {
+      let value = this.readUInt32BE(register)
       if (value === 0xffffffff) {
         value = 0
       }

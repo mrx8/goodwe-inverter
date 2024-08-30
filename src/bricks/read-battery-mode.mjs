@@ -3,12 +3,12 @@ import Factory from 'stampit'
 
 export default Factory
   .methods({
-    _readBatteryModeCode (register) {
-      return this._readUInt16BE(register)
+    readBatteryModeCode (register) {
+      return this.readUInt16BE(register)
     },
 
-    _readBatteryMode (register) {
-      const value = this._readBatteryModeCode(register)
+    readBatteryMode (register) {
+      const value = this.readBatteryModeCode(register)
 
       return BATTERY_MODES[value] || 'unknown'
     },

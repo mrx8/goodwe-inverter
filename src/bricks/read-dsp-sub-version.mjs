@@ -6,7 +6,7 @@ export default Factory
   .compose(ReadUInt16BE)
 
   .methods({
-    _readDspSubVersion (register) {
-      return this._readUInt16BE(register)
+    readDspSubVersion (register) {
+      return this.readUInt16BE(register)
     },
   })

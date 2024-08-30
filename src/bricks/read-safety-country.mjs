@@ -6,12 +6,12 @@ export default Factory
   .compose(ReadUInt16BE)
 
   .methods({
-    _readSafetyCountryCode (register) {
-      return this._readUInt16BE(register)
+    readSafetyCountryCode (register) {
+      return this.readUInt16BE(register)
     },
 
-    _readSafetyCountry (register) {
-      const value = this._readSafetyCountryCode(register)
+    readSafetyCountry (register) {
+      const value = this.readSafetyCountryCode(register)
 
       return SAFETY_COUNTRIES[value] || 'unknown'
     },

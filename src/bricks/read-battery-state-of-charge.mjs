@@ -6,7 +6,7 @@ export default Factory
   .compose(ReadUInt16BE)
 
   .methods({
-    _readBatteryStateOfCharge (register) {
-      return this._readUInt16BE(register)
+    readBatteryStateOfCharge (register) {
+      return this.readUInt16BE(register)
     },
   })

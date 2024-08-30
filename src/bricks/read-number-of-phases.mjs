@@ -7,8 +7,8 @@ export default Factory
   .compose(ReadSerialNumber)
 
   .methods({
-    _readNumberOfPhases (register) {
-      const serialNumber = this._readSerialNumber(register)
+    readNumberOfPhases (register) {
+      const serialNumber = this.readSerialNumber(register)
       let phases = 3
 
       for (const model of SINGLE_PHASE_MODELS) {

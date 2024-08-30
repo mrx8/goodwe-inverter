@@ -7,7 +7,7 @@ export default Factory
   .compose(Base, IndexRegister)
 
   .methods({
-    _readUInt16BE (register) {
+    readUInt16BE (register) {
       const index = this._getIndexFromRegister(register)
 
       let value = this.message.readUInt16BE(index)

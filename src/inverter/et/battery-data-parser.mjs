@@ -10,8 +10,8 @@ export default Factory
 
   .init((param, {instance}) => {
     const data = {
-      batteryStateOfCharge: instance._readBatteryStateOfCharge(37007),
-      batteryStateOfHealth: instance._readBatteryStateOfHealth(37008),
+      batteryStateOfCharge: instance.readBatteryStateOfCharge(37007),
+      batteryStateOfHealth: instance.readBatteryStateOfHealth(37008),
     }
 
     return data

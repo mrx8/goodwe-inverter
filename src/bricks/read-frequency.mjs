@@ -6,8 +6,8 @@ export default Factory
   .compose(ReadInt16BE)
 
   .methods({
-    _readFrequency (register) {
-      const value = this._readInt16BE(register)
+    readFrequency (register) {
+      const value = this.readInt16BE(register)
 
       return value / 100
     },

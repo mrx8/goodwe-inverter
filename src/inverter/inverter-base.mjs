@@ -14,4 +14,19 @@ export default Factory
 
       return responseMessage.subarray(MODBUS_HEADER_LENGTH)
     },
+
+    async getRunningData (registerStart, registerCount) {
+      const responseMessage = await this.readMessage({
+        registerStart,
+        registerCount,
+      })
+
+      return RunningDataParser({
+        deviceInfo: this.deviceInfo,
+        message   : responseMessage,
+        registerStart,
+      })
+    },
+
+
   })

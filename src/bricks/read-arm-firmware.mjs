@@ -6,7 +6,7 @@ export default Factory
   .compose(DecodeString)
 
   .methods({
-    _readArmFirmware (register) {
+    readArmFirmware (register) {
       return this._decodeString(register, 12)
     },
   })

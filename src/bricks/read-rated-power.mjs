@@ -6,7 +6,7 @@ export default Factory
   .compose(ReadUInt16BE)
 
   .methods({
-    _readRatedPower (register) {
-      return this._readUInt16BE(register)
+    readRatedPower (register) {
+      return this.readUInt16BE(register)
     },
   })

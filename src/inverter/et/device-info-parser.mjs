@@ -30,17 +30,17 @@ export default Factory
 
   .init((param, {instance}) => {
     return { // use it
-      ratedPower    : instance._readRatedPower(35001),
-      serialNumber  : instance._readSerialNumber(35003),
-      modelName     : instance._readModelName(35011),
-      dsp1Version   : instance._readDsp2Version(35016),
-      dsp2Version   : instance._readDsp2Version(35017),
-      dspSubVersion : instance._readDspSubVersion(35018),
-      armVersion    : instance._readArmVersion(35019),
-      armSubVersion : instance._readArmSubVersion(35020),
-      numberOfPhases: instance._readNumberOfPhases(35003), // same register since it is determined via the serialNumber
+      ratedPower    : instance.readRatedPower(35001),
+      serialNumber  : instance.readSerialNumber(35003),
+      modelName     : instance.readModelName(35011),
+      dsp1Version   : instance.readDsp2Version(35016),
+      dsp2Version   : instance.readDsp2Version(35017),
+      dspSubVersion : instance.readDspSubVersion(35018),
+      armVersion    : instance.readArmVersion(35019),
+      armSubVersion : instance.readArmSubVersion(35020),
+      numberOfPhases: instance.readNumberOfPhases(35003), // same register since it is determined via the serialNumber
 
-      // firmware     : instance._readFirmware(35021),
-      // armFirmware  : instance._readArmFirmware(35027),
+      // firmware     : instance.readFirmware(35021),
+      // armFirmware  : instance.readArmFirmware(35027),
     }
   })

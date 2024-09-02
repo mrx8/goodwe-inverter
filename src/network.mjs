@@ -1,5 +1,4 @@
 import Factory from 'stampit'
-import {GOODWE_UDP_PORT} from './constants.mjs'
 import Log from './log.mjs'
 import {ProgrammerError} from './error.mjs'
 import dgram from 'node:dgram'
@@ -7,11 +6,11 @@ import dgram from 'node:dgram'
 
 export default Factory
   .configuration({
-    dgram         : dgram,
-    defaultIp     : '127.0.0.1',
-    defaultPort   : GOODWE_UDP_PORT,
-    defaultTimeout: 2000,
-    log           : Log,
+    dgram          : dgram,
+    defaultIp      : '127.0.0.1',
+    GOODWE_UDP_PORT: 8899,
+    defaultTimeout : 2000,
+    log            : Log,
   })
 
 
@@ -22,7 +21,7 @@ export default Factory
     stamp: {compose: {configuration: {
       dgram,
       defaultIp,
-      defaultPort,
+      GOODWE_UDP_PORT,
       defaultTimeout,
     }}},
 
@@ -31,7 +30,7 @@ export default Factory
     const instance = await instancePromise
     const [ip, port] = address.split(':')
     instance.ip = ip || defaultIp
-    instance.port = port || defaultPort
+    instance.port = port || GOODWE_UDP_PORT
     instance.timeout = timeout || defaultTimeout
 
     const client = dgram.createSocket('udp4')

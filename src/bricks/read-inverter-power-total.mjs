@@ -6,7 +6,7 @@ export default Factory
   .compose(ReadInt16BE)
 
   .methods({
-    readInverterPower (register) {
+    readInverterPowerTotal (register) {
       return this.readInt16BE(register)
     },
   })

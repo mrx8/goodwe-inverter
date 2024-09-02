@@ -4,7 +4,7 @@ import ReadEnergyGenerationToday from '../../bricks/read-energy-generation-today
 import ReadEnergyGenerationTotal from '../../bricks/read-energy-generation-total.mjs'
 import ReadErrorCodes from '../../bricks/read-error-codes.mjs'
 import ReadFrequency from '../../bricks/read-frequency.mjs'
-import ReadInverterPower from '../../bricks/read-inverter-power.mjs'
+import ReadInverterPowerTotal from '../../bricks/read-inverter-power-total.mjs'
 import ReadSafetyCountry from '../../bricks/read-safety-country.mjs'
 import ReadTemperature from '../../bricks/read-temperature.mjs'
 import ReadTimestamp from '../../bricks/read-timestamp.mjs'
@@ -18,7 +18,7 @@ export default Factory
     ReadEnergyGenerationTotal,
     ReadErrorCodes,
     ReadFrequency,
-    ReadInverterPower,
+    ReadInverterPowerTotal,
     ReadSafetyCountry,
     ReadTemperature,
     ReadTimestamp,
@@ -45,9 +45,10 @@ export default Factory
       gridL1Current  : instance.readCurrent(30121),
       gridL1Frequency: instance.readFrequency(30124),
 
-      inverterPower: instance.readInverterPower(30128),
+      inverterPowerTotal: instance.readInverterPowerTotal(30128),
 
       errorCodes: instance.readErrorCodes(30130),
+      errors    : instance.readErrors(30130),
 
       safetyCountryCode: instance.readSafetyCountryCode(30149),
       safetyCountry    : instance.readSafetyCountry(30149),

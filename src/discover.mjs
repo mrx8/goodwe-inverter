@@ -1,5 +1,4 @@
 import Factory from 'stampit'
-import {GOODWE_BROADCAST_PORT} from './constants.mjs'
 import Protocol from './protocol.mjs'
 
 
@@ -19,12 +18,21 @@ function bind (socket, port = 0) {
 
 
 export default Factory
-  .compose(Protocol)
+  .compose(
+    Protocol,
+  )
+
+  .configuration({
+    GOODWE_BROADCAST_PORT: 48899,
+  })
 
   .init(async ({
     timeout = 2000,
   }, {
     instance: instancePromise,
+    stamp: {compose: {configuration: {
+      GOODWE_BROADCAST_PORT,
+    }}},
   }) => {
     const instance = await instancePromise
     await bind(instance.client, 0)

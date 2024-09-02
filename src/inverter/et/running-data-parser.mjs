@@ -9,13 +9,15 @@ import ReadEnergyGenerationToday32 from '../../bricks/read-energy-generation-tod
 import ReadEnergyGenerationTotal from '../../bricks/read-energy-generation-total.mjs'
 import ReadErrorCodes from '../../bricks/read-error-codes.mjs'
 import ReadFrequency from '../../bricks/read-frequency.mjs'
+import ReadGridMode from '../../bricks/read-grid-mode.mjs'
 import ReadInverterActivePower from '../../bricks/read-inverter-active-power.mjs'
-import ReadInverterPower from '../../bricks/read-inverter-power.mjs'
+import ReadInverterPowerTotal from '../../bricks/read-inverter-power-total.mjs'
 import ReadPower from '../../bricks/read-power.mjs'
 import ReadSafetyCountry from '../../bricks/read-safety-country.mjs'
 import ReadTemperature from '../../bricks/read-temperature.mjs'
 import ReadTimestamp from '../../bricks/read-timestamp.mjs'
 import ReadVoltage from '../../bricks/read-voltage.mjs'
+
 
 export default Factory
   .compose(
@@ -29,8 +31,9 @@ export default Factory
     ReadEnergyGenerationTotal,
     ReadErrorCodes,
     ReadFrequency,
+    ReadGridMode,
     ReadInverterActivePower,
-    ReadInverterPower,
+    ReadInverterPowerTotal,
     ReadPower,
     ReadSafetyCountry,
     ReadTemperature,
@@ -61,14 +64,18 @@ export default Factory
       energyGenerationToday: instance.readEnergyGenerationToday32(35193),
       energyGenerationTotal: instance.readEnergyGenerationTotal(35191),
 
+      gridModeCode: instance.readGridModeCode(35140),
+      gridMode    : instance.readGridMode(35140),
+
       // gridL1Voltage  : instance.readVoltage(30118),
       // gridL1Current  : instance.readCurrent(30121),
       // gridL1Frequency: instance.readFrequency(30124),
 
       inverterActivePower: instance.readInverterActivePower(35140),
-      inverterPower      : instance.readInverterPower(35138),
+      inverterPowerTotal : instance.readInverterPowerTotal(35138),
 
-      // errorCodes: instance.readErrorCodes(30130),
+      errorCodes: instance.readErrorCodes(35189),
+      errors    : instance.readErrors(35189),
 
       safetyCountryCode: instance.readSafetyCountryCode(35186),
       safetyCountry    : instance.readSafetyCountry(35186),

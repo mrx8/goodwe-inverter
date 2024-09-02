@@ -16,6 +16,17 @@ export default Factory
     log     : Log,
   })
 
+  .init(async ({
+    address,
+  }, {
+    instance: instancePromise,
+  }) => {
+    const instance = await instancePromise
+    instance.address = address
+
+    return instance
+  })
+
   .methods({
     async readMessage ({
       registerStart,

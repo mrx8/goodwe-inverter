@@ -2,7 +2,7 @@ import DeviceInfoParser from './device-info-parser.mjs'
 import Factory from 'stampit'
 import GetDeviceInfo from '../../bricks/get-device-info.mjs'
 import GetRunningData from '../../bricks/get-running-data.mjs'
-import InverterBase from '../../bricks/inverter-base.mjs'
+import InverterBase from '../../bricks/read-message.mjs'
 import Network from '../../network.mjs'
 import RunningDataParser from './running-data-parser.mjs'
 

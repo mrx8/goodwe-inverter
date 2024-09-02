@@ -197,46 +197,6 @@ export function validateRtuResponseMessage (message, address, command, offset, v
 }
 
 
-// export function debugRtuResponseMessage (message) {
-//   if (validateRtuResponseMessage === false) {
-//     console.error('cannot debug invalid message', message)
-//   }
-
-//   console.log(message[2])
-
-//   const debug = [
-//     {
-//       header_high: message[0].toString(16),
-//     }, {
-//       header_low: message[1].toString(16),
-//     },
-//   ]
-
-//   if (message[3] !== PACKET.READ_COMMAND) {
-//     debug.push({failure_code: FAILURE_CODES[message[4]] || 'UNKNOWN'})
-
-//     return debug
-//   }
-
-//   const command = PACKET_REVERSE[message[2]] || 'UNKNOWN'
-//   debug.push({command})
-
-
-//   for (let i = 5, maxLen = message.length - 2; i < maxLen; i += 2) {
-//     debug.push({
-//       data      : message.subarray(i, i + 2).toString('hex'),
-//       asBE      : message.readUInt16BE(i),
-//       asBESigned: message.readInt16BE(i),
-//       asLE      : message.readUInt16LE(i),
-//       asLESigned: message.readInt16LE(i),
-//     })
-//   }
-
-//   debug.push({checksum: message.subarray(message.length - 2, message.length)})
-
-//   return debug
-// }
-
 // export function createModbusRtuMultiRequest (commAddr, cmd, offset, values) {
 //   const size = values.length
 //   const totalMessageSize = 9 + size

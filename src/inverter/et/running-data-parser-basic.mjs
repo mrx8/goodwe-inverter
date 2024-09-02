@@ -41,7 +41,9 @@ export default Factory
     ReadVoltage,
   )
 
-  .init(({deviceInfo}, {instance}) => {
+  .init((param, {instance}) => {
+    instance.runningData = instance.runningData || {}
+
     const data = {
       timestamp: instance.readTimestamp(35100),
 
@@ -67,10 +69,6 @@ export default Factory
       gridModeCode: instance.readGridModeCode(35140),
       gridMode    : instance.readGridMode(35140),
 
-      // gridL1Voltage  : instance.readVoltage(30118),
-      // gridL1Current  : instance.readCurrent(30121),
-      // gridL1Frequency: instance.readFrequency(30124),
-
       inverterActivePower: instance.readInverterActivePower(35140),
       inverterPowerTotal : instance.readInverterPowerTotal(35138),
 
@@ -87,40 +85,17 @@ export default Factory
       batteryMode                : instance.readBatteryMode(35184),
       energyBatteryChargeToday   : instance.readEnergyBatteryChargeToday(35208),
       energyBatteryDischargeToday: instance.readEnergyBatteryDischargeToday(35211),
+
+      gridL1Voltage  : instance.readVoltage(35121),
+      gridL1Current  : instance.readCurrent(35122),
+      gridL1Frequency: instance.readFrequency(35123),
     }
+    Object.assign(instance.runningData, data)
 
-    if (deviceInfo.numberOfPhases === 3) { // only for 3-phase models
-      Object.assign(data, {
-        // gridL1L2Voltage: instance.readVoltage(30115),
-        // gridL2L3Voltage: instance.readVoltage(30116),
-        // gridL3L1Voltage: instance.readVoltage(30117),
-
-        // gridL2Voltage: instance.readVoltage(30119),
-        // gridL3Voltage: instance.readVoltage(30120),
-
-        // gridL2Current: instance.readCurrent(30122),
-        // gridL3Current: instance.readCurrent(30123),
-
-        // gridL2Frequency: instance.readFrequency(30125),
-        // gridL3Frequency: instance.readFrequency(30126),
-      })
-    }
-
-    Object.assign(data, { // virtual-fields
-      // gridL1Power: Math.round(data.gridL1Voltage * data.gridL1Current),
+    Object.assign(instance.runningData, { // virtual-fields
+      pvPower         : data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
       houseConsumption: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power + data.batteryPower - data.inverterActivePower,
     })
 
-    if (deviceInfo.numberOfPhases === 3) { // only for 3-phase models
-      Object.assign(data, { // virtual-fields
-        // gridL2Power: Math.round(data.gridL2Voltage * data.gridL2Current),
-        // gridL3Power: Math.round(data.gridL3Voltage * data.gridL3Current),
-      })
-    }
-
-    Object.assign(data, { // virtual-fields of virtual fields
-      pvPower: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
-    })
-
-    return data
+    return instance
   })

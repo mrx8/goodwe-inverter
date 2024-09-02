@@ -2,7 +2,6 @@ import Factory from 'stampit'
 import {ProgrammerError} from '../error.mjs'
 
 // generate a getStamp-method on every compose, which returns the stamp from which an instance was created
-
 const RefStampSymbol = Symbol('RefStamp')
 
 export default Factory

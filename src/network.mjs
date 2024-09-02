@@ -6,33 +6,28 @@ import dgram from 'node:dgram'
 
 export default Factory
   .configuration({
-    dgram          : dgram,
-    defaultIp      : '127.0.0.1',
-    GOODWE_UDP_PORT: 8899,
-    defaultTimeout : 2000,
-    log            : Log,
+    dgram: dgram,
+    log  : Log,
   })
 
 
   .init(async ({
-    address = ':',
-    timeout,
+    ip = '127.0.0.1',
+    port = 8899,
+    timeout = 2000,
   } = {}, {
     stamp: {compose: {configuration: {
       dgram,
-      defaultIp,
-      GOODWE_UDP_PORT,
-      defaultTimeout,
+      log,
     }}},
 
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
-    const [ip, port] = address.split(':')
-    instance.ip = ip || defaultIp
-    instance.port = port || GOODWE_UDP_PORT
-    instance.timeout = timeout || defaultTimeout
-
+    instance.ip = ip
+    instance.port = port
+    instance.timeout = timeout
+    instance.log = log
     const client = dgram.createSocket('udp4')
     client.unref()
     instance.client = client
@@ -48,7 +43,7 @@ export default Factory
 
         const receiver = (message, rinfo) => {
           clearTimeout(timeoutId)
-          Log.trace('received %d bytes length message %s from %s:%d', message.length, message.toString('hex'), rinfo.address, rinfo.port)
+          this.log.trace('received %d bytes length message %s from %s:%d', message.length, message.toString('hex'), rinfo.address, rinfo.port)
           resolve(message)
         }
         this.client.once('message', receiver)
@@ -58,7 +53,7 @@ export default Factory
           reject(new ProgrammerError('request timed out', 'REQUEST_TIMED_OUT'))
         }, this.timeout)
 
-        Log.trace('send %d bytes length message %s to %s:%d', message.length, message.toString('hex'), this.ip, this.port)
+        this.log.trace('send %d bytes length message %s to %s:%d', message.length, message.toString('hex'), this.ip, this.port)
         this.client.send(message, this.port, this.ip, err => {
           if (err) {
             clearTimeout(timeoutId)

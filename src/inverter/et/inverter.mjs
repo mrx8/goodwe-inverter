@@ -1,46 +1,139 @@
-import BatteryDataParser from './battery-data-parser.mjs'
+import DeviceInfo from '../../bricks/device-info.mjs'
 import DeviceInfoParser from './device-info-parser.mjs'
 import Factory from 'stampit'
-import GetBatteryData from '../../bricks/get-battery-data.mjs'
-import GetDeviceInfo from '../../bricks/get-device-info.mjs'
-import GetMeterData from '../../bricks/get-meter-data.mjs'
-import GetRunningData from '../../bricks/get-running-data.mjs'
-import InverterBase from '../../bricks/inverter-base.mjs'
-import MeterDataParser from './meter-data-parser.mjs'
-import Network from '../../network.mjs'
-import RunningDataParser from './running-data-parser.mjs'
 
 
 export default Factory
-  .compose(
-    Network,
-    InverterBase,
-    GetBatteryData,
-    GetDeviceInfo,
-    GetMeterData,
-    GetRunningData,
-  )
-
-  .configuration({
-    BatteryDataParser,
-    DeviceInfoParser,
-    RunningDataParser,
-    MeterDataParser,
-  })
-
-  .init(async (param, {
+  .init(async ({
+    ip,
+    port,
+    timeout,
+  }, {
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
     instance.interface = 'ET'
     instance.address = 0xf7
-    instance.deviceInfo = await instance.getDeviceInfo(35000, 33)
-    instance.runningData = await instance.getRunningData(35100, 125)
-    instance.batteryData = {}
-    if (instance.runningData.batteryModeCode > 0) {
-      Object.assign(instance.batteryData, await instance.getBatteryData(37000, 24))
+    instance.ip = ip
+    instance.port = port
+    instance.timeout = timeout
+    instance.data = {}
+    // compose the Factory for reading all relevant data for this kind of inverter
+    let ReadDataFactory = Factory
+
+    // device-info
+    const ReadDeviceInfo = await DeviceInfo.setup({
+      ip           : instance.ip,
+      port         : instance.port,
+      address      : instance.address,
+      registerStart: 35000,
+      registerCount: 33,
+      Parser       : DeviceInfoParser,
+    })
+    ReadDataFactory = ReadDataFactory.compose(ReadDeviceInfo)
+    const deviceInfo = await ReadDeviceInfo()
+    Object.assign(instance.data, deviceInfo)
+
+    // running-data
+    let RunningDataParser = Factory
+    const {default: RunningData} = await import('../../bricks/running-data.mjs')
+    const {default: RunningDataParserBasic} = await import('./running-data-parser-basic.mjs')
+    RunningDataParser = RunningDataParser.compose(RunningDataParserBasic)
+    if (instance.data.deviceInfo.numberOfPhases === 3) {
+      const {default: RunningDataParserThreePhases} = await import('./running-data-parser-three-phases.mjs')
+      RunningDataParser = RunningDataParser.compose(RunningDataParserThreePhases)
     }
-    instance.meterData = await instance.getMeterData(36000, 58)
+
+    const ReadRunningData = await RunningData.setup({
+      ip           : instance.ip,
+      port         : instance.port,
+      address      : instance.address,
+      registerStart: 35100,
+      registerCount: 125,
+      Parser       : RunningDataParser,
+    })
+    ReadDataFactory = ReadDataFactory.compose(ReadRunningData)
+    const runningData = await ReadRunningData()
+    Object.assign(instance.data, runningData)
+
+    // bms-data
+    if (instance.data.runningData.batteryModeCode > 0) {
+      const {default: BmsData} = await import('../../bricks/bms-data.mjs')
+      const {default: BmsDataParser} = await import('./bms-data-parser.mjs')
+      const ReadBmsData = await BmsData.setup({
+        ip           : instance.ip,
+        port         : instance.port,
+        address      : instance.address,
+        registerStart: 37000,
+        registerCount: 24,
+        Parser       : BmsDataParser,
+      })
+      ReadDataFactory = ReadDataFactory.compose(ReadBmsData)
+      const bmsData = await ReadBmsData()
+      Object.assign(instance.data, bmsData)
+    }
+
+    if (deviceInfo.is745Platform) {
+      const {default: MeterData} = await import('../../bricks/meter-data.mjs')
+      const {default: MeterDataParser} = await import('./meter-data-parser-even-more-extended.mjs')
+      const ReadMeterData = await MeterData.setup({
+        ip           : instance.ip,
+        port         : instance.port,
+        address      : instance.address,
+        registerStart: 36000,
+        registerCount: 125,
+        Parser       : MeterDataParser,
+      })
+
+      try {
+        const meterData = await ReadMeterData()
+        Object.assign(instance.data, meterData)
+        ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
+      } catch (e) {
+        console.log('ROHR', e )
+        if (e.code !== '') {
+          throw e
+        }
+
+        const {default: MeterDataParser} = await import('./meter-data-parser-extended.mjs')
+        const ReadMeterData = await MeterData.setup({
+          ip           : instance.ip,
+          port         : instance.port,
+          address      : instance.address,
+          registerStart: 36000,
+          registerCount: 58,
+          Parser       : MeterDataParser,
+        })
+        const meterData = await ReadMeterData()
+        Object.assign(instance.data, meterData)
+        ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
+      }
+    } else {
+      const {default: MeterData} = await import('../../bricks/meter-data.mjs')
+      const {default: MeterDataParser} = await import('./meter-data-parser-basic.mjs')
+      const ReadMeterData = await MeterData.setup({
+        ip           : instance.ip,
+        port         : instance.port,
+        address      : instance.address,
+        registerStart: 36000,
+        registerCount: 45,
+        Parser       : MeterDataParser,
+      })
+      const meterData = await ReadMeterData()
+      Object.assign(instance.data, meterData)
+      ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
+    }
+
+    instance.ReadDataFactory = ReadDataFactory
 
     return instance
+  })
+
+  .methods({
+    async update () {
+      const data = await this.ReadDataFactory()
+      Object.assign(this.data, data)
+
+      return data
+    },
   })

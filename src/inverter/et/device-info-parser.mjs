@@ -46,3 +46,11 @@ export default Factory
 
     return instance
   })
+
+  .methods({
+    getData () {
+      return {
+        deviceInfo: this.deviceInfo,
+      }
+    },
+  })

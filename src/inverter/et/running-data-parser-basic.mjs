@@ -99,3 +99,11 @@ export default Factory
 
     return instance
   })
+
+  .methods({
+    getData () {
+      return {
+        runningData: this.runningData,
+      }
+    },
+  })

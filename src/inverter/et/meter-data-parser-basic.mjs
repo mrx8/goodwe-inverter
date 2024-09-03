@@ -30,3 +30,11 @@ export default Factory
 
     return instance
   })
+
+  .methods({
+    getData () {
+      return {
+        meterData: this.meterData,
+      }
+    },
+  })

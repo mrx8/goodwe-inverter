@@ -20,3 +20,11 @@ export default Factory
 
     return instance
   })
+
+  .methods({
+    getData () {
+      return {
+        bmsData: this.bmsData,
+      }
+    },
+  })

@@ -1,4 +1,4 @@
-import DeviceInfo from '../../bricks/device-info.mjs'
+import DeviceInfo from '../../bricks/device-info-reader.mjs'
 import DeviceInfoParser from './device-info-parser.mjs'
 import Factory from 'stampit'
 
@@ -18,6 +18,7 @@ export default Factory
     instance.port = port
     instance.timeout = timeout
     instance.data = {}
+
     // compose the Factory for reading all relevant data for this kind of inverter
     let ReadDataFactory = Factory
 
@@ -36,12 +37,14 @@ export default Factory
 
     // running-data
     let RunningDataParser = Factory
-    const {default: RunningData} = await import('../../bricks/running-data.mjs')
-    const {default: RunningDataParserBasic} = await import('./running-data-parser-basic.mjs')
-    RunningDataParser = RunningDataParser.compose(RunningDataParserBasic)
+    const {default: RunningData} = await import('../../bricks/running-data-reader.mjs')
+
     if (instance.data.deviceInfo.numberOfPhases === 3) {
       const {default: RunningDataParserThreePhases} = await import('./running-data-parser-three-phases.mjs')
       RunningDataParser = RunningDataParser.compose(RunningDataParserThreePhases)
+    } else {
+      const {default: RunningDataParserBasic} = await import('./running-data-parser-basic.mjs')
+      RunningDataParser = RunningDataParser.compose(RunningDataParserBasic)
     }
 
     const ReadRunningData = await RunningData.setup({
@@ -58,7 +61,7 @@ export default Factory
 
     // bms-data
     if (instance.data.runningData.batteryModeCode > 0) {
-      const {default: BmsData} = await import('../../bricks/bms-data.mjs')
+      const {default: BmsData} = await import('../../bricks/bms-data-reader.mjs')
       const {default: BmsDataParser} = await import('./bms-data-parser.mjs')
       const ReadBmsData = await BmsData.setup({
         ip           : instance.ip,
@@ -73,8 +76,9 @@ export default Factory
       Object.assign(instance.data, bmsData)
     }
 
+    // meter data
     if (deviceInfo.is745Platform) {
-      const {default: MeterData} = await import('../../bricks/meter-data.mjs')
+      const {default: MeterData} = await import('../../bricks/meter-data-reader.mjs')
       const {default: MeterDataParser} = await import('./meter-data-parser-even-more-extended.mjs')
       const ReadMeterData = await MeterData.setup({
         ip           : instance.ip,
@@ -109,7 +113,7 @@ export default Factory
         ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
       }
     } else {
-      const {default: MeterData} = await import('../../bricks/meter-data.mjs')
+      const {default: MeterData} = await import('../../bricks/meter-data-reader.mjs')
       const {default: MeterDataParser} = await import('./meter-data-parser-basic.mjs')
       const ReadMeterData = await MeterData.setup({
         ip           : instance.ip,
@@ -124,6 +128,7 @@ export default Factory
       ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
     }
 
+    // this composed factory fetch updates from the available sensors
     instance.ReadDataFactory = ReadDataFactory
 
     return instance

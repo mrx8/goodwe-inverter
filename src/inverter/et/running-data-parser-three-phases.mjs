@@ -3,7 +3,7 @@ import ReadCurrent from '../../bricks/read-current.mjs'
 import ReadFrequency from '../../bricks/read-frequency.mjs'
 import ReadInverterPower from '../../bricks/read-inverter-power.mjs'
 import ReadVoltage from '../../bricks/read-voltage.mjs'
-
+import RunningDataParserBasic from './running-data-parser-basic.mjs'
 
 export default Factory
   .compose(
@@ -11,6 +11,7 @@ export default Factory
     ReadFrequency,
     ReadInverterPower,
     ReadVoltage,
+    RunningDataParserBasic,
   )
 
   .init((param, {instance}) => {

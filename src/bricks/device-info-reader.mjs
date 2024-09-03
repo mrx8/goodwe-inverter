@@ -18,14 +18,13 @@ export default Factory
         address,
       })
 
-      let initWasCalledOneTime = false
+      let initWasCalledOnce = false
 
       return Factory
         .init(async (param, {instance: instancePromise}) => {
           const instance = await instancePromise
-          if (initWasCalledOneTime === false) {
-            console.log('DEVICEINFO')
-            initWasCalledOneTime = true
+          if (initWasCalledOnce === false) {
+            initWasCalledOnce = true
 
             const responseMessage = await reader.readMessage({
               registerStart,
@@ -35,7 +34,7 @@ export default Factory
             Object.assign(instance, Parser({
               message: responseMessage,
               registerStart,
-            }))
+            }).getData())
           }
 
           return instance

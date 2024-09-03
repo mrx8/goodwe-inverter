@@ -30,7 +30,7 @@ export default Factory
           Object.assign(instance, Parser({
             message: responseMessage,
             registerStart,
-          }))
+          }).getData())
 
           return instance
         })

@@ -1,13 +1,13 @@
-import DeviceInfo from '../../bricks/reader/device-info-reader.mjs'
-import DeviceInfoParser from './_bricks/device-info-parser.mjs'
+import DeviceInfoReader from '../../bricks/reader/device-info-reader.mjs'
+import DeviceInfoSensors from './_bricks/device-info-sensors.mjs'
 import Factory from 'stampit'
 
 
 export default Factory
   .init(async ({
-    ip,
-    port,
-    timeout,
+    ip = '127.0.0.1',
+    port = 8899,
+    timeout = 2000,
   }, {
     instance: instancePromise,
   }) => {
@@ -23,37 +23,37 @@ export default Factory
     let ReadDataFactory = Factory
 
     // device-info
-    const ReadDeviceInfo = await DeviceInfo.setup({
+    const ReadDeviceInfo = await DeviceInfoReader.setup({
       ip           : instance.ip,
       port         : instance.port,
       address      : instance.address,
       registerStart: 35000,
       registerCount: 33,
-      Parser       : DeviceInfoParser,
+      Sensors      : DeviceInfoSensors,
     })
     ReadDataFactory = ReadDataFactory.compose(ReadDeviceInfo)
     const deviceInfo = await ReadDeviceInfo()
     Object.assign(instance.data, deviceInfo)
 
     // running-data
-    let RunningDataParser = Factory
-    const {default: RunningData} = await import('../../bricks/reader/running-data-reader.mjs')
+    let RunningDataSensors = Factory
+    const {default: RunningDataReader} = await import('../../bricks/reader/running-data-reader.mjs')
 
     if (instance.data.deviceInfo.numberOfPhases === 3) {
-      const {default: RunningDataParserThreePhases} = await import('./_bricks/running-data-parser-three-phases.mjs')
-      RunningDataParser = RunningDataParser.compose(RunningDataParserThreePhases)
+      const {default: RunningDataSensorsThreePhases} = await import('./_bricks/running-data-sensors-three-phases.mjs')
+      RunningDataSensors = RunningDataSensors.compose(RunningDataSensorsThreePhases)
     } else {
-      const {default: RunningDataParserBasic} = await import('./_bricks/running-data-parser-basic.mjs')
-      RunningDataParser = RunningDataParser.compose(RunningDataParserBasic)
+      const {default: RunningDataSensorsBasic} = await import('./_bricks/running-data-sensors-basic.mjs')
+      RunningDataSensors = RunningDataSensors.compose(RunningDataSensorsBasic)
     }
 
-    const ReadRunningData = await RunningData.setup({
+    const ReadRunningData = await RunningDataReader.setup({
       ip           : instance.ip,
       port         : instance.port,
       address      : instance.address,
       registerStart: 35100,
       registerCount: 125,
-      Parser       : RunningDataParser,
+      Sensors      : RunningDataSensors,
     })
     ReadDataFactory = ReadDataFactory.compose(ReadRunningData)
     const runningData = await ReadRunningData()
@@ -61,15 +61,15 @@ export default Factory
 
     // bms-data
     if (instance.data.runningData.batteryModeCode > 0) {
-      const {default: BmsData} = await import('../../bricks/reader/bms-data-reader.mjs')
-      const {default: BmsDataParser} = await import('./_bricks/bms-data-parser.mjs')
-      const ReadBmsData = await BmsData.setup({
+      const {default: BmsDataReader} = await import('../../bricks/reader/bms-data-reader.mjs')
+      const {default: BmsDataSensors} = await import('./_bricks/bms-data-sensors.mjs')
+      const ReadBmsData = await BmsDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
         address      : instance.address,
         registerStart: 37000,
         registerCount: 24,
-        Parser       : BmsDataParser,
+        Sensors      : BmsDataSensors,
       })
       ReadDataFactory = ReadDataFactory.compose(ReadBmsData)
       const bmsData = await ReadBmsData()
@@ -78,15 +78,15 @@ export default Factory
 
     // meter data
     if (deviceInfo.is745Platform) {
-      const {default: MeterData} = await import('../../bricks/reader/meter-data-reader.mjs')
-      const {default: MeterDataParser} = await import('./_bricks/meter-data-parser-even-more-extended.mjs')
-      const ReadMeterData = await MeterData.setup({
+      const {default: MeterDataReader} = await import('../../bricks/reader/meter-data-reader.mjs')
+      const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-even-more-extended.mjs')
+      const ReadMeterData = await MeterDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
         address      : instance.address,
         registerStart: 36000,
         registerCount: 125,
-        Parser       : MeterDataParser,
+        Sensors      : MeterDataSensors,
       })
 
       try {
@@ -99,29 +99,29 @@ export default Factory
           throw e
         }
 
-        const {default: MeterDataParser} = await import('./_bricks/meter-data-parser-extended.mjs')
-        const ReadMeterData = await MeterData.setup({
+        const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-extended.mjs')
+        const ReadMeterData = await MeterDataReader.setup({
           ip           : instance.ip,
           port         : instance.port,
           address      : instance.address,
           registerStart: 36000,
           registerCount: 58,
-          Parser       : MeterDataParser,
+          Sensors      : MeterDataSensors,
         })
         const meterData = await ReadMeterData()
         Object.assign(instance.data, meterData)
         ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
       }
     } else {
-      const {default: MeterData} = await import('../../bricks/reader/meter-data-reader.mjs')
-      const {default: MeterDataParser} = await import('./_bricks/meter-data-parser-basic.mjs')
-      const ReadMeterData = await MeterData.setup({
+      const {default: MeterDataReader} = await import('../../bricks/reader/meter-data-reader.mjs')
+      const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-basic.mjs')
+      const ReadMeterData = await MeterDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
         address      : instance.address,
         registerStart: 36000,
         registerCount: 45,
-        Parser       : MeterDataParser,
+        Sensors      : MeterDataSensors,
       })
       const meterData = await ReadMeterData()
       Object.assign(instance.data, meterData)

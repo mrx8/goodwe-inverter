@@ -1,10 +1,10 @@
 import Factory from 'stampit'
-import MeterDataParserBasic from './meter-data-parser-basic.mjs'
+import MeterDataSensorsBasic from './meter-data-sensors-basic.mjs'
 
 
 export default Factory
   .compose(
-    MeterDataParserBasic,
+    MeterDataSensorsBasic,
   )
 
   .init((param, {instance}) => {

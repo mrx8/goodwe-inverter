@@ -10,7 +10,7 @@ export default Factory
       address,
       registerStart,
       registerCount,
-      Parser,
+      Sensors,
     }) {
       const reader = await ReadMessage({
         ip,
@@ -31,7 +31,7 @@ export default Factory
               registerCount,
             })
 
-            Object.assign(instance, Parser({
+            Object.assign(instance, Sensors({
               message: responseMessage,
               registerStart,
             }).getData())

@@ -1,4 +1,4 @@
-import DeviceInfoReader from '../../bricks/reader/device-info-reader.mjs'
+import DeviceInfoReader from '../../_bricks/reader/device-info-reader.mjs'
 import DeviceInfoSensors from './_bricks/device-info-sensors.mjs'
 import Factory from 'stampit'
 
@@ -37,7 +37,7 @@ export default Factory
 
     // running-data
     let RunningDataSensors = Factory
-    const {default: RunningDataReader} = await import('../../bricks/reader/running-data-reader.mjs')
+    const {default: RunningDataReader} = await import('../../_bricks/reader/running-data-reader.mjs')
 
     if (instance.data.deviceInfo.numberOfPhases === 3) {
       const {default: RunningDataSensorsThreePhases} = await import('./_bricks/running-data-sensors-three-phases.mjs')
@@ -61,7 +61,7 @@ export default Factory
 
     // bms-data
     if (instance.data.runningData.batteryModeCode > 0) {
-      const {default: BmsDataReader} = await import('../../bricks/reader/bms-data-reader.mjs')
+      const {default: BmsDataReader} = await import('../../_bricks/reader/bms-data-reader.mjs')
       const {default: BmsDataSensors} = await import('./_bricks/bms-data-sensors.mjs')
       const ReadBmsData = await BmsDataReader.setup({
         ip           : instance.ip,
@@ -78,7 +78,7 @@ export default Factory
 
     // meter data
     if (deviceInfo.is745Platform) {
-      const {default: MeterDataReader} = await import('../../bricks/reader/meter-data-reader.mjs')
+      const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
       const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-even-more-extended.mjs')
       const ReadMeterData = await MeterDataReader.setup({
         ip           : instance.ip,
@@ -113,7 +113,7 @@ export default Factory
         ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
       }
     } else {
-      const {default: MeterDataReader} = await import('../../bricks/reader/meter-data-reader.mjs')
+      const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
       const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-basic.mjs')
       const ReadMeterData = await MeterDataReader.setup({
         ip           : instance.ip,

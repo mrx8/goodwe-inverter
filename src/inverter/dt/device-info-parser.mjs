@@ -1,14 +1,14 @@
 import Factory from 'stampit'
 
 // import only what is needed and not the whole jungle like in plain OO
-import ReadArmSubVersion from '../../bricks/read-arm-sub-version.mjs'
-import ReadArmVersion from '../../bricks/read-arm-version.mjs'
-import ReadDsp1Version from '../../bricks/read-dsp1-version.mjs'
-import ReadDsp2Version from '../../bricks/read-dsp2-version.mjs'
-import ReadDspSubVersion from '../../bricks/read-dsp-sub-version.mjs'
-import ReadModelName from '../../bricks/read-model-name.mjs'
-import ReadNumberOfPhases from '../../bricks/read-number-of-phases.mjs'
-import ReadSerialNumber from '../../bricks/read-serial-number.mjs'
+import ReadArmSubVersion from '../../_bricks/read-arm-sub-version.mjs'
+import ReadArmVersion from '../../_bricks/read-arm-version.mjs'
+import ReadDsp1Version from '../../_bricks/read-dsp1-version.mjs'
+import ReadDsp2Version from '../../_bricks/read-dsp2-version.mjs'
+import ReadDspSubVersion from '../../_bricks/read-dsp-sub-version.mjs'
+import ReadModelName from '../../_bricks/read-model-name.mjs'
+import ReadNumberOfPhases from '../../_bricks/read-number-of-phases.mjs'
+import ReadSerialNumber from '../../_bricks/read-serial-number.mjs'
 
 
 export default Factory

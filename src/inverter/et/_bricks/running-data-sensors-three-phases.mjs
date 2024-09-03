@@ -1,8 +1,8 @@
 import Factory from 'stampit'
-import ReadCurrent from '../../../bricks/sensors/read-current.mjs'
-import ReadFrequency from '../../../bricks/sensors/read-frequency.mjs'
-import ReadInverterPower from '../../../bricks/sensors/read-inverter-power.mjs'
-import ReadVoltage from '../../../bricks/sensors/read-voltage.mjs'
+import ReadCurrent from '../../../_bricks/sensors/read-current.mjs'
+import ReadFrequency from '../../../_bricks/sensors/read-frequency.mjs'
+import ReadInverterPower from '../../../_bricks/sensors/read-inverter-power.mjs'
+import ReadVoltage from '../../../_bricks/sensors/read-voltage.mjs'
 import RunningDataSensorsBasic from './running-data-sensors-basic.mjs'
 
 export default Factory

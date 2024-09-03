@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import Discover from '../src/discover.mjs'
+import Discover from './discover.mjs'
 import {program as Program} from 'commander'
 import {createRequire} from 'module'
 
@@ -21,7 +21,8 @@ if (isNaN(Options.timeout) || Options.timeout <= 0) {
 const timeout = Options.timeout * 1000
 
 const foundInverters = await Discover({
-  address: '255.255.255.255:48899',
+  ip  : '255.255.255.255',
+  port: 48899,
   timeout,
 })
 

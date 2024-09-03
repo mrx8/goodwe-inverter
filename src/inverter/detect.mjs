@@ -1,10 +1,10 @@
-import {PLATFORM_745_HV_MODELS, PLATFORM_745_LV_MODELS} from '../_bricks/read-is-745platform.mjs'
-import {createAa55Packet, validateAa55Packet} from '../modbus.mjs'
+import {PLATFORM_745_HV_MODELS, PLATFORM_745_LV_MODELS} from '../_bricks/sensors/read-is-745platform.mjs'
+import {createAa55Packet, validateAa55Packet} from '../_bricks/reader/network/modbus.mjs'
 import Factory from 'stampit'
-import GetStamp from '../_bricks/get-stamp.mjs'
-import Log from '../log.mjs'
-import {ProgrammerError} from '../error.mjs'
-import Protocol from '../network.mjs'
+import GetStamp from '../shared/get-stamp.mjs'
+import Log from '../shared/log.mjs'
+import {ProgrammerError} from '../shared/error.mjs'
+import Protocol from '../_bricks/reader/network/network.mjs'
 // import {decode} from './shared.mjs'
 
 const PLATFORM_205_MODELS = [

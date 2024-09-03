@@ -1,5 +1,6 @@
 import Factory from 'stampit'
-import Protocol from './protocol.mjs'
+import Network from '../src/_bricks/reader/network/network.mjs'
+import Log from '../src/shared/log.mjs'
 
 
 function bind (socket, port = 0) {
@@ -19,7 +20,7 @@ function bind (socket, port = 0) {
 
 export default Factory
   .compose(
-    Protocol,
+    Network,
   )
 
   .configuration({
@@ -35,7 +36,9 @@ export default Factory
     }}},
   }) => {
     const instance = await instancePromise
+    Log.trace('bind udp socket')
     await bind(instance.client, 0)
+    Log.trace('listen for broadcast on udp socket')
     instance.client.setBroadcast(true)
 
     return new Promise((resolve, reject) => {
@@ -45,6 +48,7 @@ export default Factory
           const [ip, macAdressRaw, name] = data.toString().split(',')
           if (name.startsWith('Solar-WiFi')) {
             const macAdress = macAdressRaw.match(/.{2}/g).join(':')
+            Log.trace('got answer from %s %s %s', ip, macAdress, name)
             responses.push({
               ip,
               macAdress,
@@ -62,6 +66,7 @@ export default Factory
       }, timeout)
 
       const request = Buffer.from('WIFIKIT-214028-READ')
+      Log.trace('send message %s to %s:%s', request.toString(), instance.ip, instance.port)
       instance.client.send(request, instance.port, instance.ip, err => {
         if (err) {
           clearTimeout(timeoutId)

@@ -3,7 +3,7 @@ import {program as Program} from 'commander'
 import {inspect} from 'node:util'
 
 Program
-  .requiredOption('-i, --ip <ip>', 'ip of the inverter to connect to')
+  .option('-i, --ip <ip>', 'ip of the inverter to connect to')
   .option('-p, --port <port>', 'port of the inverter to connect to')
   .showHelpAfterError()
   .parse(process.argv)

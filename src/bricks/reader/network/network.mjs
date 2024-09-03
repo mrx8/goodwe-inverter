@@ -1,6 +1,6 @@
 import Factory from 'stampit'
-import Log from './log.mjs'
-import {ProgrammerError} from './error.mjs'
+import Log from '../../../shared/log.mjs'
+import {ProgrammerError} from '../../../shared/error.mjs'
 import dgram from 'node:dgram'
 
 

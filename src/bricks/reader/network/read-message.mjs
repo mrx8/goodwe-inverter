@@ -1,8 +1,8 @@
-import {MODBUS_HEADER_LENGTH, MODBUS_READ_COMMAND, createRtuRequestMessage, validateRtuResponseMessage} from '../modbus.mjs'
+import {MODBUS_HEADER_LENGTH, MODBUS_READ_COMMAND, createRtuRequestMessage, validateRtuResponseMessage} from './modbus.mjs'
 import Factory from 'stampit'
-import GetStamp from './get-stamp.mjs'
-import Log from '../log.mjs'
-import Network from '../network.mjs'
+import GetStamp from '../../../shared/get-stamp.mjs'
+import Log from '../../../shared/log.mjs'
+import Network from './network.mjs'
 
 
 export default Factory

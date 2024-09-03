@@ -1,4 +1,4 @@
-import {from as ErrorFrom, ProgrammerError} from './error.mjs'
+import {from as ErrorFrom, ProgrammerError} from '../../../shared/error.mjs'
 
 const AA55PACKET = {
   HEADER       : 0xaa55,

@@ -1,4 +1,4 @@
-import Base from './parser-base.mjs'
+import Base from './sensor-base.mjs'
 import Factory from 'stampit'
 import IndexRegister from './index-register.mjs'
 
@@ -8,7 +8,7 @@ export default Factory
   .compose(Base, IndexRegister)
 
   .methods({
-    decodeString (register, length) {
+    readString (register, length) {
       const index = this.getIndexFromRegister(register)
 
       let isBinary = false

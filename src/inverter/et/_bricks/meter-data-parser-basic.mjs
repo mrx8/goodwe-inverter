@@ -1,6 +1,6 @@
 import Factory from 'stampit'
-import ReadMeterActivePower from '../../bricks/read-meter-active-power.mjs'
-import ReadMeterPowerFactor from '../../bricks/read-meter-power-factor.mjs'
+import ReadMeterActivePower from '../../../bricks/sensors/read-meter-active-power.mjs'
+import ReadMeterPowerFactor from '../../../bricks/sensors/read-meter-power-factor.mjs'
 
 
 export default Factory

@@ -1,5 +1,5 @@
 import Factory from 'stampit'
-import GetStamp from './get-stamp.mjs'
+import GetStamp from '../../shared/get-stamp.mjs'
 import ReadInt32BE from './read-int32be.mjs'
 
 

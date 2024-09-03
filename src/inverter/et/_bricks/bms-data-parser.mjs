@@ -1,6 +1,6 @@
 import Factory from 'stampit'
-import ReadBmsStateOfCharge from '../../bricks/read-bms-state-of-charge.mjs'
-import ReadBmsStateOfHealth from '../../bricks/read-bms-state-of-health.mjs'
+import ReadBmsStateOfCharge from '../../../bricks/sensors/read-bms-state-of-charge.mjs'
+import ReadBmsStateOfHealth from '../../../bricks/sensors/read-bms-state-of-health.mjs'
 
 export default Factory
   .compose(

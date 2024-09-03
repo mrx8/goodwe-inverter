@@ -1,5 +1,5 @@
 import Factory from 'stampit'
-import {ProgrammerError} from '../error.mjs'
+import {ProgrammerError} from '../../shared/error.mjs'
 
 
 export default Factory

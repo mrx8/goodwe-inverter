@@ -1,4 +1,4 @@
-import Base from './parser-base.mjs'
+import Base from './sensor-base.mjs'
 import Factory from 'stampit'
 import IndexRegister from './index-register.mjs'
 
@@ -10,11 +10,11 @@ export default Factory
   )
 
   .methods({
-    readUInt32BE (register) {
+    readInt16BE (register) {
       const index = this.getIndexFromRegister(register)
 
-      let value = this.message.readUInt32BE(index)
-      if (value === 0xffffffff) {
+      let value = this.message.readInt16BE(index)
+      if (value === 0xffff) {
         value = 0
       }
 

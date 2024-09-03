@@ -1,5 +1,5 @@
-import DeviceInfo from '../../bricks/device-info-reader.mjs'
-import DeviceInfoParser from './device-info-parser.mjs'
+import DeviceInfo from '../../bricks/reader/device-info-reader.mjs'
+import DeviceInfoParser from './_bricks/device-info-parser.mjs'
 import Factory from 'stampit'
 
 
@@ -37,13 +37,13 @@ export default Factory
 
     // running-data
     let RunningDataParser = Factory
-    const {default: RunningData} = await import('../../bricks/running-data-reader.mjs')
+    const {default: RunningData} = await import('../../bricks/reader/running-data-reader.mjs')
 
     if (instance.data.deviceInfo.numberOfPhases === 3) {
-      const {default: RunningDataParserThreePhases} = await import('./running-data-parser-three-phases.mjs')
+      const {default: RunningDataParserThreePhases} = await import('./_bricks/running-data-parser-three-phases.mjs')
       RunningDataParser = RunningDataParser.compose(RunningDataParserThreePhases)
     } else {
-      const {default: RunningDataParserBasic} = await import('./running-data-parser-basic.mjs')
+      const {default: RunningDataParserBasic} = await import('./_bricks/running-data-parser-basic.mjs')
       RunningDataParser = RunningDataParser.compose(RunningDataParserBasic)
     }
 
@@ -61,8 +61,8 @@ export default Factory
 
     // bms-data
     if (instance.data.runningData.batteryModeCode > 0) {
-      const {default: BmsData} = await import('../../bricks/bms-data-reader.mjs')
-      const {default: BmsDataParser} = await import('./bms-data-parser.mjs')
+      const {default: BmsData} = await import('../../bricks/reader/bms-data-reader.mjs')
+      const {default: BmsDataParser} = await import('./_bricks/bms-data-parser.mjs')
       const ReadBmsData = await BmsData.setup({
         ip           : instance.ip,
         port         : instance.port,
@@ -78,8 +78,8 @@ export default Factory
 
     // meter data
     if (deviceInfo.is745Platform) {
-      const {default: MeterData} = await import('../../bricks/meter-data-reader.mjs')
-      const {default: MeterDataParser} = await import('./meter-data-parser-even-more-extended.mjs')
+      const {default: MeterData} = await import('../../bricks/reader/meter-data-reader.mjs')
+      const {default: MeterDataParser} = await import('./_bricks/meter-data-parser-even-more-extended.mjs')
       const ReadMeterData = await MeterData.setup({
         ip           : instance.ip,
         port         : instance.port,
@@ -99,7 +99,7 @@ export default Factory
           throw e
         }
 
-        const {default: MeterDataParser} = await import('./meter-data-parser-extended.mjs')
+        const {default: MeterDataParser} = await import('./_bricks/meter-data-parser-extended.mjs')
         const ReadMeterData = await MeterData.setup({
           ip           : instance.ip,
           port         : instance.port,
@@ -113,8 +113,8 @@ export default Factory
         ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
       }
     } else {
-      const {default: MeterData} = await import('../../bricks/meter-data-reader.mjs')
-      const {default: MeterDataParser} = await import('./meter-data-parser-basic.mjs')
+      const {default: MeterData} = await import('../../bricks/reader/meter-data-reader.mjs')
+      const {default: MeterDataParser} = await import('./_bricks/meter-data-parser-basic.mjs')
       const ReadMeterData = await MeterData.setup({
         ip           : instance.ip,
         port         : instance.port,

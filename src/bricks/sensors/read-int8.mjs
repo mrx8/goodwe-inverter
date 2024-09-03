@@ -1,4 +1,4 @@
-import Base from './parser-base.mjs'
+import Base from './sensor-base.mjs'
 import Factory from 'stampit'
 import IndexRegister from './index-register.mjs'
 

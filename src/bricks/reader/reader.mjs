@@ -1,5 +1,5 @@
 import Factory from 'stampit'
-import ReadMessage from './read-message.mjs'
+import ReadMessage from './network/read-message.mjs'
 
 
 export default Factory

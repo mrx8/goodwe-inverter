@@ -12,4 +12,4 @@ Program
 const Options = Program.opts()
 const inverter = await Inverter({ip: Options.ip, port: Options.port})
 // await inverter.update()
-console.log('inverter', inspect(inverter, {depth: Infinity, maxArrayLength: Infinity, maxStringLength: Infinity}))
+console.log('inverter', inspect(inverter.data, {depth: Infinity, maxArrayLength: Infinity, maxStringLength: Infinity}))

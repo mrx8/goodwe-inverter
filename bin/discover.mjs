@@ -1,6 +1,6 @@
 import Factory from 'stampit'
-import Network from '../src/_bricks/reader/network/network.mjs'
 import Log from '../src/shared/log.mjs'
+import Network from '../src/_bricks/reader/network/network.mjs'
 
 
 function bind (socket, port = 0) {

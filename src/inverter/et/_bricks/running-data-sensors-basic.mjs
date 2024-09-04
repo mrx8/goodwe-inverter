@@ -63,8 +63,8 @@ export default Factory
       pv4Current: instance.readCurrent(35116),
       pv4Power  : instance.readPower(35117),
 
-      energyGenerationToday: instance.readEnergyGenerationToday32(35193),
-      energyGenerationTotal: instance.readEnergyGenerationTotal(35191),
+      pvEnergyGenerationToday: instance.readEnergyGenerationToday32(35193),
+      pvEnergyGenerationTotal: instance.readEnergyGenerationTotal(35191),
 
       gridModeCode: instance.readGridModeCode(35140),
       gridMode    : instance.readGridMode(35140),

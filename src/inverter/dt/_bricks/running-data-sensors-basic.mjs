@@ -5,6 +5,7 @@ import ReadEnergyGenerationTotal from '../../../_bricks/sensors/read-energy-gene
 import ReadErrorCodes from '../../../_bricks/sensors/read-error-codes.mjs'
 import ReadFrequency from '../../../_bricks/sensors/read-frequency.mjs'
 import ReadInverterPowerTotal from '../../../_bricks/sensors/read-inverter-power-total.mjs'
+import ReadPowerFactor from '../../../_bricks/sensors/read-power-factor.mjs'
 import ReadSafetyCountry from '../../../_bricks/sensors/read-safety-country.mjs'
 import ReadTemperature from '../../../_bricks/sensors/read-temperature.mjs'
 import ReadTimestamp from '../../../_bricks/sensors/read-timestamp.mjs'
@@ -19,6 +20,7 @@ export default Factory
     ReadErrorCodes,
     ReadFrequency,
     ReadInverterPowerTotal,
+    ReadPowerFactor,
     ReadSafetyCountry,
     ReadTemperature,
     ReadTimestamp,
@@ -40,8 +42,8 @@ export default Factory
       pv3Voltage: instance.readVoltage(30107),
       pv3Current: instance.readCurrent(30108),
 
-      energyGenerationToday: instance.readEnergyGenerationToday(30144),
-      energyGenerationTotal: instance.readEnergyGenerationTotal(30145),
+      pvEnergyGenerationToday: instance.readEnergyGenerationToday(30144),
+      pvEnergyGenerationTotal: instance.readEnergyGenerationTotal(30145),
 
       gridL1Voltage  : instance.readVoltage(30118),
       gridL1Current  : instance.readCurrent(30121),
@@ -52,9 +54,12 @@ export default Factory
       errorCodes: instance.readErrorCodes(30130),
       errors    : instance.readErrors(30130),
 
+      powerFactor: instance.readPowerFactor(30139),
+
       safetyCountryCode: instance.readSafetyCountryCode(30149),
       safetyCountry    : instance.readSafetyCountry(30149),
-      temperature      : instance.readTemperature(30141),
+
+      temperature: instance.readTemperature(30141),
     }
 
     Object.assign(data, { // virtual-fields

@@ -1,11 +1,12 @@
 import Factory from 'stampit'
 import ReadMeterActivePower from '../../../_bricks/sensors/read-meter-active-power.mjs'
+import ReadMeterEnergyTotal from '../../../_bricks/sensors/read-meter-energy-total.mjs'
 import ReadMeterPowerFactor from '../../../_bricks/sensors/read-meter-power-factor.mjs'
-
 
 export default Factory
   .compose(
     ReadMeterActivePower,
+    ReadMeterEnergyTotal,
     ReadMeterPowerFactor,
   )
 
@@ -22,9 +23,11 @@ export default Factory
       powerFactorL2   : instance.readMeterPowerFactor(36011),
       powerFactorL3   : instance.readMeterPowerFactor(36012),
       powerFactorTotal: instance.readMeterPowerFactor(36013),
+
+      energyExportedTotal: instance.readMeterEnergyTotal(36015),
+      energyImportedTotal: instance.readMeterEnergyTotal(36017),
     }
 
-    // voltage und currents
     // exported und imported
     Object.assign(instance.meterData, data)
 

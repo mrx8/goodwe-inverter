@@ -5,7 +5,6 @@ import ReadCurrent from '../../../_bricks/sensors/read-current.mjs'
 import ReadEnergyBatteryChargeToday from '../../../_bricks/sensors/read-energy-battery-charge-today.mjs'
 import ReadEnergyBatteryDischargeToday from '../../../_bricks/sensors/read-energy-battery-discharge-today.mjs'
 import ReadEnergyGenerationToday from '../../../_bricks/sensors/read-energy-generation-today.mjs'
-import ReadEnergyGenerationToday32 from '../../../_bricks/sensors/read-energy-generation-today32.mjs'
 import ReadEnergyGenerationTotal from '../../../_bricks/sensors/read-energy-generation-total.mjs'
 import ReadErrorCodes from '../../../_bricks/sensors/read-error-codes.mjs'
 import ReadFrequency from '../../../_bricks/sensors/read-frequency.mjs'
@@ -27,7 +26,6 @@ export default Factory
     ReadEnergyBatteryChargeToday,
     ReadEnergyGenerationToday,
     ReadEnergyBatteryDischargeToday,
-    ReadEnergyGenerationToday32,
     ReadEnergyGenerationTotal,
     ReadErrorCodes,
     ReadFrequency,
@@ -89,6 +87,8 @@ export default Factory
       gridL1Voltage  : instance.readVoltage(35121),
       gridL1Current  : instance.readCurrent(35122),
       gridL1Frequency: instance.readFrequency(35123),
+      gridL1Power    : instance.readInverterPower(35125),
+
     }
     Object.assign(instance.runningData, data)
 

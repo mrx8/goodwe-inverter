@@ -7,7 +7,7 @@ export const PLATFORM_745_LV_MODELS = [
 ]
 
 export const PLATFORM_745_HV_MODELS = [
-  'ETT', 'HTA', 'HUB', 'AEB', 'SPB', 'CUB', 'EUB', 'HEB', 'ERB', 'BTT', 'ETF', 'ARB', 'URB', 'EBR',
+  'ETU', 'ETT', 'HTA', 'HUB', 'AEB', 'SPB', 'CUB', 'EUB', 'HEB', 'ERB', 'BTT', 'ETF', 'ARB', 'URB', 'EBR',
 ]
 
 

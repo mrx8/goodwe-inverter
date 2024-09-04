@@ -77,7 +77,7 @@ export default Factory
     }
 
     // meter data
-    if (deviceInfo.is745Platform) {
+    if (instance.data.deviceInfo.is745Platform) {
       const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
       const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-even-more-extended.mjs')
       const ReadMeterData = await MeterDataReader.setup({
@@ -94,8 +94,7 @@ export default Factory
         Object.assign(instance.data, meterData)
         ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
       } catch (e) {
-        console.log('ROHR', e )
-        if (e.code !== '') {
+        if (!(e.code === 'PROTOCOL_ERROR' && e.message.match(/ILLEGAL_DATA_ADDRESS/))) {
           throw e
         }
 

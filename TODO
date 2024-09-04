@@ -1,0 +1,6 @@
+complete refactor:
+- define every single register with address and length in an individual stamp
+- the stamps register the address in a registerManager which araranges requests from a register offset to a maximum of 125 registers (more is apparently not possible via UDP)
+- test if multiple requests could be done parallel. If not do it sequential.
+- update() method to fetch all data.
+- all fields are configured in inverter.mjs

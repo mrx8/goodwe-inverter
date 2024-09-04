@@ -46,6 +46,9 @@ export default Factory
 
           return responseMessage.subarray(MODBUS_HEADER_LENGTH)
         } catch (e) {
+          if (e.code === 'PROTOCOL_ERROR') {
+            throw e
+          }
           error = e
         }
       }

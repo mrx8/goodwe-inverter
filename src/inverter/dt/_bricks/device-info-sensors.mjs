@@ -29,7 +29,7 @@ export default Factory
     const data = { // use it
       armSubVersion : instance.readArmSubVersion(30038),
       armVersion    : instance.readArmVersion(30036),
-      dsp1Version   : instance.readDsp2Version(30034),
+      dsp1Version   : instance.readDsp1Version(30034),
       dsp2Version   : instance.readDsp2Version(30035),
       dspSubVersion : instance.readDspSubVersion(30037),
       modelName     : instance.readModelName(30012),

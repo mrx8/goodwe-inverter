@@ -33,7 +33,7 @@ export default Factory
       ratedPower    : instance.readRatedPower(35001),
       serialNumber  : instance.readSerialNumber(35003),
       modelName     : instance.readModelName(35011),
-      dsp1Version   : instance.readDsp2Version(35016),
+      dsp1Version   : instance.readDsp1Version(35016),
       dsp2Version   : instance.readDsp2Version(35017),
       dspSubVersion : instance.readDspSubVersion(35018),
       armVersion    : instance.readArmVersion(35019),

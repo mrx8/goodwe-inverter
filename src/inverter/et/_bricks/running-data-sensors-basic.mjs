@@ -93,7 +93,7 @@ export default Factory
     Object.assign(instance.runningData, data)
 
     Object.assign(instance.runningData, { // virtual-fields
-      pvPower         : data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
+      pvPowerTotal    : data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
       houseConsumption: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power + data.batteryPower - data.inverterActivePower,
     })
 

@@ -71,7 +71,7 @@ export default Factory
     })
 
     Object.assign(data, { // virtual-fields
-      pvPower: data.pv1Power + data.pv2Power + data.pv3Power,
+      pvPowerTotal: data.pv1Power + data.pv2Power + data.pv3Power,
     })
 
     Object.assign(instance.runningData, data)

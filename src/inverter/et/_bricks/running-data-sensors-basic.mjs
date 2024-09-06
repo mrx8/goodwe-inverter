@@ -92,8 +92,8 @@ export default Factory
       gridL1Frequency: instance.readFrequency(35123),
       gridL1Power    : instance.readInverterPower(35125),
 
-      energyBatteryImportToday: instance.readInverterEnergyImportToday(35202),
-      energyBatteryExportToday: instance.readInverterEnergyExportToday(35199),
+      energyImportToday: instance.readInverterEnergyImportToday(35202),
+      energyExportToday: instance.readInverterEnergyExportToday(35199),
     }
     Object.assign(instance.runningData, data)
 

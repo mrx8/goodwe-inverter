@@ -10,13 +10,14 @@ import ReadErrorCodes from '../../../_bricks/sensors/read-error-codes.mjs'
 import ReadFrequency from '../../../_bricks/sensors/read-frequency.mjs'
 import ReadGridMode from '../../../_bricks/sensors/read-grid-mode.mjs'
 import ReadInverterActivePower from '../../../_bricks/sensors/read-inverter-active-power.mjs'
+import ReadInverterEnergyExportToday from '../../../_bricks/sensors/read-inverter-energy-export-today.mjs'
+import ReadInverterEnergyImportToday from '../../../_bricks/sensors/read-inverter-energy-import-today.mjs'
 import ReadInverterPowerTotal from '../../../_bricks/sensors/read-inverter-power-total.mjs'
 import ReadPower from '../../../_bricks/sensors/read-power.mjs'
 import ReadSafetyCountry from '../../../_bricks/sensors/read-safety-country.mjs'
 import ReadTemperature from '../../../_bricks/sensors/read-temperature.mjs'
 import ReadTimestamp from '../../../_bricks/sensors/read-timestamp.mjs'
 import ReadVoltage from '../../../_bricks/sensors/read-voltage.mjs'
-
 
 export default Factory
   .compose(
@@ -31,6 +32,8 @@ export default Factory
     ReadFrequency,
     ReadGridMode,
     ReadInverterActivePower,
+    ReadInverterEnergyExportToday,
+    ReadInverterEnergyImportToday,
     ReadInverterPowerTotal,
     ReadPower,
     ReadSafetyCountry,
@@ -89,6 +92,8 @@ export default Factory
       gridL1Frequency: instance.readFrequency(35123),
       gridL1Power    : instance.readInverterPower(35125),
 
+      energyBatteryImportToday: instance.readInverterEnergyImportToday(35202),
+      energyBatteryExportToday: instance.readInverterEnergyExportToday(35199),
     }
     Object.assign(instance.runningData, data)
 

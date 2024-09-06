@@ -1,22 +1,26 @@
 import DeviceInfoReader from '../../_bricks/reader/device-info-reader.mjs'
 import DeviceInfoSensors from './_bricks/device-info-sensors.mjs'
 import Factory from 'stampit'
+import InverterBase from '../inverter-base.mjs'
+import Log from '../../shared/log.mjs'
 
 
 export default Factory
-  .init(async ({
-    ip = '127.0.0.1',
-    port = 8899,
-    timeout = 2000,
-  }, {
+  .properties({
+    log: Log,
+  })
+
+  .compose(
+    InverterBase,
+  )
+
+  .init(async (param, {
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
+    instance.log.trace('init et-inverter with %o', instance)
     instance.interface = 'ET'
     instance.address = 0xf7
-    instance.ip = ip
-    instance.port = port
-    instance.timeout = timeout
     instance.data = {}
 
     // compose the Factory for reading all relevant data for this kind of inverter
@@ -26,6 +30,7 @@ export default Factory
     const ReadDeviceInfo = await DeviceInfoReader.setup({
       ip           : instance.ip,
       port         : instance.port,
+      timeout      : instance.timeout,
       address      : instance.address,
       registerStart: 35000,
       registerCount: 33,
@@ -50,6 +55,7 @@ export default Factory
     const ReadRunningData = await RunningDataReader.setup({
       ip           : instance.ip,
       port         : instance.port,
+      timeout      : instance.timeout,
       address      : instance.address,
       registerStart: 35100,
       registerCount: 125,
@@ -66,6 +72,7 @@ export default Factory
       const ReadBmsData = await BmsDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
+        timeout      : instance.timeout,
         address      : instance.address,
         registerStart: 37000,
         registerCount: 24,
@@ -83,6 +90,7 @@ export default Factory
       const ReadMeterData = await MeterDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
+        timeout      : instance.timeout,
         address      : instance.address,
         registerStart: 36000,
         registerCount: 125,
@@ -102,6 +110,7 @@ export default Factory
         const ReadMeterData = await MeterDataReader.setup({
           ip           : instance.ip,
           port         : instance.port,
+          timeout      : instance.timeout,
           address      : instance.address,
           registerStart: 36000,
           registerCount: 58,
@@ -117,6 +126,7 @@ export default Factory
       const ReadMeterData = await MeterDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
+        timeout      : instance.timeout,
         address      : instance.address,
         registerStart: 36000,
         registerCount: 45,
@@ -131,13 +141,4 @@ export default Factory
     instance.ReadDataFactory = ReadDataFactory
 
     return instance
-  })
-
-  .methods({
-    async update () {
-      const data = await this.ReadDataFactory()
-      Object.assign(this.data, data)
-
-      return data
-    },
   })

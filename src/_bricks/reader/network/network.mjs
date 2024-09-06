@@ -1,33 +1,22 @@
 import Factory from 'stampit'
 import Log from '../../../shared/log.mjs'
-import {ProgrammerError} from '../../../shared/error.mjs'
+import {OperationalError} from '../../../shared/error.mjs'
+import Param from '../../../shared/param.mjs'
 import dgram from 'node:dgram'
 
 
 export default Factory
-  .configuration({
-    dgram: dgram,
-    log  : Log,
+  .compose(Param)
+
+  .properties({
+    log: Log,
   })
 
-
-  .init(async ({
-    ip = '127.0.0.1',
-    port = 8899,
-    timeout = 2000,
-  } = {}, {
-    stamp: {compose: {configuration: {
-      dgram,
-      log,
-    }}},
-
+  .init(async (param, {
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
-    instance.ip = ip
-    instance.port = port
-    instance.timeout = timeout
-    instance.log = log
+
     const client = dgram.createSocket('udp4')
     client.unref()
     instance.client = client
@@ -50,7 +39,7 @@ export default Factory
 
         timeoutId = setTimeout(() => {
           this.client.removeListener('message', receiver)
-          reject(new ProgrammerError('request timed out', 'REQUEST_TIMED_OUT'))
+          reject(new OperationalError('request timed out', 'REQUEST_TIMED_OUT'))
         }, this.timeout)
 
         this.log.trace('send %d bytes length message %s to %s:%d', message.length, message.toString('hex'), this.ip, this.port)

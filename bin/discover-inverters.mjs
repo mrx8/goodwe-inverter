@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import Discover from './discover.mjs'
+import Discover from '../src/discover.mjs'
 import {program as Program} from 'commander'
 import {createRequire} from 'module'
 
@@ -18,12 +18,9 @@ const Options = Program.opts()
 if (isNaN(Options.timeout) || Options.timeout <= 0) {
   throw new Error(`you specified an illegal number for timeout: "${Options.timeout}". It must be a positive integer.`)
 }
-const timeout = Options.timeout * 1000
 
 const foundInverters = await Discover({
-  ip  : '255.255.255.255',
-  port: 48899,
-  timeout,
+  timeout: Options.timeout * 1000,
 })
 
 console.log(`Try to discover your inverters for ${Options.timeout} seconds.`)

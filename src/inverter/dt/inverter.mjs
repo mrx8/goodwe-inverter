@@ -1,24 +1,21 @@
 import DeviceInfoReader from '../../_bricks/reader/device-info-reader.mjs'
 import DeviceInfoSensors from './_bricks/device-info-sensors.mjs'
 import Factory from 'stampit'
+import InverterBase from '../inverter-base.mjs'
 
 // see https://github.com/MiG-41/Modbus-GoodWe-DT
 
-
 export default Factory
-  .init(async ({
-    ip = '127.0.0.1',
-    port = 8899,
-    timeout = 2000,
-  }, {
+  .compose(
+    InverterBase,
+  )
+
+  .init(async (param, {
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
     instance.interface = 'DT'
     instance.address = 0x7f
-    instance.ip = ip
-    instance.port = port
-    instance.timeout = timeout
     instance.data = {}
 
     // compose the Factory for reading all relevant data for this kind of inverter
@@ -28,6 +25,7 @@ export default Factory
     const ReadDeviceInfo = await DeviceInfoReader.setup({
       ip           : instance.ip,
       port         : instance.port,
+      timeout      : instance.timeout,
       address      : instance.address,
       registerStart: 30001,
       registerCount: 40,
@@ -52,6 +50,7 @@ export default Factory
     const ReadRunningData = await RunningDataReader.setup({
       ip           : instance.ip,
       port         : instance.port,
+      timeout      : instance.timeout,
       address      : instance.address,
       registerStart: 30100,
       registerCount: 73,
@@ -67,6 +66,7 @@ export default Factory
     const ReadMeterData = await MeterDataReader.setup({
       ip           : instance.ip,
       port         : instance.port,
+      timeout      : instance.timeout,
       address      : instance.address,
       registerStart: 30196,
       registerCount: 1,
@@ -80,13 +80,4 @@ export default Factory
     instance.ReadDataFactory = ReadDataFactory
 
     return instance
-  })
-
-  .methods({
-    async update () {
-      const data = await this.ReadDataFactory()
-      Object.assign(this.data, data)
-
-      return data
-    },
   })

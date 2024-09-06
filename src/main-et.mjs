@@ -3,13 +3,13 @@ import {program as Program} from 'commander'
 import {inspect} from 'node:util'
 
 Program
-  .option('-i, --ip <ip>', 'ip of the inverter to connect to')
-  .option('-p, --port <port>', 'port of the inverter to connect to')
+  .requiredOption('-i, --ip <ip>', 'ip of the inverter to connect to')
+  .requiredOption('-p, --port <port>', 'port of the inverter to connect to')
+  .requiredOption('-t, --timeout <seconds>', 'timeout or network-actions')
   .showHelpAfterError()
   .parse(process.argv)
 
 
 const Options = Program.opts()
-const inverter = await Inverter({ip: Options.ip, port: Options.port})
-// await inverter.update()
+const inverter = await Inverter({ip: Options.ip, port: Options.port, timeout: Options.timeout})
 console.log('inverter', inspect(inverter.data, {depth: Infinity, maxArrayLength: Infinity, maxStringLength: Infinity}))

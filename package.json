@@ -1,7 +1,7 @@
 {
   "name": "goodwe-inverter",
-  "version": "0.0.1",
-  "description": "read/write registers via modbus-rtu interface (UDP) from GoodWe-Inverters",
+  "version": "1.0.0",
+  "description": "read registers via modbus-rtu interface (UDP) from GoodWe-Inverters",
   "main": "src/main.js",
   "type": "module",
   "scripts": {
@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "commander": "11.1.0",
-    "dgram-as-promised": "6.0.0",
+    "deep-object-diff": "1.1.9",
+    "mqtt": "5.10.1",
     "pino": "9.3.2",
     "stampit": "4.3.2"
   }

@@ -11,9 +11,9 @@ export default Factory
     Network,
   )
 
-  .configuration({
-    maxTries: 2,
+  .properties({
     log     : Log,
+    maxTries: 2,
   })
 
   .init(async ({
@@ -33,9 +33,10 @@ export default Factory
       registerCount,
     }) {
       let error
-      const {maxTries, log} = this.getStampConfiguration()
-      for (let count = 1; count <= maxTries; count++) {
-        log.trace('readMessage try #%d/%d', count, maxTries)
+      let count = 0
+
+      while (++count <= this.maxTries) {
+        this.log.trace('readMessage try #%d/%d', count, this.maxTries)
         try {
           const message = createRtuRequestMessage(this.address, MODBUS_READ_COMMAND, registerStart, registerCount)
           const responseMessage = await this.requestResponse(message) // eslint-disable-line no-await-in-loop
@@ -46,12 +47,14 @@ export default Factory
 
           return responseMessage.subarray(MODBUS_HEADER_LENGTH)
         } catch (e) {
-          if (e.code === 'PROTOCOL_ERROR') {
+          if (e.code === 'PROTOCOL_ERROR') { // exit eagerly on PROTOCOL_ERROR because this is fatal
             throw e
           }
+
           error = e
         }
       }
+
       throw error
     },
   })

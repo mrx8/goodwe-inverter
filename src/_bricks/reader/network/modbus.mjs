@@ -1,4 +1,4 @@
-import {from as ErrorFrom, ProgrammerError} from '../../../shared/error.mjs'
+import {from as ErrorFrom, OperationalError, ProgrammerError} from '../../../shared/error.mjs'
 
 const AA55PACKET = {
   HEADER       : 0xaa55,
@@ -140,43 +140,43 @@ export function validateRtuResponseMessage (message, address, command, offset, v
   let expectedLength
 
   if (message.length <= 4) {
-    throw new ProgrammerError('Response is too short.', 'PROTOCOL_ERROR')
+    throw new OperationalError('Response is too short.', 'PROTOCOL_ERROR')
   }
 
   if (message.readUInt16BE(0) !== MODBUS_HEADER) {
-    throw new ProgrammerError(
+    throw new OperationalError(
       `Response has no valid header: ${message.subarray(0, 2).toString('hex')}, expected: ${MODBUS_HEADER.toString(16)}.`,
       'PROTOCOL_ERROR',
     )
   }
 
   if (message[2] !== address) {
-    throw new ProgrammerError(`Response has no valid address-header: ${message[2]}, expected: ${address}.`, 'PROTOCOL_ERROR')
+    throw new OperationalError(`Response has no valid address-header: ${message[2]}, expected: ${address}.`, 'PROTOCOL_ERROR')
   }
 
 
   if (message[3] === command) {
     if (message[4] !== value * 2) {
-      throw new ProgrammerError(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`, 'PROTOCOL_ERROR')
+      throw new OperationalError(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`, 'PROTOCOL_ERROR')
     }
 
     expectedLength = message[4] + 7
     if (message.length < expectedLength) {
-      throw new ProgrammerError(`partial message received. Length should be ${message.length} but was ${expectedLength}`, 'PROTOCOL_ERROR')
+      throw new OperationalError(`partial message received. Length should be ${message.length} but was ${expectedLength}`, 'PROTOCOL_ERROR')
     }
   } else if ([MODBUS_WRITE_COMMAND, MODBUS_WRITE_MULTI_COMMAND].includes(message[3])) {
     expectedLength = 10
     if (message.length < expectedLength) {
-      throw new ProgrammerError(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`, 'PROTOCOL_ERROR')
+      throw new OperationalError(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`, 'PROTOCOL_ERROR')
     }
     const responseOffset = message.readUInt16BE(4)
     if (responseOffset !== offset) {
-      throw new ProgrammerError(`Response has wrong offset: ${responseOffset}, expected: ${offset}.`, 'PROTOCOL_ERROR')
+      throw new OperationalError(`Response has wrong offset: ${responseOffset}, expected: ${offset}.`, 'PROTOCOL_ERROR')
     }
 
     const responseValue = message.readInt16BE(6)
     if (responseValue !== value) {
-      throw new ProgrammerError(`Response has wrong value: ${responseValue}, expected: ${value}.`, 'PROTOCOL_ERROR')
+      throw new OperationalError(`Response has wrong value: ${responseValue}, expected: ${value}.`, 'PROTOCOL_ERROR')
     }
   } else {
     expectedLength = message.length
@@ -185,12 +185,12 @@ export function validateRtuResponseMessage (message, address, command, offset, v
 
   const checksumOffset = expectedLength - 2
   if (modbusChecksum(message.subarray(2, checksumOffset)) !== message.readUInt16LE(checksumOffset)) {
-    throw new ProgrammerError('Response CRC-16 checksum does not match.', 'PROTOCOL_ERROR')
+    throw new OperationalError('Response CRC-16 checksum does not match.', 'PROTOCOL_ERROR')
   }
 
   if (message[3] !== PACKET.READ_COMMAND) {
     const failureCode = FAILURE_CODES[message[4]] || 'UNKNOWN'
-    throw new ProgrammerError(`Response command failure: ${failureCode}.`, 'PROTOCOL_ERROR')
+    throw new OperationalError(`Response command failure: ${failureCode}.`, 'PROTOCOL_ERROR')
   }
 
   return true

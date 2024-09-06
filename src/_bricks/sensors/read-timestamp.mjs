@@ -10,7 +10,7 @@ export default Factory
       const index = this.getIndexFromRegister(register)
 
       const year = 2000 + this.message[index]
-      const month = this.message[index + 1]
+      const month = --this.message[index + 1]
       const day = this.message[index + 2]
       const hour = this.message[index + 3]
       const minute = this.message[index + 4]

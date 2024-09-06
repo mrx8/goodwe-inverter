@@ -1,12 +1,12 @@
 import Factory from 'stampit'
 import ReadMessage from './network/read-message.mjs'
 
-
 export default Factory
   .statics({
     async setup ({
       ip,
       port,
+      timeout,
       address,
       registerStart,
       registerCount,
@@ -15,22 +15,34 @@ export default Factory
       const reader = await ReadMessage({
         ip,
         port,
+        timeout,
         address,
       })
 
       return Factory
-        .init(async (param, {instance: instancePromise}) => {
+        .configuration({})
+
+        .init(async (param, {
+          instance: instancePromise,
+          stamp:{compose:{configuration: {
+            maxCalls = Infinity,
+          }}},
+          stamp,
+        }) => {
           const instance = await instancePromise
+          if (maxCalls === Infinity || stamp.compose.configuration.numberOfCalls < maxCalls) {
+            const responseMessage = await reader.readMessage({
+              registerStart,
+              registerCount,
+            })
 
-          const responseMessage = await reader.readMessage({
-            registerStart,
-            registerCount,
-          })
+            Object.assign(instance, Sensors({
+              message: responseMessage,
+              registerStart,
+            }).getData())
 
-          Object.assign(instance, Sensors({
-            message: responseMessage,
-            registerStart,
-          }).getData())
+            stamp.compose.configuration.numberOfCalls++
+          }
 
           return instance
         })

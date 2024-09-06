@@ -1,6 +1,11 @@
 import Factory from 'stampit'
-import Log from '../src/shared/log.mjs'
-import Network from '../src/_bricks/reader/network/network.mjs'
+import Log from '../shared/log.mjs'
+import Network from '../_bricks/reader/network/network.mjs'
+
+
+const GOODWE_BORADCAST_IP = '255.255.255.255'
+const GOODWE_BROADCAST_PORT = 48899
+const Timeout = 2000
 
 
 function bind (socket, port = 0) {
@@ -19,27 +24,24 @@ function bind (socket, port = 0) {
 
 
 export default Factory
+  .init((param = {}) => {
+    param.ip = GOODWE_BORADCAST_IP
+    param.port = GOODWE_BROADCAST_PORT
+    param.timeout = Timeout
+  })
+
   .compose(
     Network,
   )
 
-  .configuration({
-    GOODWE_BROADCAST_PORT: 48899,
-  })
-
-  .init(async ({
-    timeout = 2000,
-  }, {
+  .init(async (param, {
     instance: instancePromise,
-    stamp: {compose: {configuration: {
-      GOODWE_BROADCAST_PORT,
-    }}},
   }) => {
     const instance = await instancePromise
-    Log.trace('bind udp socket')
+    Log.trace('setup UDP-socket for receiving multicast')
     await bind(instance.client, 0)
-    Log.trace('listen for broadcast on udp socket')
     instance.client.setBroadcast(true)
+    Log.trace('bound and listen for broadcast on UDP-socket')
 
     return new Promise((resolve, reject) => {
       const responses = []
@@ -48,7 +50,7 @@ export default Factory
           const [ip, macAdressRaw, name] = data.toString().split(',')
           if (name.startsWith('Solar-WiFi')) {
             const macAdress = macAdressRaw.match(/.{2}/g).join(':')
-            Log.trace('got answer from %s %s %s', ip, macAdress, name)
+            Log.trace('got multicast-answer from ip: %s, mac-address: %s, name: %s', ip, macAdress, name)
             responses.push({
               ip,
               macAdress,
@@ -63,7 +65,7 @@ export default Factory
       const timeoutId = setTimeout(() => {
         instance.client.removeListener('message', receiver)
         resolve(responses)
-      }, timeout)
+      }, instance.timeout)
 
       const request = Buffer.from('WIFIKIT-214028-READ')
       Log.trace('send message %s to %s:%s', request.toString(), instance.ip, instance.port)

@@ -10,8 +10,6 @@ export default Factory
     readMeterEnergyTotal (register) {
       const value = this.readFloatBE(register)
 
-      console.log('Value', value)
-
       return value / 1000
     },
   })

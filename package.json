@@ -8,21 +8,22 @@
     "eslint": "eslint eslint.config.mjs '**/*.mjs'"
   },
   "author": "Andreas Vierengel",
-  "license": "ISC",
+  "license": "MIT",
   "bin": {
-    "discover-inverters": "bin/discover.cjs"
+    "discover-inverters": "bin/discover-inverters.mjs",
+    "inverterd": "bin/inverterd.mjs"
   },
   "devDependencies": {
-    "@eslint/js": "9.9.0",
+    "@eslint/js": "9.9.1",
     "chai": "5.1.1",
-    "eslint": "9.9.0",
+    "eslint": "9.9.1",
     "mocha": "10.7.3"
   },
   "dependencies": {
-    "commander": "11.1.0",
+    "commander": "12.1.0",
     "deep-object-diff": "1.1.9",
     "mqtt": "5.10.1",
-    "pino": "9.3.2",
+    "pino": "9.4.0",
     "stampit": "4.3.2"
   }
 }

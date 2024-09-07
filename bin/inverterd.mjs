@@ -37,10 +37,10 @@ function* recursiveIterate (path, iterator) {
 function createPublisher (inverter) {
   const serialNumber = inverter.data.deviceInfo.serialNumber
 
-  return async function publishToMqttBroker (data) {
+  return async data => {
     const promises = []
     const mqttPath = `goodwe.inverters.${serialNumber}`
-
+    this.log.trace('publish sensors with path %s to mqtt', mqttPath)
     for (const [path, value] of recursiveIterate(mqttPath, data)) {
       promises.push(
         client.publishAsync(path, value, {
@@ -123,7 +123,7 @@ const ManageInverters = Factory
             })
           }
 
-          const publishToMqttBroker = createPublisher(inverter)
+          const publishToMqttBroker = createPublisher.call(this, inverter)
           let changes = inverter.data
           while (true) {
             await publishToMqttBroker(changes) // eslint-disable-line no-await-in-loop

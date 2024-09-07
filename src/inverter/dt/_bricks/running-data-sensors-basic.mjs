@@ -49,7 +49,8 @@ export default Factory
       gridL1Current  : instance.readCurrent(30121),
       gridL1Frequency: instance.readFrequency(30124),
 
-      inverterPowerTotal: instance.readInverterPowerTotal(30128),
+      inverterActivePower: instance.readInverterPowerTotal(30128), // only for completeness
+      inverterPowerTotal : instance.readInverterPowerTotal(30128),
 
       errorCodes: instance.readErrorCodes(30130),
       errors    : instance.readErrors(30130),

@@ -7,12 +7,14 @@ import Network from './network.mjs'
 
 export default Factory
   .compose(
+    Log,
     GetStamp,
     Network,
   )
 
+  .setLogId('readMmessage')
+
   .properties({
-    log     : Log,
     maxTries: 2,
   })
 

@@ -31,17 +31,20 @@ export default Factory
   })
 
   .compose(
+    Log,
     Network,
   )
+
+  .setLogId('discoverInverter')
 
   .init(async (param, {
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
-    Log.trace('setup UDP-socket for receiving multicast')
+    instance.log.trace('setup UDP-socket for receiving multicast')
     await bind(instance.client, 0)
     instance.client.setBroadcast(true)
-    Log.trace('bound and listen for broadcast on UDP-socket')
+    instance.log.trace('bound and listen for broadcast on UDP-socket')
 
     return new Promise((resolve, reject) => {
       const responses = []
@@ -50,7 +53,7 @@ export default Factory
           const [ip, macAdressRaw, name] = data.toString().split(',')
           if (name.startsWith('Solar-WiFi')) {
             const macAdress = macAdressRaw.match(/.{2}/g).join(':')
-            Log.trace('got multicast-answer from ip: %s, mac-address: %s, name: %s', ip, macAdress, name)
+            instance.log.trace('got multicast-answer from ip: %s, mac-address: %s, name: %s', ip, macAdress, name)
             responses.push({
               ip,
               macAdress,
@@ -68,7 +71,7 @@ export default Factory
       }, instance.timeout)
 
       const request = Buffer.from('WIFIKIT-214028-READ')
-      Log.trace('send message %s to %s:%s', request.toString(), instance.ip, instance.port)
+      instance.log.trace('send message %s to %s:%s', request.toString(), instance.ip, instance.port)
       instance.client.send(request, instance.port, instance.ip, err => {
         if (err) {
           clearTimeout(timeoutId)

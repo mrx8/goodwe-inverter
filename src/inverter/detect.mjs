@@ -2,9 +2,10 @@ import {PLATFORM_745_HV_MODELS, PLATFORM_745_LV_MODELS} from '../_bricks/sensors
 import {createAa55Packet, validateAa55Packet} from '../_bricks/reader/network/modbus.mjs'
 import Factory from 'stampit'
 import GetStamp from '../shared/get-stamp.mjs'
-import Log from '../../src/shared/log.mjs'
+import Log from '../shared/log.mjs'
 import Network from '../_bricks/reader/network/network.mjs'
 import {ProgrammerError} from '../shared/error.mjs'
+
 
 const PLATFORM_205_MODELS = [
   'ETU', 'ETL', 'ETR', 'BHN', 'EHU', 'BHU', 'EHR', 'BTU',
@@ -35,7 +36,7 @@ async function getDeviceIdViaAa55 () {
 }
 
 
-const DetermineInverter = Factory
+export default Factory
   .configuration({
     DT_MODEL_TAGS: [
       'DTU', 'DTS', 'MSU', 'MST', 'MSC', 'DSN', 'DTN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', 'PSB', 'PSC',
@@ -45,9 +46,12 @@ const DetermineInverter = Factory
   })
 
   .compose(
+    Log,
     GetStamp,
     Network,
   )
+
+  .setLogId('detectInverter')
 
   .init(async (param, {
     instance: instancePromise,
@@ -63,7 +67,7 @@ const DetermineInverter = Factory
       for (const model of instance.getStampConfiguration().ET_MODEL_TAGS) {
         if (serialNumber.includes(model)) {
           const {default: Inverter} = await import('./et/inverter.mjs')// eslint-disable-line no-await-in-loop
-          const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
+          const inverter = await Inverter.setLogId(param.ip).create(param) // eslint-disable-line no-await-in-loop
           instance.log.debug('SUCCESS! Detected ET/EH/BT/BH/GEH inverter %s, S/N: %s.', modelName, serialNumber)
 
           return inverter
@@ -73,7 +77,7 @@ const DetermineInverter = Factory
       for (const model of instance.getStampConfiguration().DT_MODEL_TAGS) {
         if (serialNumber.includes(model)) {
           const {default: Inverter} = await import('./dt/inverter.mjs') // eslint-disable-line no-await-in-loop
-          const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
+          const inverter = await Inverter.setLogId(param.ip).create(param) // eslint-disable-line no-await-in-loop
           instance.log.debug('SUCCESS! Detected DT/MS/D-NS/XS/GEP inverter %s, S/N: %s.', modelName, serialNumber)
 
           return inverter
@@ -92,7 +96,7 @@ const DetermineInverter = Factory
       try {
         instance.log.debug('check for model %s.', model)
         const {default: Inverter} = await import(`./${model.toLowerCase()}/inverter.mjs`) // eslint-disable-line no-await-in-loop
-        const inverter = await Inverter(param) // eslint-disable-line no-await-in-loop
+        const inverter = await Inverter.setLogId(param.ip).create(param) // eslint-disable-line no-await-in-loop
         instance.log.debug('SUCCESS! Found model %s-type inverter, S/N: %s.', model, inverter.data.deviceInfo.serialNumber)
 
         return inverter
@@ -108,15 +112,4 @@ const DetermineInverter = Factory
 
     instance.log.debug('FAILURE! I cannot determine your inverter...')
     throw new ProgrammerError('unknown inverter', 'ERROR_UNKNOWN_INVERTER')
-  })
-
-
-export default Factory
-  .statics({
-    async from (param) {
-      Log.trace('determine inverter from %o', param)
-      const inverter = await DetermineInverter(param)
-
-      return inverter
-    },
   })

@@ -6,25 +6,21 @@ import Log from '../../shared/log.mjs'
 
 
 export default Factory
-  .properties({
-    log: Log,
-  })
-
   .compose(
     InverterBase,
   )
 
   .init(async (param, {
     instance: instancePromise,
+    stamp,
   }) => {
     const instance = await instancePromise
-    instance.log.trace('init et-inverter with %o', instance)
     instance.interface = 'ET'
     instance.address = 0xf7
     instance.data = {}
 
     // compose the Factory for reading all relevant data for this kind of inverter
-    let ReadDataFactory = Factory
+    let ReadDataFactory = Factory.compose(Log).setLogId(stamp.compose?.configuration?.logId)
 
     // device-info
     const ReadDeviceInfo = await DeviceInfoReader.setup({

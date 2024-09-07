@@ -6,11 +6,10 @@ import dgram from 'node:dgram'
 
 
 export default Factory
-  .compose(Param)
-
-  .properties({
-    log: Log,
-  })
+  .compose(
+    Param,
+    Log('network'),
+  )
 
   .init(async (param, {
     instance: instancePromise,

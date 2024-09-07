@@ -12,7 +12,7 @@ export default Factory
       registerCount,
       Sensors,
     }) {
-      const reader = await ReadMessage({
+      const reader = await ReadMessage.setLogId(this.compose?.configuration?.logId || ip).create({
         ip,
         port,
         timeout,
@@ -20,7 +20,9 @@ export default Factory
       })
 
       return Factory
-        .configuration({})
+        .configuration({
+          numberOfCalls: 0,
+        })
 
         .init(async (param, {
           instance: instancePromise,

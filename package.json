@@ -1,6 +1,6 @@
 {
   "name": "goodwe-inverter",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "read registers via modbus-rtu interface (UDP) from GoodWe-Inverters",
   "main": "src/main.js",
   "type": "module",

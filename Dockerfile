@@ -4,4 +4,3 @@ WORKDIR /opt/project
 COPY package*.json ./
 RUN npm ci
 COPY . .
-ARG TZ=UTC

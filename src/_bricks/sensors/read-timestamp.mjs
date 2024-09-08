@@ -16,6 +16,6 @@ export default Factory
       const minute = this.message[index + 4]
       const second = this.message[index + 5]
 
-      return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`).toISOString()
+      return new Date(`${year}-${month}-${day} ${hour}:${minute}:${second}`).toISOString()
     },
   })

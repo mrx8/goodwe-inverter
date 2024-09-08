@@ -10,11 +10,11 @@ export default Factory
   )
 
   .methods({
-    readMeterActivePower16 (register) {
+    readMeterPower16 (register) {
       return this.readInt16BE(register)
     },
 
-    readMeterActivePower (register) {
+    readMeterPower (register) {
       return this.readInt32BE(register)
     },
   })

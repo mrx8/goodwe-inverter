@@ -1,17 +1,17 @@
 import Factory from 'stampit'
-import ReadMeterActivePower from '../../../_bricks/sensors/read-meter-active-power.mjs'
+import ReadMeterPower from '../../../_bricks/sensors/read-meter-power.mjs'
 
 
 export default Factory
   .compose(
-    ReadMeterActivePower,
+    ReadMeterPower,
   )
 
   .init((param, {instance}) => {
     instance.meterData = instance.meterData || {}
 
     const data = {
-      activePower: instance.readMeterActivePower16(30196),
+      activePower: instance.readMeterPower16(30196),
     }
 
     Object.assign(instance.meterData, data)

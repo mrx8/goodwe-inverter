@@ -60,21 +60,21 @@ export default Factory
     const runningData = await ReadRunningData()
     Object.assign(instance.data, runningData)
 
-    // meter data
-    const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
-    const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-basic.mjs')
-    const ReadMeterData = await MeterDataReader.setup({
-      ip           : instance.ip,
-      port         : instance.port,
-      timeout      : instance.timeout,
-      address      : instance.address,
-      registerStart: 30196,
-      registerCount: 1,
-      Sensors      : MeterDataSensors,
-    })
-    const meterData = await ReadMeterData()
-    Object.assign(instance.data, meterData)
-    ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
+    // meter data is curently only 1 sensor which constantly provides -1 at least for XS-inverter => skipped for now
+    // const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
+    // const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-basic.mjs')
+    // const ReadMeterData = await MeterDataReader.setup({
+    //   ip           : instance.ip,
+    //   port         : instance.port,
+    //   timeout      : instance.timeout,
+    //   address      : instance.address,
+    //   registerStart: 30196,
+    //   registerCount: 1,
+    //   Sensors      : MeterDataSensors,
+    // })
+    // const meterData = await ReadMeterData()
+    // Object.assign(instance.data, meterData)
+    // ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
 
     // this composed factory fetch updates from the available sensors
     instance.ReadDataFactory = ReadDataFactory

@@ -72,9 +72,9 @@ export default Factory
     //   registerCount: 1,
     //   Sensors      : MeterDataSensors,
     // })
+    // ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
     // const meterData = await ReadMeterData()
     // Object.assign(instance.data, meterData)
-    // ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
 
     // this composed factory fetch updates from the available sensors
     instance.ReadDataFactory = ReadDataFactory

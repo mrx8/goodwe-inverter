@@ -16,20 +16,20 @@ export default Factory
     instance.meterData = instance.meterData || {}
 
     const data = {
-      activePowerL1   : instance.readPower(36019),
-      activePowerL2   : instance.readPower(36021),
-      activePowerL3   : instance.readPower(36023),
-      activePowerTotal: instance.readPower(36025),
+      activePowerL1   : instance.readPower16(36019),
+      activePowerL2   : instance.readPower16(36021),
+      activePowerL3   : instance.readPower16(36023),
+      activePowerTotal: instance.readPower16(36025),
 
-      reactivePowerL1   : instance.readPower(36027),
-      reactivePowerL2   : instance.readPower(36029),
-      reactivePowerL3   : instance.readPower(36031),
-      reactivePowerTotal: instance.readPower(36033),
+      reactivePowerL1   : instance.readPower16(36027),
+      reactivePowerL2   : instance.readPower16(36029),
+      reactivePowerL3   : instance.readPower16(36031),
+      reactivePowerTotal: instance.readPower16(36033),
 
-      apparentPowerL1   : instance.readPower(36035),
-      apparentPowerL2   : instance.readPower(36037),
-      apparentPowerL3   : instance.readPower(36039),
-      apparentPowerTotal: instance.readPower(36041),
+      apparentPowerL1   : instance.readPower16(36035),
+      apparentPowerL2   : instance.readPower16(36037),
+      apparentPowerL3   : instance.readPower16(36039),
+      apparentPowerTotal: instance.readPower16(36041),
 
       powerFactorL1   : instance.readPowerFactor(36010),
       powerFactorL2   : instance.readPowerFactor(36011),

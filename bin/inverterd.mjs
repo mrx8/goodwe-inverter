@@ -123,6 +123,9 @@ const ManageInverters = Factory
     async runInverter (ip) {
       this.log.trace('runInverter with ip %s', ip)
       let inverter
+      let publishToMqttBroker
+      let hadError = false
+
       while (true) {
         try {
           if (!inverter) {
@@ -131,17 +134,22 @@ const ManageInverters = Factory
               port   : 8899,
               timeout: 2000,
             })
+
+            publishToMqttBroker = createPublisher.call(this, inverter)
           }
 
-          const publishToMqttBroker = createPublisher.call(this, inverter)
           let changes = inverter.data
           while (true) {
-            await publishToMqttBroker(changes) // eslint-disable-line no-await-in-loop
+            if (hadError === false) { // don't publish the last data if we had an error before
+              await publishToMqttBroker(changes) // eslint-disable-line no-await-in-loop
+            }
             await sleep(10000) // eslint-disable-line no-await-in-loop
             changes = await inverter.updateChanges() // eslint-disable-line no-await-in-loop
+            hadError = false // everything went normal
           }
         } catch (e) {
           if (e.type === 'OPERATIONAL_ERROR') {
+            hadError = true // in case of a transient error, remember it here
             this.log.warn('retrying after error: %o', e)
           } else {
             throw e

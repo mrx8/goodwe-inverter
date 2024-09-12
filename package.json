@@ -5,7 +5,8 @@
   "main": "src/main.js",
   "type": "module",
   "scripts": {
-    "eslint": "eslint eslint.config.mjs '**/*.mjs'"
+    "eslint": "eslint eslint.config.mjs '**/*.mjs'",
+    "test": "mocha $(find test -name 'test-*')"
   },
   "author": "Andreas Vierengel",
   "license": "MIT",

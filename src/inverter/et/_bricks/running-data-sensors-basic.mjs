@@ -70,8 +70,8 @@ export default Factory
       gridModeCode: instance.readGridModeCode(35140),
       gridMode    : instance.readGridMode(35140),
 
-      inverterActivePower: instance.readActivePower(35140),
-      inverterPowerTotal : instance.readPowerTotal(35138),
+      activePower: instance.readActivePower(35140),
+      powerTotal : instance.readPowerTotal(35138),
 
       errorCodes: instance.readErrorCodes(35189),
       errors    : instance.readErrors(35189),

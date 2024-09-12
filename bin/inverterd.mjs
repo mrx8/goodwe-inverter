@@ -12,7 +12,17 @@ import {setTimeout as sleep} from 'node:timers/promises'
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
 
-const client = await Mqtt.connectAsync(process.env.MQTT_URI)
+let client
+const MQTT_URI = process.env.MQTT_URI || null
+if (MQTT_URI === null) {
+  client = {
+    publishAsync (path, value) {
+      console.log(`${path} => ${value}`)
+    },
+  }
+} else {
+  client = await Mqtt.connectAsync(process.env.MQTT_URI)
+}
 
 
 function* recursiveIterate (path, iterator) {

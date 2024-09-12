@@ -4,15 +4,13 @@ import {required} from './required.mjs'
 
 export default Factory
 
-  .init(async ({
+  .init(({
     ip = required('ip'),
     port = required('port'),
     timeout = required('timeout'),
   } = {}, {
-    instance: instancePromise,
+    instance,
   }) => {
-    const instance = await instancePromise
-
     instance.ip = ip
     instance.port = port
     instance.timeout = timeout

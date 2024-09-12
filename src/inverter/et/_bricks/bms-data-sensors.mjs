@@ -1,14 +1,14 @@
 import Factory from 'stampit'
-import ReadBmsNumberOfModules from '../../../_bricks/sensors/read-bms-number-of-modules.mjs'
-import ReadBmsStateOfCharge from '../../../_bricks/sensors/read-bms-state-of-charge.mjs'
-import ReadBmsStateOfHealth from '../../../_bricks/sensors/read-bms-state-of-health.mjs'
-import ReadTemperature from '../../../_bricks/sensors/read-temperature.mjs'
+import ReadNumberOfModules from '../../../_bricks/sensors/bms/read-number-of-modules.mjs'
+import ReadStateOfCharge from '../../../_bricks/sensors/bms/read-state-of-charge.mjs'
+import ReadStateOfHealth from '../../../_bricks/sensors/bms/read-state-of-health.mjs'
+import ReadTemperature from '../../../_bricks/sensors/bms/read-temperature.mjs'
 
 export default Factory
   .compose(
-    ReadBmsNumberOfModules,
-    ReadBmsStateOfCharge,
-    ReadBmsStateOfHealth,
+    ReadNumberOfModules,
+    ReadStateOfCharge,
+    ReadStateOfHealth,
     ReadTemperature,
   )
 
@@ -16,10 +16,10 @@ export default Factory
     instance.bmsData = instance.bmsData || {}
 
     const data = {
-      stateOfCharge  : instance.readBmsStateOfCharge(37007),
-      stateOfHealth  : instance.readBmsStateOfHealth(37008),
+      stateOfCharge  : instance.readStateOfCharge(37007),
+      stateOfHealth  : instance.readStateOfHealth(37008),
       temperature    : instance.readTemperature(37003),
-      numberOfmodules: instance.readBmsNumberOfModules(37009),
+      numberOfmodules: instance.readNumberOfModules(37009),
     }
 
     Object.assign(instance.bmsData, data)

@@ -1,15 +1,15 @@
 import Factory from 'stampit'
-import ReadCurrent from '../../../_bricks/sensors/read-current.mjs'
-import ReadEnergyGenerationToday from '../../../_bricks/sensors/read-energy-generation-today.mjs'
-import ReadEnergyGenerationTotal from '../../../_bricks/sensors/read-energy-generation-total.mjs'
-import ReadErrorCodes from '../../../_bricks/sensors/read-error-codes.mjs'
-import ReadFrequency from '../../../_bricks/sensors/read-frequency.mjs'
-import ReadInverterPowerTotal from '../../../_bricks/sensors/read-inverter-power-total.mjs'
-import ReadPowerFactor from '../../../_bricks/sensors/read-power-factor.mjs'
-import ReadSafetyCountry from '../../../_bricks/sensors/read-safety-country.mjs'
-import ReadTemperature from '../../../_bricks/sensors/read-temperature.mjs'
-import ReadTimestamp from '../../../_bricks/sensors/read-timestamp.mjs'
-import ReadVoltage from '../../../_bricks/sensors/read-voltage.mjs'
+import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
+import ReadEnergyGenerationToday from '../../../_bricks/sensors/running/read-energy-generation-today.mjs'
+import ReadEnergyGenerationTotal from '../../../_bricks/sensors/running/read-energy-generation-total.mjs'
+import ReadErrorCodes from '../../../_bricks/sensors/running/read-error-codes.mjs'
+import ReadFrequency from '../../../_bricks/sensors/running/read-frequency.mjs'
+import ReadPowerFactor from '../../../_bricks/sensors/running/read-power-factor.mjs'
+import ReadPowerTotal from '../../../_bricks/sensors/running/read-power-total.mjs'
+import ReadSafetyCountry from '../../../_bricks/sensors/running/read-safety-country.mjs'
+import ReadTemperature from '../../../_bricks/sensors/running/read-temperature.mjs'
+import ReadTimestamp from '../../../_bricks/sensors/running/read-timestamp.mjs'
+import ReadVoltage from '../../../_bricks/sensors/running/read-voltage.mjs'
 
 
 export default Factory
@@ -19,8 +19,8 @@ export default Factory
     ReadEnergyGenerationTotal,
     ReadErrorCodes,
     ReadFrequency,
-    ReadInverterPowerTotal,
     ReadPowerFactor,
+    ReadPowerTotal,
     ReadSafetyCountry,
     ReadTemperature,
     ReadTimestamp,
@@ -49,8 +49,8 @@ export default Factory
       gridL1Current  : instance.readCurrent(30121),
       gridL1Frequency: instance.readFrequency(30124),
 
-      inverterActivePower: instance.readInverterPowerTotal(30128), // only for completeness
-      inverterPowerTotal : instance.readInverterPowerTotal(30128),
+      inverterActivePower: instance.readPowerTotal(30128), // only for completeness
+      inverterPowerTotal : instance.readPowerTotal(30128),
 
       errorCodes: instance.readErrorCodes(30130),
       errors    : instance.readErrors(30130),

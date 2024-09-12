@@ -18,12 +18,11 @@ export default Factory
     maxTries: 2,
   })
 
-  .init(async ({
+  .init(({
     address,
   }, {
-    instance: instancePromise,
+    instance,
   }) => {
-    const instance = await instancePromise
     instance.address = address
 
     return instance

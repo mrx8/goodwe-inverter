@@ -1,4 +1,4 @@
-import {PLATFORM_745_HV_MODELS, PLATFORM_745_LV_MODELS} from '../_bricks/sensors/read-is-745platform.mjs'
+import {PLATFORM_745_HV_MODELS, PLATFORM_745_LV_MODELS} from '../_bricks/sensors/device-info/read-is-745platform.mjs'
 import {createAa55Packet, validateAa55Packet} from '../_bricks/reader/network/modbus.mjs'
 import Factory from 'stampit'
 import GetStamp from '../shared/get-stamp.mjs'
@@ -54,10 +54,8 @@ export default Factory
   .setLogId('detectInverter')
 
   .init(async (param, {
-    instance: instancePromise,
+    instance,
   }) => {
-    const instance = await instancePromise
-
     // Determine via serialNumber
     try {
       instance.log.debug('try to determine Inverter via AA55-protocol.')

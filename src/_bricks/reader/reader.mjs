@@ -3,7 +3,7 @@ import ReadMessage from './network/read-message.mjs'
 
 export default Factory
   .statics({
-    async setup ({
+    setup ({
       ip,
       port,
       timeout,
@@ -12,7 +12,7 @@ export default Factory
       registerCount,
       Sensors,
     }) {
-      const reader = await ReadMessage.setLogId(this.compose?.configuration?.logId || ip).create({
+      const reader = ReadMessage.setLogId(this.compose?.configuration?.logId || ip).create({
         ip,
         port,
         timeout,

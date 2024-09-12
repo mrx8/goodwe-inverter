@@ -1,7 +1,7 @@
 import Factory from 'stampit'
-import ReadCurrent from '../../../_bricks/sensors/read-current.mjs'
-import ReadFrequency from '../../../_bricks/sensors/read-frequency.mjs'
-import ReadVoltage from '../../../_bricks/sensors/read-voltage.mjs'
+import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
+import ReadFrequency from '../../../_bricks/sensors/running/read-frequency.mjs'
+import ReadVoltage from '../../../_bricks/sensors/running/read-voltage.mjs'
 import RunningDataSensorsBasic from './running-data-sensors-basic.mjs'
 
 export default Factory

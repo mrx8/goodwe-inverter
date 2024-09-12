@@ -11,10 +11,9 @@ export default Factory
   )
 
   .init(async (param, {
-    instance: instancePromise,
+    instance,
     stamp,
   }) => {
-    const instance = await instancePromise
     instance.interface = 'ET'
     instance.address = 0xf7
     instance.data = {}
@@ -23,7 +22,7 @@ export default Factory
     let ReadDataFactory = Factory.compose(Log).setLogId(stamp.compose?.configuration?.logId)
 
     // device-info
-    const ReadDeviceInfo = await DeviceInfoReader.setup({
+    const ReadDeviceInfo = DeviceInfoReader.setup({
       ip           : instance.ip,
       port         : instance.port,
       timeout      : instance.timeout,
@@ -48,7 +47,7 @@ export default Factory
       RunningDataSensors = RunningDataSensors.compose(RunningDataSensorsBasic)
     }
 
-    const ReadRunningData = await RunningDataReader.setup({
+    const ReadRunningData = RunningDataReader.setup({
       ip           : instance.ip,
       port         : instance.port,
       timeout      : instance.timeout,
@@ -65,7 +64,7 @@ export default Factory
     if (instance.data.runningData.batteryModeCode > 0) {
       const {default: BmsDataReader} = await import('../../_bricks/reader/bms-data-reader.mjs')
       const {default: BmsDataSensors} = await import('./_bricks/bms-data-sensors.mjs')
-      const ReadBmsData = await BmsDataReader.setup({
+      const ReadBmsData = BmsDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
         timeout      : instance.timeout,
@@ -82,44 +81,23 @@ export default Factory
     // meter data
     if (instance.data.deviceInfo.is745Platform) {
       const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
-      const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-even-more-extended.mjs')
-      const ReadMeterData = await MeterDataReader.setup({
+      const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-extended.mjs')
+      const ReadMeterData = MeterDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
         timeout      : instance.timeout,
         address      : instance.address,
         registerStart: 36000,
-        registerCount: 125,
+        registerCount: 58,
         Sensors      : MeterDataSensors,
       })
-
-      try {
-        const meterData = await ReadMeterData()
-        Object.assign(instance.data, meterData)
-        ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
-      } catch (e) {
-        if (!(e.code === 'PROTOCOL_ERROR' && e.message.match(/ILLEGAL_DATA_ADDRESS/))) {
-          throw e
-        }
-
-        const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-extended.mjs')
-        const ReadMeterData = await MeterDataReader.setup({
-          ip           : instance.ip,
-          port         : instance.port,
-          timeout      : instance.timeout,
-          address      : instance.address,
-          registerStart: 36000,
-          registerCount: 58,
-          Sensors      : MeterDataSensors,
-        })
-        const meterData = await ReadMeterData()
-        Object.assign(instance.data, meterData)
-        ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
-      }
+      const meterData = await ReadMeterData()
+      Object.assign(instance.data, meterData)
+      ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
     } else {
       const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
       const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-basic.mjs')
-      const ReadMeterData = await MeterDataReader.setup({
+      const ReadMeterData = MeterDataReader.setup({
         ip           : instance.ip,
         port         : instance.port,
         timeout      : instance.timeout,

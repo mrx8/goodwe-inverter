@@ -1,7 +1,7 @@
 import Factory from 'stampit'
 import MeterDataSensorsBasic from './meter-data-sensors-basic.mjs'
-import ReadCurrent from '../../../_bricks/sensors/read-current.mjs'
-import ReadVoltage from '../../../_bricks/sensors/read-voltage.mjs'
+import ReadCurrent from '../../../_bricks/sensors/meter/read-current.mjs'
+import ReadVoltage from '../../../_bricks/sensors/meter/read-voltage.mjs'
 
 
 export default Factory

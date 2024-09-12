@@ -1,45 +1,45 @@
 import Factory from 'stampit'
-import ReadMeterEnergyTotal from '../../../_bricks/sensors/read-meter-energy-total.mjs'
-import ReadMeterFrequency from '../../../_bricks/sensors/read-meter-frequency.mjs'
-import ReadMeterPower from '../../../_bricks/sensors/read-meter-power.mjs'
-import ReadMeterPowerFactor from '../../../_bricks/sensors/read-meter-power-factor.mjs'
+import ReadEnergyTotal from '../../../_bricks/sensors/meter/read-energy-total.mjs'
+import ReadFrequency from '../../../_bricks/sensors/meter/read-frequency.mjs'
+import ReadPower from '../../../_bricks/sensors/meter/read-power.mjs'
+import ReadPowerFactor from '../../../_bricks/sensors/meter/read-power-factor.mjs'
 
 export default Factory
   .compose(
-    ReadMeterEnergyTotal,
-    ReadMeterFrequency,
-    ReadMeterPower,
-    ReadMeterPowerFactor,
+    ReadEnergyTotal,
+    ReadFrequency,
+    ReadPower,
+    ReadPowerFactor,
   )
 
   .init((param, {instance}) => {
     instance.meterData = instance.meterData || {}
 
     const data = {
-      activePowerL1   : instance.readMeterPower(36019),
-      activePowerL2   : instance.readMeterPower(36021),
-      activePowerL3   : instance.readMeterPower(36023),
-      activePowerTotal: instance.readMeterPower(36025),
+      activePowerL1   : instance.readPower(36019),
+      activePowerL2   : instance.readPower(36021),
+      activePowerL3   : instance.readPower(36023),
+      activePowerTotal: instance.readPower(36025),
 
-      reactivePowerL1   : instance.readMeterPower(36027),
-      reactivePowerL2   : instance.readMeterPower(36029),
-      reactivePowerL3   : instance.readMeterPower(36031),
-      reactivePowerTotal: instance.readMeterPower(36033),
+      reactivePowerL1   : instance.readPower(36027),
+      reactivePowerL2   : instance.readPower(36029),
+      reactivePowerL3   : instance.readPower(36031),
+      reactivePowerTotal: instance.readPower(36033),
 
-      apparentPowerL1   : instance.readMeterPower(36035),
-      apparentPowerL2   : instance.readMeterPower(36037),
-      apparentPowerL3   : instance.readMeterPower(36039),
-      apparentPowerTotal: instance.readMeterPower(36041),
+      apparentPowerL1   : instance.readPower(36035),
+      apparentPowerL2   : instance.readPower(36037),
+      apparentPowerL3   : instance.readPower(36039),
+      apparentPowerTotal: instance.readPower(36041),
 
-      powerFactorL1   : instance.readMeterPowerFactor(36010),
-      powerFactorL2   : instance.readMeterPowerFactor(36011),
-      powerFactorL3   : instance.readMeterPowerFactor(36012),
-      powerFactorTotal: instance.readMeterPowerFactor(36013),
+      powerFactorL1   : instance.readPowerFactor(36010),
+      powerFactorL2   : instance.readPowerFactor(36011),
+      powerFactorL3   : instance.readPowerFactor(36012),
+      powerFactorTotal: instance.readPowerFactor(36013),
 
-      frequency: instance.readMeterFrequency(36014),
+      frequency: instance.readFrequency(36014),
 
-      energyExportedTotal: instance.readMeterEnergyTotal(36015),
-      energyImportedTotal: instance.readMeterEnergyTotal(36017),
+      energyExportedTotal: instance.readEnergyTotal(36015),
+      energyImportedTotal: instance.readEnergyTotal(36017),
     }
 
     // exported und imported

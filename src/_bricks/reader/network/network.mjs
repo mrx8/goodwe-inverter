@@ -11,11 +11,9 @@ export default Factory
     Log('network'),
   )
 
-  .init(async (param, {
-    instance: instancePromise,
+  .init((param, {
+    instance,
   }) => {
-    const instance = await instancePromise
-
     const client = dgram.createSocket('udp4')
     client.unref()
     instance.client = client

@@ -1,7 +1,14 @@
 import Factory from 'stampit'
-import ReadPower from '../running/read-power.mjs'
+import ReadInt32BE from '../read-int32be.mjs'
+
 
 export default Factory
   .compose(
-    ReadPower,
+    ReadInt32BE,
   )
+
+  .methods({
+    readPower (register) {
+      return this.readInt32BE(register)
+    },
+  })

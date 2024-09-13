@@ -21,12 +21,12 @@ export default Factory
       gridL2Voltage  : instance.readVoltage(35126),
       gridL2Current  : instance.readCurrent(35127),
       gridL2Frequency: instance.readFrequency(35128),
-      gridL2Power    : instance.readPower(35130),
+      gridL2Power    : instance.readPower16(35130),
 
       gridL3Voltage  : instance.readVoltage(35131),
       gridL3Current  : instance.readCurrent(35132),
       gridL3Frequency: instance.readFrequency(35133),
-      gridL3Power    : instance.readPower(35135),
+      gridL3Power    : instance.readPower16(35135),
     }
     Object.assign(instance.runningData, data)
 

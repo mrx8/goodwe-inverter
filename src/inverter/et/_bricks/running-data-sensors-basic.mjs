@@ -1,5 +1,4 @@
 import Factory from 'stampit'
-import ReadActivePower from '../../../_bricks/sensors/running/read-active-power.mjs'
 import ReadBatteryMode from '../../../_bricks/sensors/running/read-battery-mode.mjs'
 import ReadBatteryPower from '../../../_bricks/sensors/running/read-battery-power.mjs'
 import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
@@ -13,7 +12,6 @@ import ReadErrorCodes from '../../../_bricks/sensors/running/read-error-codes.mj
 import ReadFrequency from '../../../_bricks/sensors/running/read-frequency.mjs'
 import ReadGridMode from '../../../_bricks/sensors/running/read-grid-mode.mjs'
 import ReadPower from '../../../_bricks/sensors/running/read-power.mjs'
-import ReadPowerTotal from '../../../_bricks/sensors/running/read-power-total.mjs'
 import ReadSafetyCountry from '../../../_bricks/sensors/running/read-safety-country.mjs'
 import ReadTemperature from '../../../_bricks/sensors/running/read-temperature.mjs'
 import ReadTimestamp from '../../../_bricks/sensors/running/read-timestamp.mjs'
@@ -21,7 +19,6 @@ import ReadVoltage from '../../../_bricks/sensors/running/read-voltage.mjs'
 
 export default Factory
   .compose(
-    ReadActivePower,
     ReadBatteryMode,
     ReadBatteryPower,
     ReadCurrent,
@@ -35,7 +32,6 @@ export default Factory
     ReadFrequency,
     ReadGridMode,
     ReadPower,
-    ReadPowerTotal,
     ReadSafetyCountry,
     ReadTemperature,
     ReadTimestamp,
@@ -70,8 +66,8 @@ export default Factory
       gridModeCode: instance.readGridModeCode(35140),
       gridMode    : instance.readGridMode(35140),
 
-      activePower: instance.readActivePower(35140),
-      powerTotal : instance.readPowerTotal(35138),
+      activePower: instance.readPower16(35140),
+      powerTotal : instance.readPower16(35138),
 
       errorCodes: instance.readErrorCodes(35189),
       errors    : instance.readErrors(35189),
@@ -90,7 +86,7 @@ export default Factory
       gridL1Voltage  : instance.readVoltage(35121),
       gridL1Current  : instance.readCurrent(35122),
       gridL1Frequency: instance.readFrequency(35123),
-      gridL1Power    : instance.readPower(35125),
+      gridL1Power    : instance.readPower16(35125),
 
       energyImportToday: instance.readEnergyImportToday(35202),
       energyExportToday: instance.readEnergyExportToday(35199),
@@ -98,8 +94,7 @@ export default Factory
     Object.assign(instance.runningData, data)
 
     Object.assign(instance.runningData, { // virtual-fields
-      pvPowerTotal    : data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
-      houseConsumption: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power + data.batteryPower - data.activePower,
+      pvPowerTotal: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
     })
 
     return instance

@@ -4,8 +4,7 @@ import ReadEnergyGenerationToday from '../../../_bricks/sensors/running/read-ene
 import ReadEnergyGenerationTotal from '../../../_bricks/sensors/running/read-energy-generation-total.mjs'
 import ReadErrorCodes from '../../../_bricks/sensors/running/read-error-codes.mjs'
 import ReadFrequency from '../../../_bricks/sensors/running/read-frequency.mjs'
-import ReadPowerFactor from '../../../_bricks/sensors/running/read-power-factor.mjs'
-import ReadPowerTotal from '../../../_bricks/sensors/running/read-power-total.mjs'
+import ReadPower from '../../../_bricks/sensors/running/read-power.mjs'
 import ReadSafetyCountry from '../../../_bricks/sensors/running/read-safety-country.mjs'
 import ReadTemperature from '../../../_bricks/sensors/running/read-temperature.mjs'
 import ReadTimestamp from '../../../_bricks/sensors/running/read-timestamp.mjs'
@@ -19,8 +18,7 @@ export default Factory
     ReadEnergyGenerationTotal,
     ReadErrorCodes,
     ReadFrequency,
-    ReadPowerFactor,
-    ReadPowerTotal,
+    ReadPower,
     ReadSafetyCountry,
     ReadTemperature,
     ReadTimestamp,
@@ -49,13 +47,11 @@ export default Factory
       gridL1Current  : instance.readCurrent(30121),
       gridL1Frequency: instance.readFrequency(30124),
 
-      activePower: instance.readPowerTotal(30128), // only for completeness
-      powerTotal : instance.readPowerTotal(30128),
+      activePower: instance.readPower16(30128), // only for completeness
+      powerTotal : instance.readPower16(30128),
 
       errorCodes: instance.readErrorCodes(30130),
       errors    : instance.readErrors(30130),
-
-      powerFactor: instance.readPowerFactor(30139),
 
       safetyCountryCode: instance.readSafetyCountryCode(30149),
       safetyCountry    : instance.readSafetyCountry(30149),

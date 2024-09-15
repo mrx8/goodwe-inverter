@@ -2,8 +2,8 @@ import Factory from 'stampit'
 import ReadBatteryMode from '../../../_bricks/sensors/running/read-battery-mode.mjs'
 import ReadBatteryPower from '../../../_bricks/sensors/running/read-battery-power.mjs'
 import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
-import ReadEnergyBatteryChargeToday from '../../../_bricks/sensors/running/read-energy-battery-charge-today.mjs'
-import ReadEnergyBatteryDischargeToday from '../../../_bricks/sensors/running/read-energy-battery-discharge-today.mjs'
+import ReadEnergyBatteryCharge from '../../../_bricks/sensors/running/read-energy-battery-charge.mjs'
+import ReadEnergyBatteryDischarge from '../../../_bricks/sensors/running/read-energy-battery-discharge.mjs'
 import ReadEnergyExportToday from '../../../_bricks/sensors/running/read-energy-export-today.mjs'
 import ReadEnergyGenerationToday from '../../../_bricks/sensors/running/read-energy-generation-today.mjs'
 import ReadEnergyGenerationTotal from '../../../_bricks/sensors/running/read-energy-generation-total.mjs'
@@ -22,8 +22,8 @@ export default Factory
     ReadBatteryMode,
     ReadBatteryPower,
     ReadCurrent,
-    ReadEnergyBatteryChargeToday,
-    ReadEnergyBatteryDischargeToday,
+    ReadEnergyBatteryCharge,
+    ReadEnergyBatteryDischarge,
     ReadEnergyGenerationToday,
     ReadEnergyExportToday,
     ReadEnergyGenerationTotal,
@@ -80,7 +80,9 @@ export default Factory
       batteryPower               : instance.readBatteryPower(35182),
       batteryModeCode            : instance.readBatteryModeCode(35184),
       batteryMode                : instance.readBatteryMode(35184),
+      energyBatteryChargeTotal   : instance.readEnergyBatteryChargeTotal(35206),
       energyBatteryChargeToday   : instance.readEnergyBatteryChargeToday(35208),
+      energyBatteryDischargeTotal: instance.readEnergyBatteryDischargeToday(35209),
       energyBatteryDischargeToday: instance.readEnergyBatteryDischargeToday(35211),
 
       gridL1Voltage  : instance.readVoltage(35121),

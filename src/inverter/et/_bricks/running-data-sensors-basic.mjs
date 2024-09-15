@@ -82,7 +82,7 @@ export default Factory
       batteryMode                : instance.readBatteryMode(35184),
       energyBatteryChargeTotal   : instance.readEnergyBatteryChargeTotal(35206),
       energyBatteryChargeToday   : instance.readEnergyBatteryChargeToday(35208),
-      energyBatteryDischargeTotal: instance.readEnergyBatteryDischargeToday(35209),
+      energyBatteryDischargeTotal: instance.readEnergyBatteryDischargeTotal(35209),
       energyBatteryDischargeToday: instance.readEnergyBatteryDischargeToday(35211),
 
       gridL1Voltage  : instance.readVoltage(35121),

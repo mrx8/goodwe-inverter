@@ -60,11 +60,11 @@ export default Factory
     })
 
     Object.assign(instance.runningData, { // virtual-fields
-      pv1Power: Math.round(instance.runningData.pv1Voltage * instance.runningData.pv1Current),
-      pv2Power: Math.round(instance.runningData.pv2Voltage * instance.runningData.pv2Current),
-      pv3Power: Math.round(instance.runningData.pv3Voltage * instance.runningData.pv3Current),
+      pv1Power: instance.runningData.pv1Voltage * instance.runningData.pv1Current,
+      pv2Power: instance.runningData.pv2Voltage * instance.runningData.pv2Current,
+      pv3Power: instance.runningData.pv3Voltage * instance.runningData.pv3Current,
 
-      gridL1Power: Math.round(instance.runningData.gridL1Voltage * instance.runningData.gridL1Current),
+      gridL1Power: instance.runningData.gridL1Voltage * instance.runningData.gridL1Current,
     })
 
     Object.assign(instance.runningData, { // virtual-fields
@@ -72,11 +72,11 @@ export default Factory
       gridPowerTotal: instance.runningData.gridL1Power,
     })
 
-    let efficiency = 0
+    let efficiency = null
     if (instance.runningData.pvPowerTotal > 0) {
-      efficiency = Math.abs(instance.runningData.activePower) * 100 / instance.runningData.pvPowerTotal
+      efficiency = Math.abs(instance.runningData.powerTotal) * 100 / instance.runningData.pvPowerTotal
     }
-    if (efficiency < 100) {
+    if (efficiency !== null && efficiency < 100) {
       Object.assign(instance.runningData, { // virtual-fields
         efficiency,
       })

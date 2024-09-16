@@ -99,11 +99,11 @@ export default Factory
       gridPowerTotal: instance.runningData.gridL1Power,
     })
 
-    let efficiency = 0
+    let efficiency = null
     if (instance.runningData.pvPowerTotal > 0) {
-      efficiency = (Math.abs(instance.runningData.activePower) + Math.abs(instance.runningData.batteryPower)) * 100 / instance.runningData.pvPowerTotal
+      efficiency = (Math.abs(instance.runningData.powerTotal) + Math.abs(instance.runningData.batteryPower)) * 100 / instance.runningData.pvPowerTotal
     }
-    if (efficiency < 100) {
+    if (efficiency !== null && efficiency < 100) {
       Object.assign(instance.runningData, { // virtual-fields
         efficiency,
       })

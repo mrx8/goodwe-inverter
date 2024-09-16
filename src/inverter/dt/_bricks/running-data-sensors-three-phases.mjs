@@ -29,8 +29,8 @@ export default Factory
     })
 
     Object.assign(instance.runningData, { // virtual-fields
-      gridL2Power: Math.round(instance.runningData.gridL2Voltage * instance.runningData.gridL2Current),
-      gridL3Power: Math.round(instance.runningData.gridL3Voltage * instance.runningData.gridL3Current),
+      gridL2Power: instance.runningData.gridL2Voltage * instance.runningData.gridL2Current,
+      gridL3Power: instance.runningData.gridL3Voltage * instance.runningData.gridL3Current,
     })
 
     Object.assign(instance.runningData, { // virtual-fields of virtual-fields

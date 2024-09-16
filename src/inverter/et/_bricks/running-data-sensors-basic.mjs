@@ -96,7 +96,15 @@ export default Factory
 
     Object.assign(instance.runningData, { // virtual-fields
       pvPowerTotal  : instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power + instance.runningData.pv4Power,
-      gridPowerTotal: instance.runningData.gridL1Power - instance.runningData.batteryPower,
+      gridPowerTotal: instance.runningData.gridL1Power,
+    })
+
+    let efficiency = 0
+    if (instance.runningData.pvPowerTotal > 0) {
+      efficiency = (Math.abs(instance.runningData.activePower) + Math.abs(instance.runningData.batteryPower)) * 100 / instance.runningData.pvPowerTotal
+    }
+    Object.assign(instance.runningData, { // virtual-fields
+      efficiency,
     })
 
     return instance

@@ -12,10 +12,6 @@ export default Factory
     RunningDataSensorsBasic,
   )
 
-  .properties({
-    runningData: {},
-  })
-
   .init((param, {instance}) => {
     Object.assign(instance.runningData, {
       gridL1L2Voltage: instance.readVoltage(30115),
@@ -40,7 +36,6 @@ export default Factory
     Object.assign(instance.runningData, { // virtual-fields of virtual-fields
       gridPowerTotal: instance.runningData.gridL1Power + instance.runningData.gridL2Power + instance.runningData.gridL3Power,
     })
-
 
     return instance
   })

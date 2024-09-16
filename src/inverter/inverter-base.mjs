@@ -12,6 +12,10 @@ export default Factory
 
   .setLogId('inverter')
 
+  .init((param, {instance}) => {
+    instance.data = {}
+  })
+
   .methods({
     async updateChanges () {
       const data = await this.ReadDataFactory()

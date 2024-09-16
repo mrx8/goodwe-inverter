@@ -38,11 +38,9 @@ export default Factory
     ReadVoltage,
   )
 
-  .properties({
-    runningData: {},
-  })
-
   .init((param, {instance}) => {
+    instance.runningData = {}
+
     Object.assign(instance.runningData, {
       timestamp: instance.readTimestamp(35100),
 

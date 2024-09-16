@@ -11,10 +11,6 @@ export default Factory
     ReadVoltage,
   )
 
-  .properties({
-    meterData: {},
-  })
-
   .init((param, {instance}) => {
     Object.assign(instance.meterData, {
       voltageL1: instance.readVoltage(36052),

@@ -14,10 +14,6 @@ export default Factory
     RunningDataSensorsBasic,
   )
 
-  .properties({
-    runningData: {},
-  })
-
   .init((param, {instance}) => {
     Object.assign(instance.runningData, {
       gridL2Voltage  : instance.readVoltage(35126),

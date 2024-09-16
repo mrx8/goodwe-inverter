@@ -25,11 +25,9 @@ export default Factory
     ReadVoltage,
   )
 
-  .properties({
-    runningData: {},
-  })
-
   .init((param, {instance}) => {
+    instance.runningData = {}
+
     Object.assign(instance.runningData, {
       timestamp: instance.readTimestamp(30100),
 
@@ -73,7 +71,6 @@ export default Factory
       pvPowerTotal  : instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power,
       gridPowerTotal: instance.runningData.gridL1Power,
     })
-
 
     return instance
   })

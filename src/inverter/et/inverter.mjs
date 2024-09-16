@@ -2,7 +2,6 @@ import DeviceInfoReader from '../../_bricks/reader/device-info-reader.mjs'
 import DeviceInfoSensors from './_bricks/device-info-sensors.mjs'
 import Factory from 'stampit'
 import InverterBase from '../inverter-base.mjs'
-import Log from '../../shared/log.mjs'
 
 
 export default Factory
@@ -10,16 +9,16 @@ export default Factory
     InverterBase,
   )
 
+  .properties({
+    interface: 'ET',
+    address  : 0xf7,
+  })
+
   .init(async (param, {
     instance,
-    stamp,
   }) => {
-    instance.interface = 'ET'
-    instance.address = 0xf7
-    instance.data = {}
-
     // compose the Factory for reading all relevant data for this kind of inverter
-    let ReadDataFactory = Factory.compose(Log).setLogId(stamp.compose?.configuration?.logId)
+    let ReadDataFactory = Factory
 
     // device-info
     const ReadDeviceInfo = DeviceInfoReader.setup({

@@ -26,11 +26,9 @@ export default Factory
     ReadNumberOfPhases,
   )
 
-  .properties({
-    deviceInfo: {},
-  })
-
   .init((param, {instance}) => {
+    instance.deviceInfo = {}
+
     Object.assign(instance.deviceInfo, {
       ratedPower    : instance.readRatedPower(35001),
       serialNumber  : instance.readSerialNumber(35003),

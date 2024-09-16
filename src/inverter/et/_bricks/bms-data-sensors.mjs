@@ -12,11 +12,9 @@ export default Factory
     ReadTemperature,
   )
 
-  .properties({
-    bmsData: {},
-  })
-
   .init((param, {instance}) => {
+    instance.bmsData = {}
+
     Object.assign(instance.bmsData, {
       stateOfCharge  : instance.readStateOfCharge(37007),
       stateOfHealth  : instance.readStateOfHealth(37008),

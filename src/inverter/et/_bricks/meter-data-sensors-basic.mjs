@@ -12,11 +12,9 @@ export default Factory
     ReadPowerFactor,
   )
 
-  .properties({
-    meterData: {},
-  })
-
   .init((param, {instance}) => {
+    instance.meterData = {}
+
     Object.assign(instance.meterData, {
       activePowerL1   : instance.readPower(36019),
       activePowerL2   : instance.readPower(36021),

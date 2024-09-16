@@ -10,13 +10,14 @@ export default Factory
     InverterBase,
   )
 
+  .properties({
+    interface: 'DT',
+    address  : 0x7f,
+  })
+
   .init(async (param, {
     instance,
   }) => {
-    instance.interface = 'DT'
-    instance.address = 0x7f
-    instance.data = {}
-
     // compose the Factory for reading all relevant data for this kind of inverter
     let ReadDataFactory = Factory
 

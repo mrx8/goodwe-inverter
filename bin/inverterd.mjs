@@ -134,7 +134,6 @@ const ManageInverters = Factory
               port   : 8899,
               timeout: 2000,
             })
-
             publishToMqttBroker = createPublisher.call(this, inverter)
           }
 

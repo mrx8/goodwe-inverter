@@ -102,7 +102,7 @@ export default Factory
     let efficiency = null
     if (instance.runningData.pvPowerTotal > 0) {
       efficiency = Number(
-        Math.abs(instance.runningData.activePower) - Math.abs(instance.runningData.batteryPower) * 100 / instance.runningData.pvPowerTotal,
+        Math.abs(Math.abs(instance.runningData.activePower) - Math.abs(instance.runningData.batteryPower)) * 100 / instance.runningData.pvPowerTotal,
       ).toFixed(2)
     }
     if (efficiency !== null) {

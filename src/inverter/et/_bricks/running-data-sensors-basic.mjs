@@ -38,10 +38,12 @@ export default Factory
     ReadVoltage,
   )
 
-  .init((param, {instance}) => {
-    instance.runningData = instance.runningData || {}
+  .properties({
+    runningData: {},
+  })
 
-    const data = {
+  .init((param, {instance}) => {
+    Object.assign(instance.runningData, {
       timestamp: instance.readTimestamp(35100),
 
       pv1Voltage: instance.readVoltage(35103),
@@ -92,11 +94,11 @@ export default Factory
 
       energyImportToday: instance.readEnergyImportToday(35202),
       energyExportToday: instance.readEnergyExportToday(35199),
-    }
-    Object.assign(instance.runningData, data)
+    })
 
     Object.assign(instance.runningData, { // virtual-fields
-      pvPowerTotal: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
+      pvPowerTotal  : instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power + instance.runningData.pv4Power,
+      gridPowerTotal: instance.runningData.gridL1Power - instance.runningData.batteryPower,
     })
 
     return instance

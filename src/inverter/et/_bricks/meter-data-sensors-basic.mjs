@@ -12,10 +12,12 @@ export default Factory
     ReadPowerFactor,
   )
 
-  .init((param, {instance}) => {
-    instance.meterData = instance.meterData || {}
+  .properties({
+    meterData: {},
+  })
 
-    const data = {
+  .init((param, {instance}) => {
+    Object.assign(instance.meterData, {
       activePowerL1   : instance.readPower(36019),
       activePowerL2   : instance.readPower(36021),
       activePowerL3   : instance.readPower(36023),
@@ -40,10 +42,7 @@ export default Factory
 
       energyExportedTotal: instance.readEnergyTotal(36015),
       energyImportedTotal: instance.readEnergyTotal(36017),
-    }
-
-    // exported und imported
-    Object.assign(instance.meterData, data)
+    })
 
     return instance
   })

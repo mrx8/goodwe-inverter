@@ -14,10 +14,12 @@ export default Factory
     RunningDataSensorsBasic,
   )
 
-  .init((param, {instance}) => {
-    instance.runningData = instance.runningData || {}
+  .properties({
+    runningData: {},
+  })
 
-    const data = {
+  .init((param, {instance}) => {
+    Object.assign(instance.runningData, {
       gridL2Voltage  : instance.readVoltage(35126),
       gridL2Current  : instance.readCurrent(35127),
       gridL2Frequency: instance.readFrequency(35128),
@@ -27,8 +29,14 @@ export default Factory
       gridL3Current  : instance.readCurrent(35132),
       gridL3Frequency: instance.readFrequency(35133),
       gridL3Power    : instance.readPower16(35135),
-    }
-    Object.assign(instance.runningData, data)
+    })
+
+    Object.assign(instance.runningData, { // virtual-fields of virtual-fields
+      gridPowerTotal: instance.runningData.gridL1Power
+        + instance.runningData.gridL2Power
+        + instance.runningData.gridL3Power
+        - instance.runningData.batteryPower,
+    })
 
     return instance
   })

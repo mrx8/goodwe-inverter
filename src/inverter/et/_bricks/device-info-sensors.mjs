@@ -26,10 +26,12 @@ export default Factory
     ReadNumberOfPhases,
   )
 
-  .init((param, {instance}) => {
-    instance.deviceInfo = instance.deviceInfo || {}
+  .properties({
+    deviceInfo: {},
+  })
 
-    const data = { // use it
+  .init((param, {instance}) => {
+    Object.assign(instance.deviceInfo, {
       ratedPower    : instance.readRatedPower(35001),
       serialNumber  : instance.readSerialNumber(35003),
       modelName     : instance.readModelName(35011),
@@ -40,9 +42,7 @@ export default Factory
       armSubVersion : instance.readArmSubVersion(35020),
       numberOfPhases: instance.readNumberOfPhases(35003), // same register since it is determined via the serialNumber
       is745Platform : instance.readIs745Platform(35003), // same register since it is determined via the serialNumber
-    }
-
-    Object.assign(instance.deviceInfo, data)
+    })
 
     return instance
   })

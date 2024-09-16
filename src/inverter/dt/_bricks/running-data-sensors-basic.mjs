@@ -25,10 +25,12 @@ export default Factory
     ReadVoltage,
   )
 
-  .init((param, {instance}) => {
-    instance.runningData = instance.runningData || {}
+  .properties({
+    runningData: {},
+  })
 
-    const data = {
+  .init((param, {instance}) => {
+    Object.assign(instance.runningData, {
       timestamp: instance.readTimestamp(30100),
 
       pv1Voltage: instance.readVoltage(30103),
@@ -57,21 +59,21 @@ export default Factory
       safetyCountry    : instance.readSafetyCountry(30149),
 
       temperature: instance.readTemperature(30141),
-    }
-
-    Object.assign(data, { // virtual-fields
-      pv1Power: Math.round(data.pv1Voltage * data.pv1Current),
-      pv2Power: Math.round(data.pv2Voltage * data.pv2Current),
-      pv3Power: Math.round(data.pv3Voltage * data.pv3Current),
-
-      gridL1Power: Math.round(data.gridL1Voltage * data.gridL1Current),
     })
 
-    Object.assign(data, { // virtual-fields
-      pvPowerTotal: data.pv1Power + data.pv2Power + data.pv3Power,
+    Object.assign(instance.runningData, { // virtual-fields
+      pv1Power: Math.round(instance.runningData.pv1Voltage * instance.runningData.pv1Current),
+      pv2Power: Math.round(instance.runningData.pv2Voltage * instance.runningData.pv2Current),
+      pv3Power: Math.round(instance.runningData.pv3Voltage * instance.runningData.pv3Current),
+
+      gridL1Power: Math.round(instance.runningData.gridL1Voltage * instance.runningData.gridL1Current),
     })
 
-    Object.assign(instance.runningData, data)
+    Object.assign(instance.runningData, { // virtual-fields
+      pvPowerTotal  : instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power,
+      gridPowerTotal: instance.runningData.gridL1Power,
+    })
+
 
     return instance
   })

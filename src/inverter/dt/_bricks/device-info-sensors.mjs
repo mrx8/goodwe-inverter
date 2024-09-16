@@ -23,10 +23,12 @@ export default Factory
     ReadSerialNumber,
   )
 
-  .init((param, {instance}) => {
-    instance.deviceInfo = instance.deviceInfo || {}
+  .properties({
+    deviceInfo: {},
+  })
 
-    const data = { // use it
+  .init((param, {instance}) => {
+    Object.assign(instance.deviceInfo, {
       armSubVersion : instance.readArmSubVersion(30038),
       armVersion    : instance.readArmVersion(30036),
       dsp1Version   : instance.readDsp1Version(30034),
@@ -35,9 +37,8 @@ export default Factory
       modelName     : instance.readModelName(30012),
       numberOfPhases: instance.readNumberOfPhases(30004), // same register since it is determined via the serialNumber
       serialNumber  : instance.readSerialNumber(30004),
-    }
+    })
 
-    Object.assign(instance.deviceInfo, data)
 
     return instance
   })

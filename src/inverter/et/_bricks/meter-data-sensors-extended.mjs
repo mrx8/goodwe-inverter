@@ -11,10 +11,12 @@ export default Factory
     ReadVoltage,
   )
 
-  .init((param, {instance}) => {
-    instance.meterData = instance.meterData || {}
+  .properties({
+    meterData: {},
+  })
 
-    const data = {
+  .init((param, {instance}) => {
+    Object.assign(instance.meterData, {
       voltageL1: instance.readVoltage(36052),
       voltageL2: instance.readVoltage(36053),
       voltageL3: instance.readVoltage(36054),
@@ -22,9 +24,7 @@ export default Factory
       currentL1: instance.readCurrent(36055),
       currentL2: instance.readCurrent(36056),
       currentL3: instance.readCurrent(36057),
-    }
-
-    Object.assign(instance.meterData, data)
+    })
 
     return instance
   })

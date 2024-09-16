@@ -74,9 +74,11 @@ export default Factory
 
     let efficiency = null
     if (instance.runningData.pvPowerTotal > 0) {
-      efficiency = Number(Math.abs(instance.runningData.activePower) * 100 / instance.runningData.pvPowerTotal).toFixed(2)
+      efficiency = Number(
+        Math.abs(instance.runningData.activePower) * 100 / instance.runningData.pvPowerTotal,
+      ).toFixed(2)
     }
-    if (efficiency !== null && efficiency < 100) {
+    if (efficiency !== null) {
       Object.assign(instance.runningData, { // virtual-fields
         efficiency,
       })

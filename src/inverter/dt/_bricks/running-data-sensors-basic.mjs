@@ -1,3 +1,5 @@
+import CalculateEfficiency from '../../efficiency.mjs'
+import CalculatePowerTotal from './power-total.mjs'
 import Factory from 'stampit'
 import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
 import ReadEnergyGenerationToday from '../../../_bricks/sensors/running/read-energy-generation-today.mjs'
@@ -23,6 +25,8 @@ export default Factory
     ReadTemperature,
     ReadTimestamp,
     ReadVoltage,
+    CalculatePowerTotal,
+    CalculateEfficiency,
   )
 
   .init((param, {instance}) => {
@@ -72,17 +76,20 @@ export default Factory
       gridPowerTotal: instance.runningData.gridL1Power,
     })
 
-    let efficiency = null
-    if (instance.runningData.pvPowerTotal > 0) {
-      efficiency = Number(
-        instance.runningData.powerTotal * 100 / instance.runningData.pvPowerTotal,
-      ).toFixed(2)
-    }
-    if (efficiency !== null) {
-      Object.assign(instance.runningData, { // virtual-fields
-        efficiency,
-      })
-    }
+    Object.assign(instance.runningData, { // virtual-fields
+      powerTotal: instance.calculatePowerTotal({
+        powerTotal    : instance.runningData.powerTotal,
+        gridPowerTotal: instance.runningData.gridPowerTotal,
+        pvPowerTotal  : instance.runningData.pvPowerTotal,
+      }),
+    })
+
+    Object.assign(instance.runningData, { // virtual-fields
+      efficiency: instance.calculateEfficiency({
+        pvPowerTotal: instance.runningData.pvPowerTotal,
+        powerTotal  : instance.runningData.powerTotal,
+      }),
+    })
 
     return instance
   })

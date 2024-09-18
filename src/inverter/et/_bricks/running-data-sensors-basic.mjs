@@ -1,3 +1,5 @@
+import CalculateEfficiency from '../../efficiency.mjs'
+import CalculatePowerTotal from './power-total.mjs'
 import Factory from 'stampit'
 import ReadBatteryMode from '../../../_bricks/sensors/running/read-battery-mode.mjs'
 import ReadBatteryPower from '../../../_bricks/sensors/running/read-battery-power.mjs'
@@ -16,7 +18,6 @@ import ReadSafetyCountry from '../../../_bricks/sensors/running/read-safety-coun
 import ReadTemperature from '../../../_bricks/sensors/running/read-temperature.mjs'
 import ReadTimestamp from '../../../_bricks/sensors/running/read-timestamp.mjs'
 import ReadVoltage from '../../../_bricks/sensors/running/read-voltage.mjs'
-import calculatePowerTotal from './power-total.mjs'
 
 export default Factory
   .compose(
@@ -37,6 +38,8 @@ export default Factory
     ReadTemperature,
     ReadTimestamp,
     ReadVoltage,
+    CalculatePowerTotal,
+    CalculateEfficiency,
   )
 
   .init((param, {instance}) => {
@@ -101,24 +104,19 @@ export default Factory
 
     Object.assign(instance.runningData, { // virtual-fields
       pvPowerTotal: instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power + instance.runningData.pv4Power,
-      powerTotal  : calculatePowerTotal({
+      powerTotal  : instance.calculatePowerTotal({
         pvPowerTotal  : instance.runningData.pvPowerTotal,
         batteryPower  : instance.runningData.batteryPower,
         gridPowerTotal: instance.runningData.gridPowerTotal,
       }),
     })
 
-    let efficiency = null
-    if (instance.runningData.pvPowerTotal > 0) {
-      efficiency = Number(
-        instance.runningData.powerTotal * 100 / instance.runningData.pvPowerTotal,
-      ).toFixed(2)
-    }
-    if (efficiency !== null) {
-      Object.assign(instance.runningData, { // virtual-fields
-        efficiency,
-      })
-    }
+    Object.assign(instance.runningData, { // virtual-fields
+      efficiency: instance.calculateEfficiency({
+        pvPowerTotal: instance.runningData.pvPowerTotal,
+        powerTotal  : instance.runningData.powerTotal,
+      }),
+    })
 
     return instance
   })

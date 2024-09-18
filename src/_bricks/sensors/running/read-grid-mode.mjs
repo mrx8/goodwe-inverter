@@ -20,6 +20,7 @@ export default Factory
   .methods({
     readGridModeCode (register) {
       const value = this.readUInt16BE(register)
+
       if (value < -90) {
         return 2
       }

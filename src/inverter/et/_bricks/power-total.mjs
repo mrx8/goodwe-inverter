@@ -7,7 +7,6 @@ export default Factory
     pvPowerTotal,
   }) => {
     if (pvPowerTotal > 0) { // depends on solar-activity
-      gridPowerTotal = Math.abs(gridPowerTotal)
       if (batteryPower > 0) { // if the battery is discharging the power is obviously not sufficient for our home but is included in gridPowerTotal.
         return gridPowerTotal - batteryPower // therefore substract it from gridPowerTotal.
       }

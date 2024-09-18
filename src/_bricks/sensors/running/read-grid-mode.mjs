@@ -1,12 +1,12 @@
 import Factory from 'stampit'
 import GetStamp from '../../../shared/get-stamp.mjs'
-import ReadInt16BE from '../read-int16be.mjs'
+import ReadUInt16BE from '../read-uint16be.mjs'
 
 
 export default Factory
   .compose(
     GetStamp,
-    ReadInt16BE,
+    ReadUInt16BE,
   )
 
   .configuration({
@@ -19,7 +19,7 @@ export default Factory
 
   .methods({
     readGridModeCode (register) {
-      const value = this.readInt16BE(register)
+      const value = this.readUInt16BE(register)
       if (value < -90) {
         return 2
       }

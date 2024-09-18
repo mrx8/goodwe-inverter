@@ -27,9 +27,5 @@ export default Factory
       gridL3Power    : instance.readPower16(35135),
     })
 
-    Object.assign(instance.runningData, { // virtual-fields of virtual-fields
-      gridPowerTotal: instance.runningData.gridL1Power + instance.runningData.gridL2Power + instance.runningData.gridL3Power,
-    })
-
     return instance
   })

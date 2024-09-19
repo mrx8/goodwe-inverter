@@ -10,7 +10,7 @@ export default Factory
   )
 
   .configuration({
-    BMS_ALARM_CODES: {
+    BMS_ERROR_CODES: {
       0 : 'Charging over-voltage 2',
       1 : 'Discharging under-voltage 2',
       2 : 'Cell temperature high 2',
@@ -39,7 +39,7 @@ export default Factory
       return this.readUInt16BE(register)
     },
 
-    readError (registerLow, registerHigh) {
+    readError (registerHigh, registerLow) {
       const errorCodeHigh = this.readErrorCodeHigh(registerHigh)
       const errorCodeLow = this.readErrorCodeLow(registerLow)
 
@@ -48,7 +48,7 @@ export default Factory
       for (let i = 0; i < 32; i++) {
         if (errorNumber & 1 === 1) {
           result.push(
-            this.getStampConfiguration().BMS_ALARM_CODES[i] || `unknown alarmcode ${i}`,
+            this.getStampConfiguration().BMS_ERROR_CODES[i] || `unknown alarmcode ${i}`,
           )
         }
         errorNumber = errorNumber >> 1

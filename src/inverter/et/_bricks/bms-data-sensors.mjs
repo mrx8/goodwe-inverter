@@ -5,6 +5,7 @@ import ReadNumberOfModules from '../../../_bricks/sensors/bms/read-number-of-mod
 import ReadStateOfCharge from '../../../_bricks/sensors/bms/read-state-of-charge.mjs'
 import ReadStateOfHealth from '../../../_bricks/sensors/bms/read-state-of-health.mjs'
 import ReadTemperature from '../../../_bricks/sensors/bms/read-temperature.mjs'
+import ReadWarning from '../../../_bricks/sensors/bms/read-warning.mjs'
 
 export default Factory
   .compose(
@@ -14,6 +15,7 @@ export default Factory
     ReadStateOfCharge,
     ReadStateOfHealth,
     ReadTemperature,
+    ReadWarning,
   )
 
   .init((param, {instance}) => {
@@ -29,6 +31,9 @@ export default Factory
       errorCodeHigh        : instance.readErrorCodeHigh(37012),
       errorCodeLow         : instance.readErrorCodeLow(37006),
       error                : instance.readError(37012, 37006),
+      warningCodeHigh      : instance.readWarningCodeHigh(37013),
+      warningCodeLow       : instance.readWarningCodeLow(37010),
+      warning              : instance.readWarning(37013, 37010),
     })
 
     return instance

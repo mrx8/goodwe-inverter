@@ -11,6 +11,7 @@ import ReadSafetyCountry from '../../../_bricks/sensors/running/read-safety-coun
 import ReadTemperature from '../../../_bricks/sensors/running/read-temperature.mjs'
 import ReadTimestamp from '../../../_bricks/sensors/running/read-timestamp.mjs'
 import ReadVoltage from '../../../_bricks/sensors/running/read-voltage.mjs'
+import ReadWorkMode from './read-work-mode.mjs'
 
 
 export default Factory
@@ -25,6 +26,7 @@ export default Factory
     ReadTemperature,
     ReadTimestamp,
     ReadVoltage,
+    ReadWorkMode,
     CalculatePowerTotal,
     CalculateEfficiency,
   )
@@ -47,6 +49,9 @@ export default Factory
 
       pvEnergyGenerationToday: instance.readEnergyGenerationToday(30144),
       pvEnergyGenerationTotal: instance.readEnergyGenerationTotal(30145),
+
+      workModeCode: instance.readWorkModeCode(30129),
+      workMode    : instance.readWorkMode(30129),
 
       gridL1Voltage  : instance.readVoltage(30118),
       gridL1Current  : instance.readCurrent(30121),

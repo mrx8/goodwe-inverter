@@ -18,6 +18,7 @@ import ReadSafetyCountry from '../../../_bricks/sensors/running/read-safety-coun
 import ReadTemperature from '../../../_bricks/sensors/running/read-temperature.mjs'
 import ReadTimestamp from '../../../_bricks/sensors/running/read-timestamp.mjs'
 import ReadVoltage from '../../../_bricks/sensors/running/read-voltage.mjs'
+import ReadWorkMode from './read-work-mode.mjs'
 
 export default Factory
   .compose(
@@ -38,6 +39,7 @@ export default Factory
     ReadTemperature,
     ReadTimestamp,
     ReadVoltage,
+    ReadWorkMode,
     CalculatePowerTotal,
     CalculateEfficiency,
   )
@@ -70,6 +72,9 @@ export default Factory
 
       gridModeCode: instance.readGridModeCode(35136),
       gridMode    : instance.readGridMode(35136),
+
+      workModeCode: instance.readWorkModeCode(35187),
+      workMode    : instance.readWorkMode(35187),
 
       activePower       : instance.readPower16(35140),
       inverterPowerTotal: instance.readPower16(35138),

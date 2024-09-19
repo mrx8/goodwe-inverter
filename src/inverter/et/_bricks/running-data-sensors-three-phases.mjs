@@ -27,5 +27,26 @@ export default Factory
       gridL3Power    : instance.readPower16(35135),
     })
 
+    Object.assign(instance.runningData, { // virtual-fields
+      gridPowerTotal: instance.runningData.gridL1Power + instance.runningData.gridL2Power + instance.runningData.gridL3Power,
+    })
+
+    Object.assign(instance.runningData, { // virtual-fields
+      pvPowerTotal: instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power + instance.runningData.pv4Power,
+      powerTotal  : instance.calculatePowerTotal({
+        pvPowerTotal      : instance.runningData.pvPowerTotal,
+        batteryPower      : instance.runningData.batteryPower,
+        inverterPowerTotal: instance.runningData.inverterPowerTotal,
+        gridPowerTotal    : instance.runningData.gridPowerTotal,
+      }),
+    })
+
+    Object.assign(instance.runningData, { // virtual-fields
+      efficiency: instance.calculateEfficiency({
+        pvPowerTotal: instance.runningData.pvPowerTotal,
+        powerTotal  : instance.runningData.powerTotal,
+      }),
+    })
+
     return instance
   })

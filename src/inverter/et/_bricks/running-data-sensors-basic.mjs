@@ -70,7 +70,8 @@ export default Factory
       gridModeCode: instance.readGridModeCode(35136),
       gridMode    : instance.readGridMode(35136),
 
-      activePower: instance.readPower16(35140),
+      activePower       : instance.readPower16(35140),
+      inverterPowerTotal: instance.readPower16(35138),
 
       errorCodes: instance.readErrorCodes(35189),
       errors    : instance.readErrors(35189),
@@ -88,7 +89,6 @@ export default Factory
       energyBatteryDischargeTotal: instance.readEnergyBatteryDischargeTotal(35209),
       energyBatteryDischargeToday: instance.readEnergyBatteryDischargeToday(35211),
 
-      gridPowerTotal : instance.readPower16(35138),
       gridL1Voltage  : instance.readVoltage(35121),
       gridL1Current  : instance.readCurrent(35122),
       gridL1Frequency: instance.readFrequency(35123),
@@ -103,11 +103,16 @@ export default Factory
     })
 
     Object.assign(instance.runningData, { // virtual-fields
+      gridPowerTotal: instance.runningData.gridL1Power,
+    })
+
+    Object.assign(instance.runningData, { // virtual-fields
       pvPowerTotal: instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power + instance.runningData.pv4Power,
       powerTotal  : instance.calculatePowerTotal({
-        pvPowerTotal  : instance.runningData.pvPowerTotal,
-        batteryPower  : instance.runningData.batteryPower,
-        gridPowerTotal: instance.runningData.gridPowerTotal,
+        pvPowerTotal      : instance.runningData.pvPowerTotal,
+        batteryPower      : instance.runningData.batteryPower,
+        inverterPowerTotal: instance.runningData.inverterPowerTotal,
+        gridPowerTotal    : instance.runningData.gridPowerTotal,
       }),
     })
 

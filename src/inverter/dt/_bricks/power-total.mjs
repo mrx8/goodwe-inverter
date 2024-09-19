@@ -7,16 +7,14 @@ export default Factory
       gridPowerTotal,
       pvPowerTotal,
     }) {
-      if (pvPowerTotal > 0) {
-        if (powerTotal < pvPowerTotal) {
-          return powerTotal
-        }
-
-        if (gridPowerTotal > 0 && gridPowerTotal < pvPowerTotal) {
-          return gridPowerTotal
-        }
+      if (gridPowerTotal === 0) {
+        gridPowerTotal = Infinity
       }
 
-      return pvPowerTotal
+      if (powerTotal === 0) {
+        powerTotal = Infinity
+      }
+
+      return Math.min(pvPowerTotal, powerTotal, gridPowerTotal)
     },
   })

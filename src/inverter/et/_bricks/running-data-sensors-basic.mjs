@@ -79,7 +79,9 @@ export default Factory
 
       safetyCountryCode: instance.readSafetyCountryCode(35186),
       safetyCountry    : instance.readSafetyCountry(35186),
+
       temperatureAir   : instance.readTemperature(35174),
+      temperatureModule: instance.readTemperature(35175),
       temperature      : instance.readTemperature(35176),
 
       batteryPower               : instance.readBatteryPower(35182),

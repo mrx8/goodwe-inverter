@@ -9,11 +9,10 @@ export default Factory
       inverterPowerTotal,
       gridPowerTotal,
     }) {
-      // evtl. activePower als Möglichkeit bei Batterieversorgung checken.
       if (batteryPower > 0) {
         inverterPowerTotal -= batteryPower
         gridPowerTotal -= batteryPower
-        activePower -= batteryPower
+        activePower -= batteryPower // check this if correct
       } else {
         inverterPowerTotal += Math.abs(batteryPower)
         gridPowerTotal += Math.abs(batteryPower)

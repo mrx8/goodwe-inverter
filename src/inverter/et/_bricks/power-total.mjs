@@ -3,6 +3,7 @@ import Factory from 'stampit'
 export default Factory
   .methods({
     calculatePowerTotal ({
+      activePower,
       pvPowerTotal,
       batteryPower,
       inverterPowerTotal,
@@ -12,11 +13,13 @@ export default Factory
       if (batteryPower > 0) {
         inverterPowerTotal -= batteryPower
         gridPowerTotal -= batteryPower
+        activePower -= batteryPower
       } else {
         inverterPowerTotal += Math.abs(batteryPower)
         gridPowerTotal += Math.abs(batteryPower)
+        activePower += batteryPower
       }
 
-      return Math.min(pvPowerTotal, inverterPowerTotal, gridPowerTotal)
+      return Math.min(pvPowerTotal, inverterPowerTotal, gridPowerTotal, activePower)
     },
   })

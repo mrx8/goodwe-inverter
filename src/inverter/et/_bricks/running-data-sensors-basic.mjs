@@ -43,9 +43,10 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    instance.runningData = {}
+    let data
+    instance.runningData = data = {}
 
-    Object.assign(instance.runningData, {
+    Object.assign(data, {
       timestamp: instance.readTimestamp(35100),
 
       pv1Voltage: instance.readVoltage(35103),
@@ -98,28 +99,28 @@ export default Factory
       energyExportToday: instance.readEnergyExportToday(35199),
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
-      pvPowerTotal: instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power + instance.runningData.pv4Power,
+    Object.assign(data, { // virtual-fields
+      pvPowerTotal: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
-      gridPowerTotal: instance.runningData.gridL1Power,
+    Object.assign(data, { // virtual-fields
+      gridPowerTotal: data.gridL1Power,
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
-      pvPowerTotal: instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power + instance.runningData.pv4Power,
+    Object.assign(data, { // virtual-fields
+      pvPowerTotal: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
       powerTotal  : instance.calculatePowerTotal({
-        pvPowerTotal      : instance.runningData.pvPowerTotal,
-        batteryPower      : instance.runningData.batteryPower,
-        inverterPowerTotal: instance.runningData.inverterPowerTotal,
-        gridPowerTotal    : instance.runningData.gridPowerTotal,
+        pvPowerTotal      : data.pvPowerTotal,
+        batteryPower      : data.batteryPower,
+        inverterPowerTotal: data.inverterPowerTotal,
+        gridPowerTotal    : data.gridPowerTotal,
       }),
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
+    Object.assign(data, { // virtual-fields
       efficiency: instance.calculateEfficiency({
-        pvPowerTotal: instance.runningData.pvPowerTotal,
-        powerTotal  : instance.runningData.powerTotal,
+        pvPowerTotal: data.pvPowerTotal,
+        powerTotal  : data.powerTotal,
       }),
     })
 

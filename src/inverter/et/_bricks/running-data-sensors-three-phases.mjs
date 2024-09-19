@@ -15,7 +15,8 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    Object.assign(instance.runningData, {
+    const data = instance.runningData
+    Object.assign(data, {
       gridL2Voltage  : instance.readVoltage(35126),
       gridL2Current  : instance.readCurrent(35127),
       gridL2Frequency: instance.readFrequency(35128),
@@ -27,24 +28,24 @@ export default Factory
       gridL3Power    : instance.readPower16(35135),
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
-      gridPowerTotal: instance.runningData.gridL1Power + instance.runningData.gridL2Power + instance.runningData.gridL3Power,
+    Object.assign(data, { // virtual-fields
+      gridPowerTotal: data.gridL1Power + data.gridL2Power + data.gridL3Power,
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
-      pvPowerTotal: instance.runningData.pv1Power + instance.runningData.pv2Power + instance.runningData.pv3Power + instance.runningData.pv4Power,
+    Object.assign(data, { // virtual-fields
+      pvPowerTotal: data.pv1Power + data.pv2Power + data.pv3Power + data.pv4Power,
       powerTotal  : instance.calculatePowerTotal({
-        pvPowerTotal      : instance.runningData.pvPowerTotal,
-        batteryPower      : instance.runningData.batteryPower,
-        inverterPowerTotal: instance.runningData.inverterPowerTotal,
-        gridPowerTotal    : instance.runningData.gridPowerTotal,
+        pvPowerTotal      : data.pvPowerTotal,
+        batteryPower      : data.batteryPower,
+        inverterPowerTotal: data.inverterPowerTotal,
+        gridPowerTotal    : data.gridPowerTotal,
       }),
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
+    Object.assign(data, { // virtual-fields
       efficiency: instance.calculateEfficiency({
-        pvPowerTotal: instance.runningData.pvPowerTotal,
-        powerTotal  : instance.runningData.powerTotal,
+        pvPowerTotal: data.pvPowerTotal,
+        powerTotal  : data.powerTotal,
       }),
     })
 

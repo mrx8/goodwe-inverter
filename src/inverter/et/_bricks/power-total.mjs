@@ -16,6 +16,11 @@ export default Factory
         gridPowerTotal += Math.abs(batteryPower)
       }
 
-      return Math.min(pvPowerTotal, inverterPowerTotal, gridPowerTotal)
+      let powerTotal = Math.min(pvPowerTotal, inverterPowerTotal, gridPowerTotal)
+      if (powerTotal < 0) {
+        powerTotal = 0
+      }
+      
+      return powerTotal
     },
   })

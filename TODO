@@ -4,3 +4,7 @@ complete refactor:
 - test if multiple requests could be done parallel. If not do it sequential.
 - update() method to fetch all data.
 - all fields are configured in inverter.mjs
+- poll every 10s of all registers and signal on ready => data can then be read.
+
+write-support
+- for battery-DOD for setting this to 100 if battery should not be discharged and 10 if battery should be discharged. usefull when charging BEV in winter.

@@ -10,7 +10,6 @@ export default Factory
   )
 
   .properties({
-    interface     : 'ET',
     address       : 0xf7,
     updateInterval: 10000,
   })

@@ -2,7 +2,7 @@ import {diff as DiffObject} from 'deep-object-diff'
 import Factory from 'stampit'
 import Log from '../shared/log.mjs'
 import Param from '../shared/param.mjs'
-
+import {setTimeout as sleep} from 'node:timers/promises'
 
 export default Factory
   .compose(
@@ -18,6 +18,7 @@ export default Factory
 
   .methods({
     async updateChanges () {
+      await sleep(this.updateInterval)
       const data = await this.ReadDataFactory()
       const diff = DiffObject(this.data, data)
       this.data = data

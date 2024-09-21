@@ -11,8 +11,9 @@ export default Factory
   )
 
   .properties({
-    interface: 'DT',
-    address  : 0x7f,
+    interface     : 'DT',
+    address       : 0x7f,
+    updateInterval: 5000,
   })
 
   .init(async (param, {

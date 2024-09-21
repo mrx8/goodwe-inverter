@@ -10,8 +10,9 @@ export default Factory
   )
 
   .properties({
-    interface: 'ET',
-    address  : 0xf7,
+    interface     : 'ET',
+    address       : 0xf7,
+    updateInterval: 10000,
   })
 
   .init(async (param, {

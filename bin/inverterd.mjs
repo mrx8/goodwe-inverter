@@ -7,7 +7,6 @@ import Mqtt from 'mqtt'
 import {program as Program} from 'commander'
 import {createRequire} from 'module'
 import {required} from '../src/shared/required.mjs'
-import {setTimeout as sleep} from 'node:timers/promises'
 
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
@@ -142,7 +141,6 @@ const ManageInverters = Factory
             if (hadError === false) { // don't publish the last data if we had an error before
               await publishToMqttBroker(changes) // eslint-disable-line no-await-in-loop
             }
-            await sleep(10000) // eslint-disable-line no-await-in-loop
             changes = await inverter.updateChanges() // eslint-disable-line no-await-in-loop
             hadError = false // everything went normal
           }

@@ -17,10 +17,10 @@ export default Factory
       }
 
       let powerTotal = Math.min(pvPowerTotal, inverterPowerTotal, gridPowerTotal)
-      if (powerTotal < 0) {
+      if (pvPowerTotal === 0 && powerTotal < 0) {
         powerTotal = 0
       }
-      
+
       return powerTotal
     },
   })

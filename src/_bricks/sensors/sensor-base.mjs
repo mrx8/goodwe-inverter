@@ -6,6 +6,7 @@ export default Factory
     message,
   }, {instance}) => {
     instance.message = message
+    instance.data = {}
 
     return instance
   })

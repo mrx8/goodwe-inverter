@@ -15,7 +15,7 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    const data = instance.runningData
+    const data = instance.data.runningData
     Object.assign(data, {
       gridL2Voltage  : instance.readVoltage(35126),
       gridL2Current  : instance.readCurrent(35127),

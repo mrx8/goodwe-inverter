@@ -22,12 +22,13 @@ export default Factory
       return Factory
         .configuration({
           numberOfCalls: 0,
+          maxCalls     : Infinity,
         })
 
         .init(async (param, {
           instance: instancePromise,
           stamp:{compose:{configuration: {
-            maxCalls = Infinity,
+            maxCalls,
           }}},
           stamp,
         }) => {
@@ -38,15 +39,19 @@ export default Factory
               registerCount,
             })
 
-            Object.assign(instance, Sensors({
+            const sensorData = Sensors({
               message: responseMessage,
               registerStart,
-            }).getData())
+            }).data
+
+            Object.assign(instance, sensorData)
 
             stamp.compose.configuration.numberOfCalls++
+
+            return instance
           }
 
-          return instance
+          return instancePromise
         })
     },
   })

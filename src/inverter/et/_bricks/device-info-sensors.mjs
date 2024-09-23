@@ -27,9 +27,9 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    instance.deviceInfo = {}
+    instance.data.deviceInfo = {}
 
-    Object.assign(instance.deviceInfo, {
+    Object.assign(instance.data.deviceInfo, {
       ratedPower    : instance.readRatedPower(35001),
       serialNumber  : instance.readSerialNumber(35003),
       modelName     : instance.readModelName(35011),
@@ -43,12 +43,4 @@ export default Factory
     })
 
     return instance
-  })
-
-  .methods({
-    getData () {
-      return {
-        deviceInfo: this.deviceInfo,
-      }
-    },
   })

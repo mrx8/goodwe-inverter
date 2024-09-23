@@ -1,5 +1,5 @@
 import CalculateEfficiency from '../../efficiency.mjs'
-import CalculatePowerTotal from './power-total.mjs'
+import CalculatePowerTotal from './_power-total.mjs'
 import Factory from 'stampit'
 import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
 import ReadEnergyGenerationToday from '../../../_bricks/sensors/running/read-energy-generation-today.mjs'
@@ -11,7 +11,7 @@ import ReadSafetyCountry from '../../../_bricks/sensors/running/read-safety-coun
 import ReadTemperature from '../../../_bricks/sensors/running/read-temperature.mjs'
 import ReadTimestamp from '../../../_bricks/sensors/running/read-timestamp.mjs'
 import ReadVoltage from '../../../_bricks/sensors/running/read-voltage.mjs'
-import ReadWorkMode from './read-work-mode.mjs'
+import ReadWorkMode from './_read-work-mode.mjs'
 
 
 export default Factory
@@ -33,7 +33,7 @@ export default Factory
 
   .init((param, {instance}) => {
     let data
-    instance.runningData = data = {}
+    instance.data.runningData = data = {}
 
     Object.assign(data, {
       timestamp: instance.readTimestamp(30100),
@@ -98,12 +98,4 @@ export default Factory
     })
 
     return instance
-  })
-
-  .methods({
-    getData () {
-      return {
-        runningData: this.runningData,
-      }
-    },
   })

@@ -1,4 +1,4 @@
-import CalculatePowerTotal from './power-total.mjs'
+import CalculatePowerTotal from './_power-total.mjs'
 import Factory from 'stampit'
 import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
 import ReadFrequency from '../../../_bricks/sensors/running/read-frequency.mjs'
@@ -15,7 +15,10 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    Object.assign(instance.runningData, {
+    let data
+    instance.data.runningData = data = instance.data.runningData || {}
+
+    Object.assign(data, {
       gridL1L2Voltage: instance.readVoltage(30115),
       gridL2L3Voltage: instance.readVoltage(30116),
       gridL3L1Voltage: instance.readVoltage(30117),
@@ -30,27 +33,27 @@ export default Factory
       gridL3Frequency: instance.readFrequency(30126),
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
-      gridL2Power: instance.runningData.gridL2Voltage * instance.runningData.gridL2Current,
-      gridL3Power: instance.runningData.gridL3Voltage * instance.runningData.gridL3Current,
+    Object.assign(data, { // virtual-fields
+      gridL2Power: data.gridL2Voltage * data.gridL2Current,
+      gridL3Power: data.gridL3Voltage * data.gridL3Current,
     })
 
-    Object.assign(instance.runningData, { // virtual-fields of virtual-fields
-      gridPowerTotal: instance.runningData.gridL1Power + instance.runningData.gridL2Power + instance.runningData.gridL3Power,
+    Object.assign(data, { // virtual-fields of virtual-fields
+      gridPowerTotal: data.gridL1Power + data.gridL2Power + data.gridL3Power,
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
+    Object.assign(data, { // virtual-fields
       powerTotal: instance.calculatePowerTotal({
-        powerTotal    : instance.runningData.powerTotal,
-        gridPowerTotal: instance.runningData.gridPowerTotal,
-        pvPowerTotal  : instance.runningData.pvPowerTotal,
+        powerTotal    : data.powerTotal,
+        gridPowerTotal: data.gridPowerTotal,
+        pvPowerTotal  : data.pvPowerTotal,
       }),
     })
 
-    Object.assign(instance.runningData, { // virtual-fields
+    Object.assign(data, { // virtual-fields
       efficiency: instance.calculateEfficiency({
-        pvPowerTotal: instance.runningData.pvPowerTotal,
-        powerTotal  : instance.runningData.powerTotal,
+        pvPowerTotal: data.pvPowerTotal,
+        powerTotal  : data.powerTotal,
       }),
     })
 

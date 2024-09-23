@@ -1,7 +1,6 @@
 import Factory from 'stampit'
 import Log from '../shared/log.mjs'
-import Network from '../_bricks/reader/network/network.mjs'
-
+import dgram from 'node:dgram'
 
 const GOODWE_BORADCAST_IP = '255.255.255.255'
 const GOODWE_BROADCAST_PORT = 48899
@@ -24,26 +23,30 @@ function bind (socket, port = 0) {
 
 
 export default Factory
-  .init((param = {}) => {
-    param.ip = GOODWE_BORADCAST_IP
-    param.port = GOODWE_BROADCAST_PORT
-    param.timeout = Timeout
-  })
-
   .compose(
     Log,
-    Network,
   )
 
   .setLogId('discoverInverter')
 
-  .init(async (param, {
+  .properties({
+    ip  : GOODWE_BORADCAST_IP,
+    port: GOODWE_BROADCAST_PORT,
+  })
+
+  .init(async ({
+    timeout = Timeout,
+  }, {
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
+    instance.timeout = timeout
     instance.log.trace('setup UDP-socket for receiving multicast')
-    await bind(instance.client, 0)
-    instance.client.setBroadcast(true)
+    const client = dgram.createSocket('udp4')
+    client.unref()
+
+    await bind(client, 0)
+    client.setBroadcast(true)
     instance.log.trace('bound and listen for broadcast on UDP-socket')
 
     return new Promise((resolve, reject) => {
@@ -63,16 +66,16 @@ export default Factory
         }
       }
 
-      instance.client.on('message', receiver)
+      client.on('message', receiver)
 
       const timeoutId = setTimeout(() => {
-        instance.client.removeListener('message', receiver)
+        client.removeListener('message', receiver)
         resolve(responses)
       }, instance.timeout)
 
       const request = Buffer.from('WIFIKIT-214028-READ')
       instance.log.trace('send message %s to %s:%s', request.toString(), instance.ip, instance.port)
-      instance.client.send(request, instance.port, instance.ip, err => {
+      client.send(request, instance.port, instance.ip, err => {
         if (err) {
           clearTimeout(timeoutId)
           reject(err)

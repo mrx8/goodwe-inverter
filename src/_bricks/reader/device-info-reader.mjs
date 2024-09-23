@@ -3,8 +3,8 @@ import Reader from './reader.mjs'
 
 
 export default Factory
+  .compose(Reader)
+
   .configuration({
     maxCalls: 1,
   })
-
-  .compose(Reader)

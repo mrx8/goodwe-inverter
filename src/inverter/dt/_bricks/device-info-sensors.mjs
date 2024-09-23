@@ -24,9 +24,9 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    instance.deviceInfo = {}
+    instance.data.deviceInfo = {}
 
-    Object.assign(instance.deviceInfo, {
+    Object.assign(instance.data.deviceInfo, {
       armSubVersion : instance.readArmSubVersion(30038),
       armVersion    : instance.readArmVersion(30036),
       dsp1Version   : instance.readDsp1Version(30034),
@@ -38,12 +38,4 @@ export default Factory
     })
 
     return instance
-  })
-
-  .methods({
-    getData () {
-      return {
-        deviceInfo: this.deviceInfo,
-      }
-    },
   })

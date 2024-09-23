@@ -5,7 +5,8 @@ import Factory from 'stampit'
 import Log from '../src/shared/log.mjs'
 import Mqtt from 'mqtt'
 import {program as Program} from 'commander'
-import {createRequire} from 'module'
+import {createRequire} from 'node:module'
+import {inspect} from 'node:util'
 import {required} from '../src/shared/required.mjs'
 
 const require = createRequire(import.meta.url)
@@ -92,7 +93,7 @@ const ManageInverters = Factory
         instance.addInverters(foundInverters)
       } catch (e) {
         if (e.type === 'OPERATIONAL_ERROR') {
-          instance.log.warn('skipping error: %o', e)
+          instance.log.warn('skipping error: %s', inspect(e))
         } else {
           throw e
         }
@@ -147,7 +148,7 @@ const ManageInverters = Factory
         } catch (e) {
           if (e.type === 'OPERATIONAL_ERROR') {
             hadError = true // in case of a transient error, remember it here
-            this.log.warn('retrying after error: %o', e)
+            this.log.warn('retrying after error: %s', inspect(e))
           } else {
             throw e
           }

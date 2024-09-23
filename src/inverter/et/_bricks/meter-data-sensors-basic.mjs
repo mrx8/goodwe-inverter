@@ -13,9 +13,9 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    instance.meterData = {}
+    instance.data.meterData = {}
 
-    Object.assign(instance.meterData, {
+    Object.assign(instance.data.meterData, {
       activePowerL1   : instance.readPower(36019),
       activePowerL2   : instance.readPower(36021),
       activePowerL3   : instance.readPower(36023),
@@ -43,12 +43,4 @@ export default Factory
     })
 
     return instance
-  })
-
-  .methods({
-    getData () {
-      return {
-        meterData: this.meterData,
-      }
-    },
   })

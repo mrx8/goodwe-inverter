@@ -12,7 +12,7 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    Object.assign(instance.meterData, {
+    Object.assign(instance.data.meterData, {
       voltageL1: instance.readVoltage(36052),
       voltageL2: instance.readVoltage(36053),
       voltageL3: instance.readVoltage(36054),

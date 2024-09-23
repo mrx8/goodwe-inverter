@@ -19,9 +19,9 @@ export default Factory
   )
 
   .init((param, {instance}) => {
-    instance.bmsData = {}
+    instance.data.bmsData = {}
 
-    Object.assign(instance.bmsData, {
+    Object.assign(instance.data.bmsData, {
       stateOfCharge        : instance.readStateOfCharge(37007),
       stateOfHealth        : instance.readStateOfHealth(37008),
       temperature          : instance.readTemperature(37003),
@@ -37,12 +37,4 @@ export default Factory
     })
 
     return instance
-  })
-
-  .methods({
-    getData () {
-      return {
-        bmsData: this.bmsData,
-      }
-    },
   })

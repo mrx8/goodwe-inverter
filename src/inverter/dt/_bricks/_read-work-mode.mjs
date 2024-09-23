@@ -12,7 +12,7 @@ export default Factory
   .configuration({
     WORK_MODES: {
       0: 'Wait Mode',
-      1: 'Normal',
+      1: 'Normal (On-Grid)',
       2: 'Error',
       4: 'Check Mode',
     },

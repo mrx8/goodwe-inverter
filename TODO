@@ -8,3 +8,7 @@ complete refactor:
 
 write-support
 - for battery-DOD for setting this to 100 if battery should not be discharged and 10 if battery should be discharged. usefull when charging BEV in winter.
+
+https://forum.iobroker.net/assets/uploads/files/1703579717824-arm.745.esg2.et30.modbus.protocol.map.20221231..v1.pdf
+=> 45356
+PINO_LOG_LEVEL=trace node read-register.mjs -i 192.168.30.203 -p 8899 -t 2000 -a 247 -r 45356 -c 1 -s uint16be -m readUInt16BE

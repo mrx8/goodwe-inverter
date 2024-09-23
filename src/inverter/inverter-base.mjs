@@ -12,6 +12,10 @@ export default Factory
 
   .setLogId('inverter')
 
+  .properties({
+    updateInterval: 9000,
+  })
+
   .init((param, {instance}) => {
     instance.data = {}
   })

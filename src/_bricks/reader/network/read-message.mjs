@@ -1,4 +1,4 @@
-import {MODBUS_HEADER_LENGTH, MODBUS_READ_COMMAND, createRtuRequestMessage, validateRtuResponseMessage} from './modbus.mjs'
+import {MODBUS_READ_COMMAND, MODBUS_READ_HEADER_LENGTH, createRtuRequestMessage, validateRtuResponseMessage} from './modbus.mjs'
 import Factory from 'stampit'
 import Log from '../../../shared/log.mjs'
 import Network from './network.mjs'
@@ -52,7 +52,7 @@ export default Factory
           )
           validateRtuResponseMessage(responseMessage, this.address, MODBUS_READ_COMMAND, registerStart, registerCount)
 
-          return responseMessage.subarray(MODBUS_HEADER_LENGTH)
+          return responseMessage.subarray(MODBUS_READ_HEADER_LENGTH)
         } catch (e) {
           if (e.code === 'PROTOCOL_ERROR') { // exit eagerly on PROTOCOL_ERROR because this is fatal
             throw e

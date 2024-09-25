@@ -11,5 +11,5 @@ Program
 
 
 const Options = Program.opts()
-const inverter = await Inverter({ip: Options.ip, port: Options.port, timeout: Options.timeout})
+const inverter = await Inverter({ip: Options.ip, port: Options.port, timeout: Options.timeout * 1000})
 console.log('inverter', inspect(inverter.data, {depth: Infinity, maxArrayLength: Infinity, maxStringLength: Infinity}))

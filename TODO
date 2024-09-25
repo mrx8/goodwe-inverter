@@ -11,4 +11,6 @@ write-support
 
 https://forum.iobroker.net/assets/uploads/files/1703579717824-arm.745.esg2.et30.modbus.protocol.map.20221231..v1.pdf
 => 45356
-PINO_LOG_LEVEL=trace node read-register.mjs -i 192.168.30.203 -p 8899 -t 2000 -a 247 -r 45356 -c 1 -s uint16be -m readUInt16BE
+PINO_LOG_LEVEL=trace node read-register.mjs -i 192.168.30.203 -p 8899 -t 2 -a 247 -r 45356 -c 1 -s uint16be -m readUInt16BE
+
+47546 => SoC zum stoppen des Ladevorgangs: immer mindestens current SoC + 2 sonst ILLEGAL_DATA_VALUE.

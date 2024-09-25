@@ -8,27 +8,14 @@ const AA55PACKET = {
   QUERY_ID_INFO: 0x02,
 }
 
-const PACKET = {
-  COMMAND_ADDRESS: 0x7f,
-  READ_COMMAND   : 0x03,
-}
-
-// const PACKET_REVERSE = {
-//   0x7f: 'COMMAND_ADDRESS_DT_FAMILY',
-//   0xf7: 'COMMAND_ADDRESS_ET_FAMILY',
-//   0x03: 'READ_COMMAND',
-// }
-
-// const REGISTER = {
-//   ADDRESS     : 0xf7,
-//   READ_COMMAND: 0x03,
-// }
-
 const CHECKSUM_LENGTH = 2
 const MODBUS_HEADER = 0xaa55
+
 export const MODBUS_READ_COMMAND = 0x03
+export const MODBUS_READ_HEADER_LENGTH = 5
+
 export const MODBUS_WRITE_COMMAND = 0x06
-export const MODBUS_HEADER_LENGTH = 5
+export const MODBUS_WRITE_HEADER_LENGTH = 4
 
 
 const FAILURE_CODES = {
@@ -154,7 +141,7 @@ export function validateRtuResponseMessage (message, address, command, offset, v
   }
 
 
-  if (message[3] === command) {
+  if (message[3] === MODBUS_READ_COMMAND) {
     if (message[4] !== value * 2) {
       throw new OperationalError(`Response has unexpected length: ${message[4].toString(16)}, expected: ${(value * 2).toString(16)}.`, 'PROTOCOL_ERROR')
     }
@@ -190,7 +177,7 @@ export function validateRtuResponseMessage (message, address, command, offset, v
     throw new OperationalError('Response CRC-16 checksum does not match.', 'PROTOCOL_ERROR')
   }
 
-  if (message[3] !== PACKET.READ_COMMAND) {
+  if (message[3] !== command) {
     const failureCode = FAILURE_CODES[message[4]] || 'UNKNOWN'
     throw new OperationalError(`Response command failure: ${failureCode}.`, 'PROTOCOL_ERROR')
   }

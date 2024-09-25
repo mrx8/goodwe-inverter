@@ -21,7 +21,7 @@ const Options = Program.opts()
 const reader = ReadMessage.setLogId('manual-read').create({
   ip     : Options.ip,
   port   : Number(Options.port),
-  timeout: Options.timeout,
+  timeout: Options.timeout * 1000,
   address: Number(Options.address),
 })
 

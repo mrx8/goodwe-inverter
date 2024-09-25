@@ -12,7 +12,7 @@ export default Factory
   .setLogId('inverter-write')
 
   .init((param, {instance}) => {
-    instance.writeMessage = WriteMessage({
+    instance.writer = WriteMessage({
       ...param,
       address: instance.address,
     })
@@ -22,7 +22,7 @@ export default Factory
 
   .methods({
     writeRegister (register, registerValue) {
-      return this.writeMessage({
+      return this.writer.writeMessage({
         register,
         registerValue,
       })

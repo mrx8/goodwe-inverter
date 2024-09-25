@@ -1,13 +1,16 @@
 import {diff as DiffObject} from 'deep-object-diff'
 import Factory from 'stampit'
+import InverterWrite from './inverter-write.mjs'
 import Log from '../shared/log.mjs'
 import Param from '../shared/param.mjs'
 import {setTimeout as sleep} from 'node:timers/promises'
+
 
 export default Factory
   .compose(
     Param,
     Log,
+    InverterWrite,
   )
 
   .setLogId('inverter')
@@ -49,5 +52,4 @@ export default Factory
 
       return 0
     },
-
   })

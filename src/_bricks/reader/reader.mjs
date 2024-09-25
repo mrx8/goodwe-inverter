@@ -32,7 +32,6 @@ export default Factory
           }}},
           stamp,
         }) => {
-          const instance = await instancePromise
           if (maxCalls === Infinity || stamp.compose.configuration.numberOfCalls < maxCalls) {
             const responseMessage = await reader.readMessage({
               registerStart,
@@ -44,6 +43,7 @@ export default Factory
               registerStart,
             }).data
 
+            const instance = await instancePromise
             Object.assign(instance, sensorData)
 
             stamp.compose.configuration.numberOfCalls++

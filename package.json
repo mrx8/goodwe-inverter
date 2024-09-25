@@ -24,6 +24,7 @@
     "commander": "12.1.0",
     "deep-object-diff": "1.1.9",
     "mqtt": "5.10.1",
+    "p-queue": "8.0.1",
     "pino": "9.4.0",
     "stampit": "4.3.2"
   }

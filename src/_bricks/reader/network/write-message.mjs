@@ -1,4 +1,4 @@
-import {MODBUS_HEADER_LENGTH, MODBUS_READ_COMMAND, createRtuRequestMessage, validateRtuResponseMessage} from './modbus.mjs'
+import {MODBUS_HEADER_LENGTH, MODBUS_WRITE_COMMAND, createRtuRequestMessage, validateRtuResponseMessage} from './modbus.mjs'
 import Factory from 'stampit'
 import Log from '../../../shared/log.mjs'
 import Network from './network.mjs'
@@ -10,7 +10,7 @@ export default Factory
     Network,
   )
 
-  .setLogId('readMmessage')
+  .setLogId('writeMmessage')
 
   .properties({
     maxTries: 2,
@@ -27,30 +27,22 @@ export default Factory
   })
 
   .methods({
-    async readMessage ({
-      registerStart,
-      registerCount,
+    async writeMessage ({
+      register,
+      registerValue,
     }) {
       let error
       let count = 0
 
       while (++count <= this.maxTries) {
-        this.log.trace(
-          'readMessage try #%d/%d for address 0x%s from 0x%s to 0x%s',
-          count, this.maxTries, this.address.toString(16), registerStart.toString(16), registerCount.toString(16),
-        )
-
+        this.log.trace('writeMessage try #%d/%d', count, this.maxTries)
         try {
-          const message = createRtuRequestMessage(this.address, MODBUS_READ_COMMAND, registerStart, registerCount)
+          const message = createRtuRequestMessage(this.address, MODBUS_WRITE_COMMAND, register, registerValue)
           const responseMessage = await this.requestResponse(message) // eslint-disable-line no-await-in-loop
           // Note: Sometimes we get back invalid data. Maybe the inverter sent a response to us which was intended for another requester.
           // I have no detailed documentation about the request/response-cycle from GoodWe-Inverters...
           // therefore I try it again even in this case.
-          this.log.trace(
-            'validateMessage for address 0x%s from 0x%s with length 0x%s',
-            this.address.toString(16), registerStart.toString(16), (registerCount * 2).toString(16),
-          )
-          validateRtuResponseMessage(responseMessage, this.address, MODBUS_READ_COMMAND, registerStart, registerCount)
+          validateRtuResponseMessage(responseMessage, this.address, MODBUS_WRITE_COMMAND, register, registerValue)
 
           return responseMessage.subarray(MODBUS_HEADER_LENGTH)
         } catch (e) {

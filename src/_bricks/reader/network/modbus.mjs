@@ -27,8 +27,7 @@ const PACKET = {
 const CHECKSUM_LENGTH = 2
 const MODBUS_HEADER = 0xaa55
 export const MODBUS_READ_COMMAND = 0x03
-const MODBUS_WRITE_COMMAND = 0x06
-const MODBUS_WRITE_MULTI_COMMAND = 0x10
+export const MODBUS_WRITE_COMMAND = 0x06
 export const MODBUS_HEADER_LENGTH = 5
 
 
@@ -157,17 +156,20 @@ export function validateRtuResponseMessage (message, address, command, offset, v
 
   if (message[3] === command) {
     if (message[4] !== value * 2) {
-      throw new OperationalError(`Response has unexpected length: ${message[4]}, expected: ${value * 2}.`, 'PROTOCOL_ERROR')
+      throw new OperationalError(`Response has unexpected length: ${message[4].toString(16)}, expected: ${(value * 2).toString(16)}.`, 'PROTOCOL_ERROR')
     }
 
     expectedLength = message[4] + 7
     if (message.length < expectedLength) {
-      throw new OperationalError(`partial message received. Length should be ${message.length} but was ${expectedLength}`, 'PROTOCOL_ERROR')
+      throw new OperationalError(
+        `partial message received. Length should be ${message.length.toString(16)} but was ${expectedLength.toString(16)}`,
+        'PROTOCOL_ERROR',
+      )
     }
-  } else if ([MODBUS_WRITE_COMMAND, MODBUS_WRITE_MULTI_COMMAND].includes(message[3])) {
+  } else if (message[3] === MODBUS_WRITE_COMMAND) {
     expectedLength = 10
     if (message.length < expectedLength) {
-      throw new OperationalError(`Response has unexpected length: ${message.length}, expected: ${expectedLength}.`, 'PROTOCOL_ERROR')
+      throw new OperationalError(`Response has unexpected length: ${message.length.toString(16)}, expected: ${expectedLength.toString(16)}.`, 'PROTOCOL_ERROR')
     }
     const responseOffset = message.readUInt16BE(4)
     if (responseOffset !== offset) {

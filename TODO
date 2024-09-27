@@ -9,8 +9,8 @@ complete refactor:
 write-support
 - for battery-DOD for setting this to 100 if battery should not be discharged and 10 if battery should be discharged. usefull when charging BEV in winter.
 
-https://forum.iobroker.net/assets/uploads/files/1703579717824-arm.745.esg2.et30.modbus.protocol.map.20221231..v1.pdf
-=> 45356
 PINO_LOG_LEVEL=trace node read-register.mjs -i 192.168.30.203 -p 8899 -t 2 -a 247 -r 45356 -c 1 -s uint16be -m readUInt16BE
 
-47546 => SoC zum stoppen des Ladevorgangs: immer mindestens current SoC + 2 sonst ILLEGAL_DATA_VALUE.
+45356 BattSOCUnderMin RW U16 1 1 [0,100]
+47545 FastChargeEnable RW U16 1 1 [0,1] 0: Disable 1:Enable
+47546 FastChargeStopSoc RW U16 1 1 [0,100] => SoC zum stoppen des Ladevorgangs: immer mindestens current SoC + 2 sonst ILLEGAL_DATA_VALUE.

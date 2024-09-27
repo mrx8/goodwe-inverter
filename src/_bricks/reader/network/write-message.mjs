@@ -10,7 +10,7 @@ export default Factory
     Network,
   )
 
-  .setLogId('writeMmessage')
+  .setLogId('writeMessage')
 
   .properties({
     maxTries: 2,

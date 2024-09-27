@@ -1,12 +1,14 @@
-import DeviceInfoReader from '../../_bricks/reader/device-info-reader.mjs'
 import DeviceInfoSensors from './_bricks/device-info-sensors.mjs'
 import Factory from 'stampit'
 import InverterBase from '../inverter-base.mjs'
-
+import ObjectAssignDeep from 'object-assign-deep'
+import Reader from '../../_bricks/reader/reader.mjs'
+import WriteData from './_bricks/write-data.mjs'
 
 export default Factory
   .compose(
     InverterBase,
+    WriteData,
   )
 
   .properties({
@@ -21,7 +23,7 @@ export default Factory
     let ReadDataFactory = Factory
 
     // device-info
-    const ReadDeviceInfo = DeviceInfoReader.setup({
+    const ReadDeviceInfo = Reader.configuration({maxCalls: 1}).setup({
       ip           : instance.ip,
       port         : instance.port,
       timeout      : instance.timeout,
@@ -32,11 +34,10 @@ export default Factory
     })
     ReadDataFactory = ReadDataFactory.compose(ReadDeviceInfo)
     const deviceInfo = await ReadDeviceInfo()
-    Object.assign(instance.data, deviceInfo)
+    ObjectAssignDeep(instance.data, deviceInfo)
 
     // running-data
     let RunningDataSensors = Factory
-    const {default: RunningDataReader} = await import('../../_bricks/reader/running-data-reader.mjs')
 
     if (instance.data.deviceInfo.numberOfPhases === 3) {
       const {default: RunningDataSensorsThreePhases} = await import('./_bricks/running-data-sensors-three-phases.mjs')
@@ -46,7 +47,7 @@ export default Factory
       RunningDataSensors = RunningDataSensors.compose(RunningDataSensorsBasic)
     }
 
-    const ReadRunningData = RunningDataReader.setup({
+    const ReadRunningData = Reader.setup({
       ip           : instance.ip,
       port         : instance.port,
       timeout      : instance.timeout,
@@ -57,13 +58,12 @@ export default Factory
     })
     ReadDataFactory = ReadDataFactory.compose(ReadRunningData)
     const runningData = await ReadRunningData()
-    Object.assign(instance.data, runningData)
+    ObjectAssignDeep(instance.data, runningData)
 
     // bms-data
     if (instance.data.runningData.batteryModeCode > 0) {
-      const {default: BmsDataReader} = await import('../../_bricks/reader/bms-data-reader.mjs')
       const {default: BmsDataSensors} = await import('./_bricks/bms-data-sensors.mjs')
-      const ReadBmsData = BmsDataReader.setup({
+      const ReadBmsData = Reader.setup({
         ip           : instance.ip,
         port         : instance.port,
         timeout      : instance.timeout,
@@ -74,14 +74,13 @@ export default Factory
       })
       ReadDataFactory = ReadDataFactory.compose(ReadBmsData)
       const bmsData = await ReadBmsData()
-      Object.assign(instance.data, bmsData)
+      ObjectAssignDeep(instance.data, bmsData)
     }
 
     // meter data
     if (instance.data.deviceInfo.is745Platform) {
-      const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
       const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-extended.mjs')
-      const ReadMeterData = MeterDataReader.setup({
+      const ReadMeterData = Reader.setup({
         ip           : instance.ip,
         port         : instance.port,
         timeout      : instance.timeout,
@@ -91,12 +90,11 @@ export default Factory
         Sensors      : MeterDataSensors,
       })
       const meterData = await ReadMeterData()
-      Object.assign(instance.data, meterData)
+      ObjectAssignDeep(instance.data, meterData)
       ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
     } else {
-      const {default: MeterDataReader} = await import('../../_bricks/reader/meter-data-reader.mjs')
       const {default: MeterDataSensors} = await import('./_bricks/meter-data-sensors-basic.mjs')
-      const ReadMeterData = MeterDataReader.setup({
+      const ReadMeterData = Reader.setup({
         ip           : instance.ip,
         port         : instance.port,
         timeout      : instance.timeout,
@@ -106,8 +104,40 @@ export default Factory
         Sensors      : MeterDataSensors,
       })
       const meterData = await ReadMeterData()
-      Object.assign(instance.data, meterData)
+      ObjectAssignDeep(instance.data, meterData)
       ReadDataFactory = ReadDataFactory.compose(ReadMeterData)
+    }
+
+    if (instance.data.runningData.batteryModeCode > 0) {
+      // settings-data #1
+      const {default: SettingsDataSensors1} = await import('./_bricks/settings-data-sensors1.mjs')
+      const ReadSettingsData1 = Reader.setup({
+        ip           : instance.ip,
+        port         : instance.port,
+        timeout      : instance.timeout,
+        address      : instance.address,
+        registerStart: 45356,
+        registerCount: 1,
+        Sensors      : SettingsDataSensors1,
+      })
+      ReadDataFactory = ReadDataFactory.compose(ReadSettingsData1)
+      const settingsData1 = await ReadSettingsData1()
+      ObjectAssignDeep(instance.data, settingsData1)
+
+      // settings-data #1
+      const {default: SettingsDataSensors2} = await import('./_bricks/settings-data-sensors2.mjs')
+      const ReadSettingsData2 = Reader.setup({
+        ip           : instance.ip,
+        port         : instance.port,
+        timeout      : instance.timeout,
+        address      : instance.address,
+        registerStart: 47545,
+        registerCount: 2,
+        Sensors      : SettingsDataSensors2,
+      })
+      ReadDataFactory = ReadDataFactory.compose(ReadSettingsData2)
+      const settingsData2 = await ReadSettingsData2()
+      ObjectAssignDeep(instance.data, settingsData2)
     }
 
     // this composed factory fetch updates from the available sensors

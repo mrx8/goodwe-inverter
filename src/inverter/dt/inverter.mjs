@@ -1,7 +1,7 @@
-import DeviceInfoReader from '../../_bricks/reader/device-info-reader.mjs'
 import DeviceInfoSensors from './_bricks/device-info-sensors.mjs'
 import Factory from 'stampit'
 import InverterBase from '../inverter-base.mjs'
+import Reader from '../../_bricks/reader/reader.mjs'
 
 // see https://github.com/MiG-41/Modbus-GoodWe-DT
 
@@ -22,7 +22,7 @@ export default Factory
     let ReadDataFactory = Factory
 
     // device-info
-    const ReadDeviceInfo = DeviceInfoReader.setup({
+    const ReadDeviceInfo = Reader.configuration({maxCalls: 1}).setup({
       ip           : instance.ip,
       port         : instance.port,
       timeout      : instance.timeout,
@@ -37,8 +37,6 @@ export default Factory
 
     // running-data
     let RunningDataSensors = Factory
-    const {default: RunningDataReader} = await import('../../_bricks/reader/running-data-reader.mjs')
-
     if (instance.data.deviceInfo.numberOfPhases === 3) {
       const {default: RunningDataSensorsThreePhases} = await import('./_bricks/running-data-sensors-three-phases.mjs')
       RunningDataSensors = RunningDataSensors.compose(RunningDataSensorsThreePhases)
@@ -47,7 +45,7 @@ export default Factory
       RunningDataSensors = RunningDataSensors.compose(RunningDataSensorsBasic)
     }
 
-    const ReadRunningData = RunningDataReader.setup({
+    const ReadRunningData = Reader.setup({
       ip           : instance.ip,
       port         : instance.port,
       timeout      : instance.timeout,

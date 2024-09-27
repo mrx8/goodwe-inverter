@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import DetectInverter from '../src/inverter/detect.mjs'
 import DiscoverInverters from '../src/inverter/discover.mjs'
+import {EventEmitter} from 'node:events'
 import Factory from 'stampit'
 import Log from '../src/shared/log.mjs'
 import Mqtt from 'mqtt'
@@ -11,6 +12,7 @@ import {required} from '../src/shared/required.mjs'
 
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
+const MQTT_BASE_PATH = 'goodwe.inverters'
 
 let client
 const MQTT_URI = process.env.MQTT_URI || null
@@ -19,9 +21,12 @@ if (MQTT_URI === null) {
     publishAsync (path, value) {
       console.log(`${path} => ${value}`)
     },
+    subscribeAsync () {},
+    on () {},
   }
 } else {
   client = await Mqtt.connectAsync(process.env.MQTT_URI)
+  client.subscribe('')
 }
 
 
@@ -49,7 +54,7 @@ function createPublisher (inverter) {
 
   return async data => {
     const promises = []
-    const mqttPath = `goodwe.inverters.${serialNumber}`
+    const mqttPath = `${MQTT_BASE_PATH}.${serialNumber}`
     this.log.trace('publish sensors with path %s to mqtt', mqttPath)
     for (const [path, value] of recursiveIterate(mqttPath, data)) {
       promises.push(
@@ -62,6 +67,51 @@ function createPublisher (inverter) {
 }
 
 
+async function createSubscriber (inverter) {
+  const serialNumber = inverter.data.deviceInfo.serialNumber
+  const mqttPath = `${MQTT_BASE_PATH}.${serialNumber}`
+  const states = inverter.getWriteableStates()
+
+  const topics = []
+  for (const state of states) { // only subscribe if the inverter has configured any.
+    const topic = `${mqttPath}.${state}`
+    this.log.trace('setup subscribe on topic "%s"', topic)
+    topics.push(topic)
+
+    let lastElement = state.split('.').pop()
+    lastElement = `${lastElement.charAt(0).toUpperCase()}${lastElement.slice(1)}`
+
+    let numberOfMessages = 0
+    this.emitter.on(topic, async message => {
+      // on subscribe to a topic the mqtt-broker is sending the current state (configured by me in the mqtt-instance in iobroker)
+      // afterwards we read the current value from the inverter and publish them to the mqtt-broker, which resends it to us.
+      // afterwards this won't happen anymore because of the {nl: true}-flag below in subscribeAsync().
+      if (numberOfMessages < 2) {
+        numberOfMessages++
+        this.log.trace('dropping message number %d for topic "%s"', numberOfMessages, topic)
+
+        return
+      }
+
+      try {
+        message = message.toString()
+        this.log.trace('received data from topic "%s" with message "%s"', topic, message)
+        const methodName = `write${lastElement}`
+        this.log.trace('invoking inverter.%s(%s)', methodName, message)
+        await inverter[methodName](message)
+        this.log.trace('invoke successful')
+      } catch (e) {
+        this.log.error('error in handling received data from topic %s with message %s: %s', topic, message, inspect(e))
+      }
+    })
+  }
+
+  if (topics.length > 0) {
+    await client.subscribeAsync(topics, {nl: true})
+  }
+}
+
+
 const ManageInverters = Factory
   .compose(Log)
 
@@ -70,6 +120,11 @@ const ManageInverters = Factory
   .init(({
     timeout = required('timeout'),
   }, {instance}) => {
+    instance.emitter = new EventEmitter()
+    client.on('message', (topic, message) => {
+      instance.emitter.emit(topic, message)
+    })
+
     instance.runningInverters = {}
     instance.timeout = timeout * 1000
 
@@ -131,6 +186,7 @@ const ManageInverters = Factory
               timeout: 2000,
             })
             publishToMqttBroker = createPublisher.call(this, inverter)
+            await createSubscriber.call(this, inverter) // eslint-disable-line no-await-in-loop
           }
 
           let changes = inverter.data

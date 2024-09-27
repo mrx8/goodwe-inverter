@@ -10,7 +10,7 @@ export default Factory
     Network,
   )
 
-  .setLogId('readMmessage')
+  .setLogId('readMessage')
 
   .properties({
     maxTries: 2,

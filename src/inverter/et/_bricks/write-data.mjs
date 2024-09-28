@@ -12,6 +12,7 @@ export default Factory
       'settingsData.batteryMinimumStateOfChargeOnGrid',
       'settingsData.batteryFastChargeEnable',
       'settingsData.batteryFastChargeStopStateOfCharge',
+      'settingsData.batteryFastChargePower',
     ],
   })
 

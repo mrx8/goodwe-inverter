@@ -11,6 +11,7 @@ export default Factory
 
     Object.assign(instance.data.settingsData, {
       batteryFastChargeEnable           : instance.readBatteryFastChargeEnable(47545),
+      batteryFastChargePower            : instance.readBatteryFastChargePower(47603),
       batteryFastChargeStopStateOfCharge: instance.readBatteryFastChargeStopStateOfCharge(47546),
     })
 

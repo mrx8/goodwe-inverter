@@ -45,4 +45,14 @@ export default Factory
 
       await this.writeRegister(47546, value)
     },
+
+    async writeBatteryFastChargePower (registerValue) {
+      // 47603 FastChargePower RW U16 1 1 [0,100]
+      const value = Number.parseInt(registerValue, 10)
+      if (Number.isNaN(value) || value < 0 || value > 100) {
+        throw new ProgrammerError('value is not an integer or not between [0,100]', 'PARAM_ERROR')
+      }
+
+      await this.writeRegister(47603, value)
+    },
   })

@@ -132,7 +132,7 @@ export default Factory
         timeout      : instance.timeout,
         address      : instance.address,
         registerStart: 47545,
-        registerCount: 2,
+        registerCount: 59,
         Sensors      : SettingsDataSensors2,
       })
       ReadDataFactory = ReadDataFactory.compose(ReadSettingsData2)

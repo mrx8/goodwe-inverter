@@ -10,6 +10,10 @@ export default Factory
       return this.readUInt16BE(register)
     },
 
+    readBatteryFastChargePower (register) {
+      return this.readUInt16BE(register)
+    },
+
     readBatteryFastChargeStopStateOfCharge (register) {
       return this.readUInt16BE(register)
     },

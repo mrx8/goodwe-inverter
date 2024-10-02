@@ -14,3 +14,16 @@ PINO_LOG_LEVEL=trace node read-register.mjs -i 192.168.30.203 -p 8899 -t 2 -a 24
 45356 BattSOCUnderMin RW U16 1 1 [0,100]
 47545 FastChargeEnable RW U16 1 1 [0,1] 0: Disable 1:Enable
 47546 FastChargeStopSoc RW U16 1 1 [0,100] => SoC zum stoppen des Ladevorgangs: immer mindestens current SoC + 2 sonst ILLEGAL_DATA_VALUE.
+
+Regeln: 
+- kein Ladevorgang aktiv
+- akku <= 50%    
+- Preis muss 33% unter dem Tagesdurchschnitt und <= 22¢ (Grenze bei aussreissern nach oben) liegen.
+- solarwetter: solarwetter.0.forecast.home.realSky_max * weatherunderground.0.forecast.0d.cloudCover
+  bei < x kWh
+=> laden mit voller power bis 90%
+
+
+- wenn Auto nicht im PV-mode laden will, entladen blockieren.
+  => mqtt.0.openWB.chargepoint.6.get.connected_vehicle.config => .chargemode !== "pv_charging"
+=> DOD auf 100 setzen, ansonsten 10.

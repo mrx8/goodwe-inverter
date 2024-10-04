@@ -27,3 +27,5 @@ Regeln:
 - wenn Auto nicht im PV-mode laden will, entladen blockieren.
   => mqtt.0.openWB.chargepoint.6.get.connected_vehicle.config => .chargemode !== "pv_charging"
 => DOD auf 100 setzen, ansonsten 10.
+
+PV-mode immer setzen wenn kein Ladevorgang läuft.

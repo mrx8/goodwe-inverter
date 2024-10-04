@@ -26,7 +26,6 @@ if (MQTT_URI === null) {
   }
 } else {
   client = await Mqtt.connectAsync(process.env.MQTT_URI)
-  client.subscribe('')
 }
 
 

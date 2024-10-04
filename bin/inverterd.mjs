@@ -95,13 +95,15 @@ async function createSubscriber (inverter) {
 
       try {
         message = message.toString()
-        this.log.trace('received data from topic "%s" with message "%s"', topic, message)
+        this.log.trace('subscribe: received data from topic "%s" with message "%s"', topic, message)
         const methodName = `write${lastElement}`
-        this.log.trace('invoking inverter.%s(%s)', methodName, message)
+        this.log.trace('subscribe: invoking inverter.%s(%s)', methodName, message)
         await inverter[methodName](message)
-        this.log.trace('invoke successful')
+        this.log.trace('subscribe: invoke successful')
+        client.publishAsync(topic, message),
+        this.log.trace('subscribe: ack send back')
       } catch (e) {
-        this.log.error('error in handling received data from topic %s with message %s: %s', topic, message, inspect(e))
+        this.log.error('subscribe: error in handling received data from topic %s with message %s: %s', topic, message, inspect(e))
       }
     })
   }

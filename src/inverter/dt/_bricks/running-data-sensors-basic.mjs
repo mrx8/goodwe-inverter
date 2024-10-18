@@ -83,7 +83,7 @@ export default Factory
     })
 
     Object.assign(data, { // virtual-fields
-      powerTotal: instance.calculatePowerTotal({
+      realPowerTotal: instance.calculatePowerTotal({
         powerTotal    : data.powerTotal,
         gridPowerTotal: data.gridPowerTotal,
         pvPowerTotal  : data.pvPowerTotal,
@@ -93,7 +93,7 @@ export default Factory
     Object.assign(data, { // virtual-fields
       efficiency: instance.calculateEfficiency({
         pvPowerTotal: data.pvPowerTotal,
-        powerTotal  : data.powerTotal,
+        powerTotal  : data.realPowerTotal,
       }),
     })
 

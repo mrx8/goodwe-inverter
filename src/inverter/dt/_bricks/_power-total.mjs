@@ -6,7 +6,13 @@ export default Factory
       powerTotal,
       gridPowerTotal,
       pvPowerTotal,
+      workModeCode,
+
     }) {
-      return Math.min(pvPowerTotal, powerTotal, gridPowerTotal)
+      if (workModeCode === 1) {
+        return Math.min(pvPowerTotal, powerTotal, gridPowerTotal)
+      }
+
+      return 0
     },
   })

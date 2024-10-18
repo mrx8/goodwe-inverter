@@ -39,6 +39,7 @@ export default Factory
         batteryPower      : data.batteryPower,
         inverterPowerTotal: data.inverterPowerTotal,
         gridPowerTotal    : data.gridPowerTotal,
+        workModeCode      : data.workModeCode,
       }),
     })
 

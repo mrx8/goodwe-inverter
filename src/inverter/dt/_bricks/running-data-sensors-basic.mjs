@@ -87,6 +87,7 @@ export default Factory
         powerTotal    : data.powerTotal,
         gridPowerTotal: data.gridPowerTotal,
         pvPowerTotal  : data.pvPowerTotal,
+        workModeCode  : data.workModeCode,
       }),
     })
 

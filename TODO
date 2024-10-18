@@ -6,8 +6,6 @@ complete refactor:
 - all fields are configured in inverter.mjs
 - poll every 10s of all registers and signal on ready => data can then be read.
 
-write-support
-- for battery-DOD for setting this to 100 if battery should not be discharged and 10 if battery should be discharged. usefull when charging BEV in winter.
 
 PINO_LOG_LEVEL=trace node read-register.mjs -i 192.168.30.203 -p 8899 -t 2 -a 247 -r 45356 -c 1 -s uint16be -m readUInt16BE
 
@@ -18,14 +16,15 @@ PINO_LOG_LEVEL=trace node read-register.mjs -i 192.168.30.203 -p 8899 -t 2 -a 24
 Regeln: 
 - kein Ladevorgang aktiv
 - akku <= 50%    
-- Preis muss 33% unter dem Tagesdurchschnitt und <= 22¢ (Grenze bei aussreissern nach oben) liegen.
-- solarwetter: solarwetter.0.forecast.home.realSky_max * weatherunderground.0.forecast.0d.cloudCover
-  bei < x kWh
+- Preis muss 20% unter dem Tagesdurchschnitt und <= 28¢ (Grenze bei aussreissern nach oben) liegen.
+- solarwetter: (solarwetter.0.forecast.home.realSky_max + solarwetter.0.forecast.home.realSky_min) / 2
+  bei < 10 kWh
+
 => laden mit voller power bis 90%
 
 
-- wenn Auto nicht im PV-mode laden will, entladen blockieren.
-  => mqtt.0.openWB.chargepoint.6.get.connected_vehicle.config => .chargemode !== "pv_charging"
-=> DOD auf 100 setzen, ansonsten 10.
-
-PV-mode immer setzen wenn kein Ladevorgang läuft.
+ab SOC < 50%
+  - wenn noch kein timer dann timer auf billigste Stunde setzen mit:
+    - check ob SOC < 60%
+      - laden mit voller power bis SOC 60%
+    

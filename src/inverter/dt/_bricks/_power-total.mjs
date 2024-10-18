@@ -7,14 +7,6 @@ export default Factory
       gridPowerTotal,
       pvPowerTotal,
     }) {
-      if (gridPowerTotal === 0) {
-        gridPowerTotal = Infinity
-      }
-
-      if (powerTotal === 0) {
-        powerTotal = Infinity
-      }
-
       return Math.min(pvPowerTotal, powerTotal, gridPowerTotal)
     },
   })

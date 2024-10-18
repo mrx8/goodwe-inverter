@@ -44,10 +44,9 @@ export default Factory
 
     Object.assign(data, { // virtual-fields
       realPowerTotal: instance.calculatePowerTotal({
-        powerTotal    : data.powerTotal,
-        gridPowerTotal: data.gridPowerTotal,
-        pvPowerTotal  : data.pvPowerTotal,
-        workModeCode  : data.workModeCode,
+        powerTotal  : data.powerTotal,
+        pvPowerTotal: data.pvPowerTotal,
+        workModeCode: data.workModeCode,
       }),
     })
 

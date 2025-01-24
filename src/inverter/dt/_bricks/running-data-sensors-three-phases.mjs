@@ -1,4 +1,3 @@
-import CalculatePowerTotal from './_power-total.mjs'
 import Factory from 'stampit'
 import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
 import ReadFrequency from '../../../_bricks/sensors/running/read-frequency.mjs'
@@ -7,7 +6,6 @@ import RunningDataSensorsBasic from './running-data-sensors-basic.mjs'
 
 export default Factory
   .compose(
-    CalculatePowerTotal,
     ReadCurrent,
     ReadFrequency,
     ReadVoltage,
@@ -43,11 +41,7 @@ export default Factory
     })
 
     Object.assign(data, { // virtual-fields
-      realPowerTotal: instance.calculatePowerTotal({
-        powerTotal  : data.powerTotal,
-        pvPowerTotal: data.pvPowerTotal,
-        workModeCode: data.workModeCode,
-      }),
+      realPowerTotal: data.powerTotal,
     })
 
     Object.assign(data, { // virtual-fields

@@ -1,5 +1,4 @@
 import CalculateEfficiency from '../../efficiency.mjs'
-import CalculatePowerTotal from './_power-total.mjs'
 import Factory from 'stampit'
 import ReadCurrent from '../../../_bricks/sensors/running/read-current.mjs'
 import ReadEnergyGenerationToday from '../../../_bricks/sensors/running/read-energy-generation-today.mjs'
@@ -27,7 +26,6 @@ export default Factory
     ReadTimestamp,
     ReadVoltage,
     ReadWorkMode,
-    CalculatePowerTotal,
     CalculateEfficiency,
   )
 
@@ -59,7 +57,7 @@ export default Factory
 
       activePower: instance.readPower16(30128), // only for completeness
       powerTotal : instance.readPower16(30128),
-
+  
       errorCodes: instance.readErrorCodes(30130),
       errors    : instance.readErrors(30130),
 
@@ -83,11 +81,7 @@ export default Factory
     })
 
     Object.assign(data, { // virtual-fields
-      realPowerTotal: instance.calculatePowerTotal({
-        powerTotal  : data.powerTotal,
-        pvPowerTotal: data.pvPowerTotal,
-        workModeCode: data.workModeCode,
-      }),
+      realPowerTotal: data.powerTotal,
     })
 
     Object.assign(data, { // virtual-fields

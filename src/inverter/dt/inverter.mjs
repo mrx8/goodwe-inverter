@@ -12,7 +12,7 @@ export default Factory
 
   .properties({
     address       : 0x7f,
-    updateInterval: 4000,
+    updateInterval: 4 * 1000,
   })
 
   .init(async (param, {
@@ -35,9 +35,9 @@ export default Factory
     const deviceInfo = await ReadDeviceInfo()
     Object.assign(instance.data, deviceInfo)
 
-    // if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
-    //   instance.updateInterval = 10000
-    // }
+    if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
+      instance.updateInterval = 30 * 1000
+    }
 
     // running-data
     let RunningDataSensors = Factory

@@ -39,7 +39,7 @@ async function getDeviceIdViaAa55 () {
 export default Factory
   .configuration({
     DT_MODEL_TAGS: [
-      'DTU', 'DTS', 'MSU', 'MST', 'MSC', 'DSN', 'DTN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', 'PSB', 'PSC',
+      'DTB', 'DTU', 'DTS', 'MSU', 'MST', 'MSC', 'DSN', 'DTN', 'DST', 'NSU', 'SSN', 'SST', 'SSX', 'SSY', 'PSB', 'PSC',
     ],
 
     ET_MODEL_TAGS,

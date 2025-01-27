@@ -150,7 +150,7 @@ const ManageInverters = Factory
           throw e
         }
       } finally {
-        setTimeout(discoverInverters, 30000)
+        setTimeout(discoverInverters, 60000)
       }
     }
 

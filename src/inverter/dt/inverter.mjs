@@ -34,7 +34,7 @@ export default Factory
     ReadDataFactory = ReadDataFactory.compose(ReadDeviceInfo)
     const deviceInfo = await ReadDeviceInfo()
     Object.assign(instance.data, deviceInfo)
-
+console.log("DEVINFO", deviceInfo)
     if (deviceInfo.data.deviceInfo.serialNumber.includes('DTB')) {
       instance.updateInterval = 10000
     }

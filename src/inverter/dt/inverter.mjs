@@ -35,7 +35,7 @@ export default Factory
     const deviceInfo = await ReadDeviceInfo()
     Object.assign(instance.data, deviceInfo)
     if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
-      instance.updateInterval = 60 * 1000
+      instance.updateInterval = 150 * 1000
       instance.log.trace("Overrinding updaterInterval to %d ms", instance.updateInterval)
     }
 

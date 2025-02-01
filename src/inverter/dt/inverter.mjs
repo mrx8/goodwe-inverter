@@ -34,10 +34,9 @@ export default Factory
     ReadDataFactory = ReadDataFactory.compose(ReadDeviceInfo)
     const deviceInfo = await ReadDeviceInfo()
     Object.assign(instance.data, deviceInfo)
-    instance.log.trace("DEVICEINFO %o", deviceInfo.deviceInfo)
     if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
-      instance.log.trace("I AM YOUR FATHER")
       instance.updateInterval = 5 * 60 * 1000
+      instance.log.trace("Overrinding updaterInterval to %d ms", instance.updateInterval)
     }
 
     // running-data

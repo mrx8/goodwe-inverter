@@ -35,9 +35,9 @@ export default Factory
     const deviceInfo = await ReadDeviceInfo()
     Object.assign(instance.data, deviceInfo)
 
-    // if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
-    //   instance.updateInterval = 30 * 1000
-    // }
+    if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
+      instance.updateInterval = 10 * 1000
+    }
 
     // running-data
     let RunningDataSensors = Factory

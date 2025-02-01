@@ -36,7 +36,7 @@ export default Factory
     Object.assign(instance.data, deviceInfo)
 
     if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
-      instance.updateInterval = 10 * 1000
+      instance.updateInterval = 5 * 60 * 1000
     }
 
     // running-data

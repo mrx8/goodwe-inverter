@@ -34,10 +34,10 @@ export default Factory
     ReadDataFactory = ReadDataFactory.compose(ReadDeviceInfo)
     const deviceInfo = await ReadDeviceInfo()
     Object.assign(instance.data, deviceInfo)
-    if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
-      instance.updateInterval = 120 * 1000
-      instance.log.trace("Overrinding updaterInterval to %d ms", instance.updateInterval)
-    }
+    // if (deviceInfo.deviceInfo.serialNumber.includes('DTB')) {
+    //  instance.updateInterval = 120 * 1000
+    //  instance.log.trace("Overrinding updaterInterval to %d ms", instance.updateInterval)
+    // }
 
     // running-data
     let RunningDataSensors = Factory

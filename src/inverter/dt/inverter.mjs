@@ -12,7 +12,7 @@ export default Factory
 
   .properties({
     address       : 0x7f,
-    updateInterval: 4 * 1000,
+    updateInterval: 5 * 1000,
   })
 
   .init(async (param, {

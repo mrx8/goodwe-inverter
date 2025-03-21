@@ -36,26 +36,32 @@ export default Factory
           stamp,
         }) => {
           if (maxCalls === Infinity || stamp.compose.configuration.numberOfCalls < maxCalls) {
-            try {
-              const responseMessage = await reader.readMessage({
-                registerStart,
-                registerCount,
-              })
+            let retries = 10
+            let error
+            while (retries-- > 0) {
+              try {
+                const responseMessage = await reader.readMessage({ // eslint-disable-line no-await-in-loop
+                  registerStart,
+                  registerCount,
+                })
 
-              const sensorData = Sensors({
-                message: responseMessage,
-                registerStart,
-              }).data
+                const sensorData = Sensors({
+                  message: responseMessage,
+                  registerStart,
+                }).data
 
-              const instance = await instancePromise
-              Object.assign(instance, sensorData)
+                const instance = await instancePromise // eslint-disable-line no-await-in-loop
+                Object.assign(instance, sensorData)
 
-              stamp.compose.configuration.numberOfCalls++
+                stamp.compose.configuration.numberOfCalls++
 
-              return instance
-            } catch (e) {
-              reader.log.error(e)
+                return instance
+              } catch (e) {
+                error = e
+                reader.log.error(e)
+              }
             }
+            throw error
           }
 
           return instancePromise

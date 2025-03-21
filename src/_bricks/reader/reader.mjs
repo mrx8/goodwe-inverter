@@ -12,12 +12,15 @@ export default Factory
       registerCount,
       Sensors,
     }) {
-      const reader = ReadMessage.setLogId(this.compose?.configuration?.logId || ip).create({
-        ip,
-        port,
-        timeout,
-        address,
-      })
+      const reader = ReadMessage
+        .setLogId(this.compose?.configuration?.logId || ip)
+
+        .create({
+          ip,
+          port,
+          timeout,
+          address,
+        })
 
       return Factory
         .configuration({
@@ -33,22 +36,26 @@ export default Factory
           stamp,
         }) => {
           if (maxCalls === Infinity || stamp.compose.configuration.numberOfCalls < maxCalls) {
-            const responseMessage = await reader.readMessage({
-              registerStart,
-              registerCount,
-            })
+            try {
+              const responseMessage = await reader.readMessage({
+                registerStart,
+                registerCount,
+              })
 
-            const sensorData = Sensors({
-              message: responseMessage,
-              registerStart,
-            }).data
+              const sensorData = Sensors({
+                message: responseMessage,
+                registerStart,
+              }).data
 
-            const instance = await instancePromise
-            Object.assign(instance, sensorData)
+              const instance = await instancePromise
+              Object.assign(instance, sensorData)
 
-            stamp.compose.configuration.numberOfCalls++
+              stamp.compose.configuration.numberOfCalls++
 
-            return instance
+              return instance
+            } catch (e) {
+              reader.log.error(e)
+            }
           }
 
           return instancePromise

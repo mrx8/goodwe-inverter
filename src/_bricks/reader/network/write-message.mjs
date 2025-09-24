@@ -13,7 +13,7 @@ export default Factory
   .setLogId('writeMessage')
 
   .properties({
-    maxTries: 2,
+    maxTries: 100,
   })
 
   .init(({

@@ -57,7 +57,7 @@ export default Factory
 
       activePower: instance.readPower16(30128), // only for completeness
       powerTotal : instance.readPower16(30128),
-  
+
       errorCodes: instance.readErrorCodes(30130),
       errors    : instance.readErrors(30130),
 

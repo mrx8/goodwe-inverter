@@ -184,7 +184,7 @@ const ManageInverters = Factory
             inverter = await DetectInverter.setLogId(ip).create({ // eslint-disable-line no-await-in-loop
               ip,
               port   : 8899,
-              timeout: 2000,
+              timeout: 3000,
             })
             publishToMqttBroker = createPublisher.call(this, inverter)
             await createSubscriber.call(this, inverter) // eslint-disable-line no-await-in-loop

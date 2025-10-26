@@ -57,7 +57,7 @@ function createPublisher (inverter) {
     this.log.trace('publish sensors with path %s to mqtt', mqttPath)
     for (const [path, value] of recursiveIterate(mqttPath, data)) {
       promises.push(
-        client.publishAsync(path, value),
+        client.publishAsync(path, value, {retain:true}),
       )
     }
 

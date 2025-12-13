@@ -3,7 +3,7 @@ This is a node.js based auto-detecting Client of Goodwe  inverters which could b
 # Usage
 as always:
 ```
-npm install
+pnpm install
 ```
 and simply call
 ```

@@ -15,9 +15,9 @@ It will auto-detect all available GoodWe Inverters in your local network (UDP-br
 Anyway, it is broadcasting every 60s and adds new inverters on successful detection. So let it run as daemon with auto-restart.
 If you do not specify the env-variable `MQTT_URI` it will print the topics/values on the screen.
 
+# Motivation
 The code borrows protocol-details heavily from this very nice project https://github.com/marcelblijleven/goodwe/tree/master.
 
-# Motivation
 I didn't want to use the software from the above link, because I wanted to write my own client to learn more about GoodWe inverters and most of all: I do not like Python ;)
 
 # Some background

@@ -11,7 +11,7 @@ export default Factory
   )
 
   .properties({
-    address: 0x7f,
+    address       : 0x7f,
     updateInterval: 15 * 1000,
   })
 
@@ -38,6 +38,10 @@ export default Factory
     //  instance.updateInterval = 120 * 1000
     //  instance.log.trace("Overrinding updaterInterval to %d ms", instance.updateInterval)
     // }
+
+    if (instance.detectOnly === true) {
+      return instance
+    }
 
     // running-data
     let RunningDataSensors = Factory

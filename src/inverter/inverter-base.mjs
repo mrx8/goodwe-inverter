@@ -20,6 +20,7 @@ export default Factory
   })
 
   .init((param, {instance}) => {
+    instance.detectOnly = param.detectOnly || false
     instance.data = {}
   })
 

@@ -12,7 +12,7 @@ export default Factory
   )
 
   .properties({
-    address: 0xf7,
+    address       : 0xf7,
     updateInterval: 15 * 1000,
   })
 
@@ -35,6 +35,10 @@ export default Factory
     ReadDataFactory = ReadDataFactory.compose(ReadDeviceInfo)
     const deviceInfo = await ReadDeviceInfo()
     ObjectAssignDeep(instance.data, deviceInfo)
+
+    if (instance.detectOnly === true) {
+      return instance
+    }
 
     // running-data
     let RunningDataSensors = Factory

@@ -1,4 +1,4 @@
-complete refactor:
+future complete refactor (only for better code, functionality remains the same):
 - define every single register with address and length in an individual stamp
 - the stamps register the address in a registerManager which araranges requests from a register offset to a maximum of 125 registers (more is apparently not possible via UDP)
 - test if multiple requests could be done parallel. If not do it sequential.
@@ -11,20 +11,4 @@ PINO_LOG_LEVEL=trace node read-register.mjs -i 192.168.30.203 -p 8899 -t 2 -a 24
 
 45356 BattSOCUnderMin RW U16 1 1 [0,100]
 47545 FastChargeEnable RW U16 1 1 [0,1] 0: Disable 1:Enable
-47546 FastChargeStopSoc RW U16 1 1 [0,100] => SoC zum stoppen des Ladevorgangs: immer mindestens current SoC + 2 sonst ILLEGAL_DATA_VALUE.
-
-Regeln: 
-- kein Ladevorgang aktiv
-- akku <= 50%    
-- Preis muss 20% unter dem Tagesdurchschnitt und <= 28¢ (Grenze bei aussreissern nach oben) liegen.
-- solarwetter: (solarwetter.0.forecast.home.realSky_max + solarwetter.0.forecast.home.realSky_min) / 2
-  bei < 10 kWh
-
-=> laden mit voller power bis 90%
-
-
-ab SOC < 50%
-  - wenn noch kein timer dann timer auf billigste Stunde setzen mit:
-    - check ob SOC < 60%
-      - laden mit voller power bis SOC 60%
-    
+47546 FastChargeStopSoc RW U16 1 1 [0,100] => SoC at which charging is stopped: always at least current SoC + 2 or you will get ILLEGAL_DATA_VALUE.

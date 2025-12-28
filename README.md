@@ -1,5 +1,5 @@
 # GoodWe Inverter Proxy
-This is a node.js based auto-detecting Client of Goodwe  inverters which could be configured to write the data to a MQTT-server.
+This is a node.js based auto-detecting Client of Goodwe  inverters which can be configured to write the data to a MQTT-server.
 # Usage
 as always:
 ```

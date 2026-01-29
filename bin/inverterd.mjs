@@ -139,16 +139,14 @@ const ManageInverters = Factory
 
         if (foundInverters.length === 0) {
           instance.log.error('No GoodWe inverters were found in your LAN. Maybe try again.')
+
+          return
         }
 
         instance.log.trace('found inverters: %o', foundInverters)
         instance.addInverters(foundInverters)
       } catch (e) {
-        if (e.type === 'OPERATIONAL_ERROR') {
-          instance.log.warn('skipping error: %s', inspect(e))
-        } else {
-          throw e
-        }
+        instance.log.warn('skipping error: %s', inspect(e))
       } finally {
         setTimeout(discoverInverters, 60000)
       }

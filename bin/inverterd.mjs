@@ -9,6 +9,7 @@ import {program as Program} from 'commander'
 import {createRequire} from 'node:module'
 import {inspect} from 'node:util'
 import {required} from '../src/shared/required.mjs'
+import {setTimeout as sleep} from 'node:timers/promises'
 
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
@@ -25,7 +26,15 @@ if (MQTT_URI === null) {
     on () {},
   }
 } else {
-  client = await Mqtt.connectAsync(process.env.MQTT_URI)
+  const {log} = Log.setLogId('mqtt')()
+  while (!client) {
+    try {
+      client = await Mqtt.connectAsync(MQTT_URI) // eslint-disable-line no-await-in-loop
+    } catch (e) { // e.g. while the host is booting and the broker is not running yet
+      log.warn('cannot connect to the mqtt-broker, retry in 10s: %s', e.code || e.message)
+      await sleep(10000) // eslint-disable-line no-await-in-loop
+    }
+  }
 }
 
 
@@ -99,7 +108,7 @@ async function createSubscriber (inverter) {
         this.log.trace('subscribe: invoking inverter.%s(%s)', methodName, message)
         await inverter[methodName](message)
         this.log.trace('subscribe: invoke successful')
-        client.publishAsync(topic, message),
+        await client.publishAsync(topic, message)
         this.log.trace('subscribe: ack send back')
       } catch (e) {
         this.log.error('subscribe: error in handling received data from topic %s with message %s: %s', topic, message, inspect(e))
@@ -175,6 +184,7 @@ const ManageInverters = Factory
       let inverter
       let publishToMqttBroker
       let hadError = false
+      let failures = 0
 
       while (true) {
         try {
@@ -182,10 +192,11 @@ const ManageInverters = Factory
             inverter = await DetectInverter.setLogId(ip).create({ // eslint-disable-line no-await-in-loop
               ip,
               port   : 8899,
-              timeout: 3000,
+              timeout: 5000, // the WiFi-module sometimes answers only after 3.1s
             })
             publishToMqttBroker = createPublisher.call(this, inverter)
             await createSubscriber.call(this, inverter) // eslint-disable-line no-await-in-loop
+            hadError = false // publish the complete data of the new detected inverter
           }
 
           let changes = inverter.data
@@ -195,14 +206,20 @@ const ManageInverters = Factory
             }
             changes = await inverter.updateChanges() // eslint-disable-line no-await-in-loop
             hadError = false // everything went normal
+            if (failures > 0) {
+              this.log.info('inverter with ip %s answers again after %d failed attempts', ip, failures)
+              failures = 0
+            }
           }
         } catch (e) {
-          if (e.type === 'OPERATIONAL_ERROR') {
-            hadError = true // in case of a transient error, remember it here
-            this.log.warn('retrying after error: %s', inspect(e))
-          } else {
-            throw e
-          }
+          // an error of one inverter (e.g. switched off at night) must not end the process: retry with growing pauses
+          hadError = true
+          failures++
+          const pause = Math.min(15 * 2 ** (failures - 1), 120)
+          this.log[e.type === 'OPERATIONAL_ERROR' ? 'warn' : 'error'](
+            'inverter with ip %s failed %d times, retry in %ds: %s', ip, failures, pause, inspect(e),
+          )
+          await sleep(pause * 1000) // eslint-disable-line no-await-in-loop
         }
       }
     },

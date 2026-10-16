@@ -1,5 +1,59 @@
 import Factory from 'stampit'
+import ObjectAssignDeep from 'object-assign-deep'
 import ReadMessage from './network/read-message.mjs'
+
+
+async function readRegisterBlock (instance, readerData) {
+  const {
+    reader,
+    registerStart,
+    registerCount,
+    Sensors,
+  } = readerData
+
+  let retries = 10
+  let error
+  while (retries-- > 0) {
+    try {
+      const responseMessage = await reader.readMessage({ // eslint-disable-line no-await-in-loop
+        registerStart,
+        registerCount,
+      })
+
+      const sensorData = Sensors({
+        message: responseMessage,
+        registerStart,
+      }).data
+
+      ObjectAssignDeep(instance, sensorData) // deep: several readers may fill the same group (e.g. settingsData)
+      readerData.numberOfCalls++
+
+      return
+    } catch (e) {
+      error = e
+      // timeouts are expected when an inverter is switched off (e.g. at night), the caller logs the final error
+      reader.log[e.code === 'REQUEST_TIMED_OUT' ? 'debug' : 'warn'](e)
+    }
+  }
+  throw error
+}
+
+
+// The same initializer for every reader, so a composed ReadDataFactory has it only once (stampit removes duplicates).
+// It reads the blocks of all composed readers one after another and stops at the first block which fails.
+async function readRegisters (param, {
+  instance,
+  stamp,
+}) {
+  for (const readerData of stamp.compose.deepConfiguration.readers) {
+    if (readerData.numberOfCalls < readerData.maxCalls) {
+      await readRegisterBlock(instance, readerData) // eslint-disable-line no-await-in-loop
+    }
+  }
+
+  return instance
+}
+
 
 export default Factory
   .statics({
@@ -22,49 +76,22 @@ export default Factory
           address,
         })
 
+      // every reader carries its data with it. deepConfiguration and not configuration: on compose the arrays of all
+      // readers are concatenated (in the order of composition), while configuration would keep only the last reader.
       return Factory
-        .configuration({
-          numberOfCalls: 0,
-          maxCalls     : Infinity,
+        .deepConfiguration({
+          readers: [
+            {
+              reader,
+              registerStart,
+              registerCount,
+              Sensors,
+              maxCalls     : this.compose?.configuration?.maxCalls ?? Infinity,
+              numberOfCalls: 0,
+            },
+          ],
         })
 
-        .init(async (param, {
-          instance: instancePromise,
-          stamp:{compose:{configuration: {
-            maxCalls,
-          }}},
-          stamp,
-        }) => {
-          if (maxCalls === Infinity || stamp.compose.configuration.numberOfCalls < maxCalls) {
-            let retries = 10
-            let error
-            while (retries-- > 0) {
-              try {
-                const responseMessage = await reader.readMessage({ // eslint-disable-line no-await-in-loop
-                  registerStart,
-                  registerCount,
-                })
-
-                const sensorData = Sensors({
-                  message: responseMessage,
-                  registerStart,
-                }).data
-
-                const instance = await instancePromise // eslint-disable-line no-await-in-loop
-                Object.assign(instance, sensorData)
-
-                stamp.compose.configuration.numberOfCalls++
-
-                return instance
-              } catch (e) {
-                error = e
-                reader.log.error(e)
-              }
-            }
-            throw error
-          }
-
-          return instancePromise
-        })
+        .init(readRegisters)
     },
   })

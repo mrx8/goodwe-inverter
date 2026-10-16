@@ -1,4 +1,4 @@
-import {MODBUS_WRITE_COMMAND, MODBUS_WRITE_HEADER_LENGTH, createRtuRequestMessage, validateRtuResponseMessage} from './modbus.mjs'
+import {MODBUS_WRITE_COMMAND, MODBUS_WRITE_HEADER_LENGTH, createRtuRequestMessage, isRtuResponseFor, validateRtuResponseMessage} from './modbus.mjs'
 import Factory from 'stampit'
 import Log from '../../../shared/log.mjs'
 import Network from './network.mjs'
@@ -38,7 +38,10 @@ export default Factory
         this.log.trace('writeMessage try #%d/%d', count, this.maxTries)
         try {
           const message = createRtuRequestMessage(this.address, MODBUS_WRITE_COMMAND, register, registerValue)
-          const responseMessage = await this.requestResponse(message) // eslint-disable-line no-await-in-loop
+          const responseMessage = await this.requestResponse( // eslint-disable-line no-await-in-loop
+            message,
+            response => isRtuResponseFor(response, this.address, MODBUS_WRITE_COMMAND, register, registerValue),
+          )
           // Note: Sometimes we get back invalid data. Maybe the inverter sent a response to us which was intended for another requester.
           // I have no detailed documentation about the request/response-cycle from GoodWe-Inverters...
           // therefore I try it again even in this case.

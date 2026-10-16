@@ -122,6 +122,29 @@ export function createRtuRequestMessage (commandAddress, command, offset, value)
 //   return false
 // }
 
+// false if the message is an answer, but to another request (e.g. a late answer after a timeout).
+// The answer to a read contains no register-address, so it can only be told apart by its length.
+export function isRtuResponseFor (message, address, command, offset, value) {
+  if (message.length < 5 || message.readUInt16BE(0) !== MODBUS_HEADER || message[2] !== address) {
+    return true // not identifiable => validateRtuResponseMessage() decides
+  }
+
+  if (message[3] === (command | 0x80)) {
+    return true // failure-response to this command
+  }
+
+  if (message[3] !== command) {
+    return false
+  }
+
+  if (command === MODBUS_READ_COMMAND) {
+    return message[4] === value * 2
+  }
+
+  return message.length < 6 || message.readUInt16BE(4) === offset
+}
+
+
 export function validateRtuResponseMessage (message, address, command, offset, value) {
   let expectedLength
 

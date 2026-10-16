@@ -54,8 +54,8 @@ export default Factory
       const receiver = (data, rinfo) => {
         if (rinfo.port === GOODWE_BROADCAST_PORT) {
           const [ip, macAdressRaw, name] = data.toString().split(',')
-          if (name.startsWith('Solar-WiFi')) {
-            const macAdress = macAdressRaw.match(/.{2}/g).join(':')
+          if (name?.startsWith('Solar-WiFi')) { // other devices may answer on this port, too
+            const macAdress = macAdressRaw.match(/.{2}/g)?.join(':')
             instance.log.trace('got multicast-answer from ip: %s, mac-address: %s, name: %s', ip, macAdress, name)
             responses.push({
               ip,
@@ -69,7 +69,7 @@ export default Factory
       client.on('message', receiver)
 
       const timeoutId = setTimeout(() => {
-        client.removeListener('message', receiver)
+        client.close() // a new socket is used for every discovery
         resolve(responses)
       }, instance.timeout)
 
@@ -78,6 +78,7 @@ export default Factory
       client.send(request, instance.port, instance.ip, err => {
         if (err) {
           clearTimeout(timeoutId)
+          client.close()
           reject(err)
         }
       })

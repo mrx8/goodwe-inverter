@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "eslint": "eslint eslint.config.mjs '**/*.mjs'",
-    "test": "PINO_LOG_LEVEL=trace node ./bin/inverterd.mjs | pino-pretty -g"
+    "test": "PINO_LOG_LEVEL=trace node ./bin/inverterd.mjs | pino-pretty -g",
+    "unittest": "PINO_LOG_LEVEL=silent mocha $(find test -name 'test-*')"
   },
   "author": "Andreas Vierengel",
   "license": "MIT",

@@ -28,6 +28,7 @@ export default Factory
     async updateChanges () {
       await sleep(this.updateInterval)
       const data = await this.ReadDataFactory()
+      data.deviceInfo ??= this.data.deviceInfo // is read only once (maxCalls: 1)
       const diff = DiffObject(this.data, data)
       this.data = data
 

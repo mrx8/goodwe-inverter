@@ -7,6 +7,14 @@ const GOODWE_BROADCAST_PORT = 48899
 const Timeout = 2000
 
 
+// a mac-address may be written with or without separators and in any case
+function normalize (entry) {
+  const mac = entry.trim().toLowerCase().replace(/[:-]/g, '')
+
+  return /^[0-9a-f]{12}$/.test(mac) ? mac : entry.trim()
+}
+
+
 function bind (socket, port = 0) {
   return new Promise((resolve, reject) => {
     socket.bind({
@@ -36,11 +44,13 @@ export default Factory
 
   .init(async ({
     timeout = Timeout,
+    ignore = [], // ip- or mac-addresses of inverters which must not be used (e.g. to let the WiFi-module log to SEMS undisturbed)
   }, {
     instance: instancePromise,
   }) => {
     const instance = await instancePromise
     instance.timeout = timeout
+    const ignored = new Set(ignore.map(normalize))
     instance.log.trace('setup UDP-socket for receiving multicast')
     const client = dgram.createSocket('udp4')
     client.unref()
@@ -57,6 +67,11 @@ export default Factory
           if (name?.startsWith('Solar-WiFi')) { // other devices may answer on this port, too
             const macAdress = macAdressRaw.match(/.{2}/g)?.join(':')
             instance.log.trace('got multicast-answer from ip: %s, mac-address: %s, name: %s', ip, macAdress, name)
+            if (ignored.has(ip) || ignored.has(normalize(macAdressRaw))) {
+              instance.log.trace('ignore inverter with ip %s, mac-address %s', ip, macAdress)
+
+              return
+            }
             responses.push({
               ip,
               macAdress,

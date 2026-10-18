@@ -14,6 +14,8 @@ import {setTimeout as sleep} from 'node:timers/promises'
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
 const MQTT_BASE_PATH = 'goodwe.inverters'
+// comma-separated ip- or mac-addresses of inverters which must not be used, e.g. "28:9c:6e:0a:1b:2c,192.168.1.50"
+const IGNORE_INVERTERS = (process.env.IGNORE_INVERTERS || '').split(',').map(entry => entry.trim()).filter(Boolean)
 
 let client
 const MQTT_URI = process.env.MQTT_URI || null
@@ -137,6 +139,9 @@ const ManageInverters = Factory
 
     instance.runningInverters = {}
     instance.timeout = timeout * 1000
+    if (IGNORE_INVERTERS.length > 0) {
+      instance.log.info('ignore inverters: %s', IGNORE_INVERTERS.join(', '))
+    }
 
     const discoverInverters = async () => {
       try {
@@ -144,6 +149,7 @@ const ManageInverters = Factory
 
         const foundInverters = await DiscoverInverters({
           timeout: instance.timeout,
+          ignore : IGNORE_INVERTERS,
         })
 
         if (foundInverters.length === 0) {

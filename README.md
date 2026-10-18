@@ -15,6 +15,11 @@ It will auto-detect all available GoodWe Inverters in your local network (UDP-br
 Anyway, it is broadcasting every 60s and adds new inverters on successful detection. So let it run as daemon with auto-restart.
 If you do not specify the env-variable `MQTT_URI` it will print the topics/values on the screen.
 
+To leave inverters alone, list their mac- or ip-addresses comma-separated in the env-variable `IGNORE_INVERTERS`
+(e.g. `IGNORE_INVERTERS=28:9c:6e:0a:1b:2c`). They are dropped right after the broadcast, so not a single request is sent to them.
+Useful if the WiFi-module must log to SEMS undisturbed or the inverter is read by other means (e.g. via RS485). The mac-address
+is the one the WiFi-module reports in the broadcast-answer (see `bin/discover-inverters.mjs`), notation and case don't matter.
+
 # Motivation
 The code borrows protocol-details heavily from this very nice project https://github.com/marcelblijleven/goodwe/tree/master.
 
